@@ -126,7 +126,7 @@ package com.codecatalyst.component.chart.control
 			
 			// Calculate zoom origin coordinate (in component coordinates)
 			
-			var zoomOrigin:Point = new Point( this.mouseX, this.mouseY );
+			var zoomOrigin:Point = new Point( mouseX, mouseY );
 			
 			// Zoom to the calculated origin coordinate
 			

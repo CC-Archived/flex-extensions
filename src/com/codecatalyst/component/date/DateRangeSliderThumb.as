@@ -315,12 +315,19 @@ package com.codecatalyst.component.date
 			
 			var allStyles:Boolean = ( ( styleProp == null ) || ( styleProp == "styleName" ) );
 			
+			// Thumb skin.
+			
+			if ( ( allStyles == true ) || ( styleProp == "thumbSkin" ) )
+			{
+				setButtonSkin( this, ( getStyle( "thumbSkin" ) as Class ) );
+			}
+			
 			// Handle skin.
 			
 			if ( ( allStyles == true ) || ( styleProp == "handleSkin" ) )
 			{
-				leftHandle.setStyle(  "skin", ( getStyle( "handleSkin" ) as Class ) );
-				rightHandle.setStyle( "skin", ( getStyle( "handleSkin" ) as Class ) );
+				setButtonSkin( leftHandle,  ( getStyle( "handleSkin" ) as Class ) );
+				setButtonSkin( rightHandle, ( getStyle( "handleSkin" ) as Class ) );
 			}
 			
 			// Handle width and height.
@@ -377,20 +384,6 @@ package com.codecatalyst.component.date
 			}
 		}
 		
-		/**
-		 * Position the handles for this thumb.
-		 */
-		public function positionHandles():void
-		{
-			var frame:Rectangle = new Rectangle( x, y, unscaledWidth, unscaledHeight );
-			
-			leftHandle.setActualSize( handleWidth, handleHeight );
-			leftHandle.move( frame.left  - ( leftHandle.width   / 2 ), ( frame.height / 2 ) - ( leftHandle.height  / 2 ) );
-			
-			rightHandle.setActualSize( handleWidth, handleHeight );
-			rightHandle.move( frame.right - ( rightHandle.width / 2 ), ( frame.height / 2 ) - ( rightHandle.height / 2 ) );			
-		}
-		
 		// ========================================
 		// Protected methods
 		// ========================================	
@@ -438,6 +431,27 @@ package com.codecatalyst.component.date
 				owner.removeChild( rightHandle );
 			}
 		}
+		
+		/**
+		 * Set the specified skin class as the skin for the specified Button.
+		 */
+		protected function setButtonSkin( button:Button, skinClass:Class ):void
+		{
+			// Ensure Button styles are not applied instead (they have precedence).
+			
+			button.setStyle( "upSkin",               null );
+			button.setStyle( "overSkin",             null );
+			button.setStyle( "downSkin",             null );
+			button.setStyle( "disabledSkin",         null );
+			button.setStyle( "selectedUpSkin",       null );
+			button.setStyle( "selectedOverSkin",     null );
+			button.setStyle( "selectedDownSkin",     null );
+			button.setStyle( "selectedDisabledSkin", null );
+			
+			// Apply skin class.
+			
+			button.setStyle( "skin", skinClass );
+		}
 
 		/**
 		 * @inheritDoc
@@ -447,6 +461,20 @@ package com.codecatalyst.component.date
 			super.updateDisplayList( unscaledWidth, unscaledHeight );
 			
 			positionHandles();
+		}
+		
+		/**
+		 * Position the handles for this thumb.
+		 */
+		protected function positionHandles():void
+		{
+			var frame:Rectangle = new Rectangle( x, y, unscaledWidth, unscaledHeight );
+			
+			leftHandle.setActualSize( handleWidth, handleHeight );
+			leftHandle.move( frame.left  - ( leftHandle.width   / 2 ), ( frame.height / 2 ) - ( leftHandle.height  / 2 ) );
+			
+			rightHandle.setActualSize( handleWidth, handleHeight );
+			rightHandle.move( frame.right - ( rightHandle.width / 2 ), ( frame.height / 2 ) - ( rightHandle.height / 2 ) );			
 		}
 		
 		/**

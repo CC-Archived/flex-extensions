@@ -174,12 +174,12 @@ package com.codecatalyst.component.chart.control
 		 */
 		protected function calculateCurrentZoomRectangle():Rectangle
 		{
-			var rectangle:Rectangle =		
-				new Rectangle( 
+			var rectangle:Rectangle =
+				new Rectangle(
 					( allowZoomX ) ? zoomStart.x : 0,
 					( allowZoomY ) ? zoomStart.y : 0,
-					( allowZoomX ) ? zoomCurrent.x - zoomStart.x : this.width,
-					( allowZoomY ) ? zoomCurrent.y - zoomStart.y : this.height 
+					( allowZoomX ) ? zoomCurrent.x - zoomStart.x : width,
+					( allowZoomY ) ? zoomCurrent.y - zoomStart.y : height
 				);
 			
 			return RectangleUtil.normalize( rectangle );
@@ -200,7 +200,7 @@ package com.codecatalyst.component.chart.control
 				
 				// Store the starting coordinate
 				
-				zoomStart = new Point( this.mouseX, this.mouseY );
+				zoomStart = new Point( mouseX, mouseY );
 			}
 		}
 		
@@ -213,7 +213,7 @@ package com.codecatalyst.component.chart.control
 			
 			// Store the current coordinate
 			
-			zoomCurrent = new Point( this.mouseX, this.mouseY );
+			zoomCurrent = new Point( mouseX, mouseY );
 			
 			// Mark the display as dirty
 			

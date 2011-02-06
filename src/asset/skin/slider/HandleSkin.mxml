@@ -32,25 +32,6 @@
 		
 	</states>
 	
-	<!-- Strokes -->
-	
-	<strokes>
-		<LinearGradientStroke id="upStroke" angle="90">
-			<GradientStop color="#898b8d" alpha="1" ratio="0.0" />
-			<GradientStop color="#5d5f60" alpha="1" ratio="1.0" />
-		</LinearGradientStroke>
-		
-		<LinearGradientStroke id="overStroke" angle="90">
-			<GradientStop color="#009dff" alpha="1" ratio="0.0" />
-			<GradientStop color="#0056b8" alpha="1" ratio="1.0" />
-		</LinearGradientStroke>
-		
-		<LinearGradientStroke id="downStroke" angle="90">
-			<GradientStop color="#009dff" alpha="1" ratio="0.0" />
-			<GradientStop color="#0056b8" alpha="1" ratio="1.0" />
-		</LinearGradientStroke>
-	</strokes>
-	
 	<!-- Fills -->
 	
 	<fills>
@@ -70,13 +51,33 @@
 		</LinearGradientFill>
 	</fills>
 	
+	<!-- Strokes -->
+	
+	<strokes>
+		<LinearGradientStroke id="upStroke" angle="90">
+			<GradientStop color="#898b8d" alpha="1.0" ratio="0.0" />
+			<GradientStop color="#5d5f60" alpha="1.0" ratio="1.0" />
+		</LinearGradientStroke>
+		
+		<LinearGradientStroke id="overStroke" angle="90">
+			<GradientStop color="#009dff" alpha="1.0" ratio="0.0" />
+			<GradientStop color="#0056b8" alpha="1.0" ratio="1.0" />
+		</LinearGradientStroke>
+		
+		<LinearGradientStroke id="downStroke" angle="90">
+			<GradientStop color="#009dff" alpha="1.0" ratio="0.0" />
+			<GradientStop color="#0056b8" alpha="1.0" ratio="1.0" />
+		</LinearGradientStroke>
+	</strokes>
+	
 	<!-- Geometry -->
 	
 	<geometry>
 		<RoundedRectangle 
 			id="backgroundRectangle"
 			width="{ skinWidth }" height="{ skinHeight }" 
-			fill="{ upFill }" stroke="{ upStroke }"
+			fill="{ upFill }" 
+			stroke="{ upStroke }"
 			cornerRadius="0" />
 	</geometry>
 	

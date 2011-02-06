@@ -267,7 +267,7 @@ package com.codecatalyst.component.date
 		/**
 		 * Backing variable for <code>bitmapDataModifier</code> property.
 		 * 
-		 * @see #bitmapDataModifier
+		 * @see #bitmapDataModifier 
 		 */
 		protected var _bitmapDataModifier:Function = BitmapDataUtil.grayscale;
 		
@@ -510,16 +510,6 @@ package com.codecatalyst.component.date
 				invalidateDisplayList();
 			}
 			
-			// Thumb skin.
-			
-			if ( ( allStyles == true ) || ( styleProp == "thumbSkin" ) )
-			{
-				for each ( var thumb:DateRangeSliderThumb in thumbs )
-				{
-					thumb.setStyle( "skin", getStyle( "thumbSkin" ) );
-				}
-			}
-			
 			// Grip position.
 			
 			if ( ( allStyles == true ) || ( styleProp == "gripPosition" ) )
@@ -584,8 +574,6 @@ package com.codecatalyst.component.date
 			{
 				var thumb:DateRangeSliderThumb = thumbPool.acquireInstance();
 				thumb.dateRange = dateRange;
-				
-				thumb.setStyle( "skin", getStyle( "thumbSkin" ) );
 				
 				addChild( thumb );
 				
@@ -656,6 +644,8 @@ package com.codecatalyst.component.date
 			
 			if ( content != null )
 			{
+				content.visible = true;
+
 				SkinUtil.resize( content, unscaledWidth, unscaledHeight );
 				SkinUtil.validate( content );
 			}
@@ -667,7 +657,10 @@ package com.codecatalyst.component.date
 				contentUpdated = false;
 			}
 			
-			// TODO: hide content
+			if ( content != null )
+			{
+				content.visible = false;
+			}
 			
 			// Draw and position background elements.
 			
@@ -937,6 +930,8 @@ package com.codecatalyst.component.date
 		protected function content_updateCompleteHandler( event:FlexEvent ):void
 		{
 			contentUpdated = true;
+			
+			invalidateDisplayList();
 		}
 	}
 }

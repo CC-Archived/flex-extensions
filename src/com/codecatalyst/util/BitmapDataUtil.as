@@ -37,7 +37,7 @@ package com.codecatalyst.util
 		// ========================================
 		
 		/**
-		 * Create a grayscale version of the specified BitmapData.
+		 * Convert the specified BitmapData to grayscale.
 		 */
 		public static function grayscale( bitmapData:BitmapData ):BitmapData
 		{
@@ -78,6 +78,30 @@ package com.codecatalyst.util
 			return bitmapData;
 		}
 		
-		// TODO: lighten( percentage ), darken( percentage ).
+		/**
+		 * Adjust the brightness of the specified BitmapData by the specified percentage.
+		 */
+		public static function brightness( bitmapData:BitmapData, percentage:Number ):BitmapData
+		{
+			percentage = Math.min( 1.0, Math.max( -1.0, percentage ) ) * 100;
+			
+			if ( percentage != 0 )
+			{
+				var matrix:Array = 
+					[ 
+						1, 0, 0, 0, percentage,
+						0, 1, 0, 0, percentage,
+						0, 0, 1, 0, percentage,
+						0, 0, 0, 1, 0
+					];
+			 
+				var bitmapBounds:Rectangle = new Rectangle( 0, 0, bitmapData.width, bitmapData.height );
+				var filter:ColorMatrixFilter = new ColorMatrixFilter( matrix );
+				
+				bitmapData.applyFilter( bitmapData, bitmapBounds, new Point( 0, 0 ), filter );
+			}
+			
+			return bitmapData;
+		}
 	}
 }

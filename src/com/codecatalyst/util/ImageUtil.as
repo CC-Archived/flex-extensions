@@ -54,6 +54,18 @@ package com.codecatalyst.util
 			return bitmap;
 		}
 		
+		/**
+		 * Return the specified image source with its brightness adjusted by the specified percentage.
+		 */
+		public static function brightness( source:Object, percentage:Number ):Bitmap
+		{
+			var bitmap:Bitmap = createBitmap( source );
+			
+			BitmapDataUtil.brightness( bitmap.bitmapData, percentage );
+			
+			return bitmap;
+		}
+		
 		// ========================================
 		// Protected methods
 		// ========================================
