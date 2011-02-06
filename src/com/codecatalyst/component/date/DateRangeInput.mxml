@@ -1,0 +1,437 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Box 
+	direction="horizontal"
+	horizontalGap="8"
+	verticalAlign="middle" 
+	xmlns:hamcrest="http://hamcrest.org/2009/mxml"
+	xmlns:mx="http://www.adobe.com/2006/mxml">
+	
+	<mx:Metadata>
+		
+		/**
+		 * Start and end Label style.
+		 */
+		[Style(name="labelStyleName", type="String", inherit="no")]
+		
+		/**
+		* DateField style.
+		*/
+		[Style(name="dateFieldStyleName", type="String", inherit="no")]
+		
+		/**
+		 * Dispatched when the user changes the selected date range.
+		 */
+		[Event(name="change",type="flash.events.Event")]
+		
+	</mx:Metadata>
+	
+	<mx:Script>
+		<![CDATA[
+			////////////////////////////////////////////////////////////////////////////////
+			// Copyright (c) 2009 CodeCatalyst, LLC - http://www.codecatalyst.com/
+			// 
+			// Permission is hereby granted, free of charge, to any person obtaining a copy
+			// of this software and associated documentation files (the "Software"), to deal
+			// in the Software without restriction, including without limitation the rights
+			// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+			// copies of the Software, and to permit persons to whom the Software is
+			// furnished to do so, subject to the following conditions:
+			//
+			// The above copyright notice and this permission notice shall be included in
+			// all copies or substantial portions of the Software.
+			//
+			// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+			// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+			// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+			// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+			// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+			// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+			// THE SOFTWARE.	
+			////////////////////////////////////////////////////////////////////////////////
+			
+			import com.codecatalyst.data.DateRange;
+			import com.codecatalyst.util.DateUtil;
+			
+			import mx.events.CalendarLayoutChangeEvent;
+			import mx.validators.Validator;
+			
+			// ========================================
+			// Protected properties
+			// ========================================
+			
+			/**
+			 * Backing variable for <code>selectableDateRange</code> property.
+			 * 
+			 * @see #selectableDateRange
+			 */
+			protected var _selectableDateRange:DateRange = null;
+			
+			/**
+			 * Backing variable for <code>selectedDateRange</code> property.
+			 * 
+			 * @see #selectedDateRange
+			 */
+			protected var _selectedDateRange:DateRange = null;
+			
+			/**
+			 * Backing variable for <code>startLabelText</code> property.
+			 * 
+			 * @see #startLabelText
+			 */
+			protected var _startLabelText:String = null;
+			
+			/**
+			 * Backing variable for <code>endLabelText</code> property.
+			 * 
+			 * @see #endLabelText
+			 */
+			protected var _endLabelText:String = null;
+			
+			[Bindable]
+			/**
+			 * Label style declaration.
+			 */
+			protected var labelStyle:CSSStyleDeclaration = null;
+			
+			[Bindable]
+			/**
+			 * DateField style declaration.
+			 */
+			protected var dateFieldStyle:CSSStyleDeclaration = null;
+			
+			[Bindable]
+			/**
+			 * Indicates whether the user has focused on the start or end date.
+			 */
+			protected var isFocused:Boolean = false;
+			
+			// ========================================
+			// Public properties
+			// ========================================
+			
+			[Bindable("selectedDateRangeChanged")]
+			/**
+			 * DateRange of selected Dates.
+			 */
+			public function get selectedDateRange():DateRange
+			{
+				return _selectedDateRange;
+			}
+			
+			public function set selectedDateRange( value:DateRange ):void
+			{
+				if ( _selectedDateRange != value )
+				{
+					_selectedDateRange = value;
+					
+					dispatchEvent( new Event( "selectedDateRangeChanged" ) );
+				}
+			}
+			
+			[Bindable("selectableDateRangeChanged")]
+			/**
+			 * DateRange of selectable Dates.
+			 */
+			public function get selectableDateRange():DateRange
+			{
+				return _selectableDateRange;
+			}
+			
+			public function set selectableDateRange( value:DateRange ):void
+			{
+				if ( _selectableDateRange != value )
+				{
+					_selectableDateRange = value;
+					
+					dispatchEvent( new Event( "selectableDateRangeChanged" ) );
+				}
+			}
+			
+			[Bindable("startLabelTextChanged")]
+			/**
+			 * Start Label text (optional).
+			 */
+			public function get startLabelText():String
+			{
+				return _startLabelText;
+			}
+			
+			public function set startLabelText( value:String ):void
+			{
+				if ( _startLabelText != value )
+				{
+					_startLabelText = value;
+					
+					dispatchEvent( new Event( "startLabelTextChanged" ) );
+				}
+			}
+			
+			[Bindable("endLabelTextChanged")]
+			/**
+			 * End Label text (optional).
+			 */
+			public function get endLabelText():String
+			{
+				return _endLabelText;
+			}
+			
+			public function set endLabelText( value:String ):void
+			{
+				if ( _endLabelText != value )
+				{
+					_endLabelText = value;
+					
+					dispatchEvent( new Event( "endLabelTextChanged" ) );
+				}
+			}
+			
+			// ========================================
+			// Public methods
+			// ========================================
+			
+			/**
+			 * @inheritDoc
+			 */
+			override public function styleChanged( styleProp:String ):void
+			{
+				super.styleChanged( styleProp );
+				
+				var allStyles:Boolean = ( ( styleProp == null ) || ( styleProp == "styleName" ) );
+				
+				// Label styles.
+				
+				if ( ( allStyles == true ) || ( styleProp == "labelStyleName" ) )
+				{
+					var labelStyleName:String = getStyle( "labelStyleName" ) as String;
+					if ( labelStyleName != null )
+					{
+						var labelStyleDeclaration:CSSStyleDeclaration = StyleManager.getStyleDeclaration( "." + labelStyleName );
+						
+						if ( labelStyleDeclaration != null )
+							labelStyle = labelStyleDeclaration;
+					}
+				}
+				
+				// DateField styles.
+				
+				if ( ( allStyles == true ) || ( styleProp == "dateFieldStyleName" ) )
+				{
+					var dateFieldStyleName:String = getStyle( "dateFieldStyleName" ) as String;
+					if ( dateFieldStyleName != null )
+					{
+						var dateFieldStyleDeclaration:CSSStyleDeclaration = StyleManager.getStyleDeclaration( "." + dateFieldStyleName );
+						
+						if ( dateFieldStyleDeclaration != null )
+							dateFieldStyle = dateFieldStyleDeclaration;
+					}
+				}
+			}
+			
+			// ========================================
+			// Protected methods
+			// ========================================
+			
+			/**
+			 * Validate.
+			 */
+			protected function validate():Boolean
+			{
+				if ( Validator.validateAll( validators ).length != 0 )
+					return false;
+				
+				return true;
+			}
+			
+			/**
+			 * Returns a new Date with the value rounded down to the nearest day.
+			 */
+			public static function nearestDay( date:Date ):Date
+			{
+				return DateUtil.floor( date, DateUtil.DAY );
+			}
+			
+			/**
+			 * Handle start or end DateField CalendarLayoutChangeEvent.CHANGE.
+			 */
+			protected function dateField_changeHandler( event:CalendarLayoutChangeEvent ):void
+			{
+				if ( !validate() )
+					return;
+				
+				var dateRange:DateRange = new DateRange();
+				dateRange.startTime = nearestDay( startDateField.selectedDate ).time;
+				dateRange.endTime   = nearestDay( endDateField.selectedDate   ).time;
+				
+				selectedDateRange = selectableDateRange.createBoundedDateRange( dateRange );
+				
+				dispatchEvent( new Event( Event.CHANGE ) );
+			}
+			
+			/**
+			 * Format the specified Date for display in a DateField.
+			 */
+			protected function dateField_labelFunction( item:Date ):String
+			{
+				if ( isFocused )
+					return mx.controls.DateField.dateToString( item, numericDateFormatter.formatString );
+				
+				if ( item == null )
+					return "";
+				
+				return textDateFormatter.format( item );
+			}
+			
+			/**
+			 * Parse the start DateField input text into the corresponding Date.
+			 */
+			protected function startDateField_parseFunction( valueString:String, inputFormat:String ):Date
+			{
+				if ( isFocused )
+					return mx.controls.DateField.stringToDate( valueString, inputFormat );
+				
+				return startDateField.selectedDate;
+			}
+			
+			/**
+			 * Parse the end DateField input text into the corresponding Date.
+			 */
+			protected function endDateField_parseFunction( valueString:String, inputFormat:String ):Date
+			{
+				if ( isFocused )
+					return mx.controls.DateField.stringToDate( valueString, inputFormat );
+				
+				return endDateField.selectedDate;
+			}
+			
+			/**
+			 * Handle start or end DateField FocusEvent.FOCUS_IN.
+			 */
+			protected function dateField_focusInHandler( event:FocusEvent ):void
+			{
+				if ( startDateField.selectedDate != null)
+					startDateField.text = mx.controls.DateField.dateToString( startDateField.selectedDate, numericDateFormatter.formatString );
+				
+				if ( endDateField.selectedDate != null)
+					endDateField.text = mx.controls.DateField.dateToString( endDateField.selectedDate, numericDateFormatter.formatString );
+				
+				isFocused = true;
+			}
+			
+			/**
+			 * Handle start or end DateField FocusEvent.FOCUS_OUT.
+			 */
+			protected function dateField_focusOutHandler( event:FocusEvent ):void
+			{
+				if ( startDateField.selectedDate != null)
+					startDateField.text = textDateFormatter.format( startDateField.selectedDate );
+				
+				if ( endDateField.selectedDate != null)
+					endDateField.text = textDateFormatter.format( endDateField.selectedDate );
+				
+				isFocused = false;
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<!-- Formatters. -->
+	
+	<mx:DateFormatter 
+		id="textDateFormatter" 
+		formatString="MMM D, YYYY" />
+	
+	<mx:DateFormatter 
+		id="numericDateFormatter" 
+		formatString="MM/DD/YYYY" />
+	
+	<!-- Validators. -->
+	
+	<mx:Array id="validators">
+		
+		<mx:DateValidator 
+			id="startDateValidator" 
+			source="{ startDateField }" 
+			property="text" 
+			trigger="{ new EventDispatcher() }" />
+		
+		<mx:DateValidator 
+			id="endDateValidator" 
+			source="{ endDateField }" 
+			property="text" 
+			trigger="{ new EventDispatcher() }" />
+		
+		<hamcrest:MatcherValidator
+			source="{ startDateField }" property="selectedDate"
+			errorMessage="Start date must occur before end date."
+			trigger="{ new EventDispatcher() }">
+			<hamcrest:DateBefore date="{ selectedDateRange.endDate }" />
+		</hamcrest:MatcherValidator>
+		
+		<hamcrest:MatcherValidator
+			source="{ endDateField }" property="selectedDate"
+			errorMessage="End date must occur after the start date."
+			trigger="{ new EventDispatcher() }">
+			<hamcrest:DateAfter date="{ selectedDateRange.startDate }" />
+		</hamcrest:MatcherValidator>
+		
+		<hamcrest:MatcherValidator
+			source="{ startDateField }" property="selectedDate"
+			errorMessage="Start date must occur between { numericDateFormatter.format( selectableDateRange.startDate ) } and { numericDateFormatter.format( selectableDateRange.endDate ) }."
+			trigger="{ new EventDispatcher() }">
+			<hamcrest:DateBetween min="{ DateUtil.floor( selectableDateRange.startDate, DateUtil.DAY ) }" max="{ DateUtil.ceil( selectableDateRange.endDate, DateUtil.DAY ) }" />
+		</hamcrest:MatcherValidator>
+		
+		<hamcrest:MatcherValidator
+			source="{ endDateField }" property="selectedDate"
+			errorMessage="End date must occur between { numericDateFormatter.format( selectableDateRange.startDate ) } and { numericDateFormatter.format( selectableDateRange.endDate ) }."
+			trigger="{ new EventDispatcher() }">
+			<hamcrest:DateBetween min="{ DateUtil.floor( selectableDateRange.startDate, DateUtil.DAY ) }" max="{ DateUtil.ceil( selectableDateRange.endDate, DateUtil.DAY ) }" />
+		</hamcrest:MatcherValidator>
+		
+	</mx:Array>
+	
+	<!-- UI -->
+	
+	<mx:Label 
+		id="startLabel"
+		styleName="{ labelStyle }"
+		text="{ startLabelText }"
+		visible="{ ( startLabelText != null ) }"
+		includeInLayout="{ ( startLabelText != null ) }" />
+	
+	<mx:DateField
+		id="startDateField"
+		styleName="{ dateFieldStyle }"
+		width="102"
+		editable="true"
+		selectedDate="{ selectedDateRange.startDate }"
+		selectableRange="{ { rangeStart: selectableDateRange.startDate, rangeEnd: selectableDateRange.endDate } }"
+		enabled="{ selectableDateRange != null }"
+		change="dateField_changeHandler( event )"
+		labelFunction="dateField_labelFunction"
+		parseFunction="startDateField_parseFunction"
+		focusIn="dateField_focusInHandler( event )"
+		focusOut="dateField_focusOutHandler( event )" />
+	
+	<mx:Label 
+		id="endLabel"
+		styleName="{ labelStyle }"
+		text="{ endLabelText }"
+		visible="{ ( endLabelText != null ) }"
+		includeInLayout="{ ( endLabelText != null ) }" />
+	
+	<mx:DateField
+		id="endDateField"
+		styleName="{ dateFieldStyle }"
+		width="102"
+		editable="true"
+		selectedDate="{ selectedDateRange.endDate }"
+		selectableRange="{ { rangeStart: selectableDateRange.startDate, rangeEnd: selectableDateRange.endDate } }"
+		enabled="{ selectableDateRange != null }"
+		change="dateField_changeHandler( event )"
+		labelFunction="dateField_labelFunction"
+		parseFunction="endDateField_parseFunction"
+		focusIn="dateField_focusInHandler( event )"
+		focusOut="dateField_focusOutHandler( event )" />
+	
+</mx:Box>

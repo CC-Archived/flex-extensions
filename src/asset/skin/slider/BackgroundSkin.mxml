@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<GraphicBorderSkin
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	xmlns="http://www.degrafa.com/2007">
+	
+	<!-- Fills -->
+	
+	<fills>
+		<SolidFill id="backgroundFill" color="#ffffff" alpha="1.0" />
+	</fills>
+	
+	<!-- Strokes -->
+	
+	<strokes>
+		<SolidStroke id="backgroundStroke" color="#5d5f60" alpha="1.0" weight="1" /> 
+	</strokes> 
+	
+	<!-- Geometry -->
+	
+	<geometry>
+		
+		<RegularRectangle
+			width="{ skinWidth }" height="{ skinHeight }"
+			fill="{ backgroundFill }"
+			stroke="{ backgroundStroke }" />
+		
+	</geometry>
+	
+</GraphicBorderSkin>

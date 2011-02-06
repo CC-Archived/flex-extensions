@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<GraphicBorderSkin
+	filters="{ [ new DropShadowFilter( 2, 90, 0x000000, 0.25, 0, 4 ) ] }"
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	xmlns="http://www.degrafa.com/2007" 
+	implements="mx.core.IStateClient">
+	
+	<!-- States -->
+	
+	<states>
+
+		<State name="upSkin">
+			<SetProperty target="{ backgroundRectangle }" name="fill"   value="{ upFill }" />
+			<SetProperty target="{ backgroundRectangle }" name="stroke" value="{ upStroke }" />
+		</State>
+		
+		<State name="overSkin">
+			<SetProperty target="{ backgroundRectangle }" name="fill"   value="{ overFill }" />
+			<SetProperty target="{ backgroundRectangle }" name="stroke" value="{ overStroke }" />
+		</State>
+		
+		<State name="downSkin">
+			<SetProperty target="{ backgroundRectangle }" name="fill"   value="{ downFill }" />
+			<SetProperty target="{ backgroundRectangle }" name="stroke" value="{ downStroke }" />
+		</State>
+		
+		<State name="selectedUpSkin" basedOn="upSkin" />
+		
+		<State name="selectedOverSkin" basedOn="overSkin" />
+		
+		<State name="selectedDownSkin" basedOn="downSkin" />
+		
+	</states>
+	
+	<!-- Strokes -->
+	
+	<strokes>
+		<LinearGradientStroke id="upStroke" angle="90">
+			<GradientStop color="#898b8d" alpha="1" ratio="0.0" />
+			<GradientStop color="#5d5f60" alpha="1" ratio="1.0" />
+		</LinearGradientStroke>
+		
+		<LinearGradientStroke id="overStroke" angle="90">
+			<GradientStop color="#009dff" alpha="1" ratio="0.0" />
+			<GradientStop color="#0056b8" alpha="1" ratio="1.0" />
+		</LinearGradientStroke>
+		
+		<LinearGradientStroke id="downStroke" angle="90">
+			<GradientStop color="#009dff" alpha="1" ratio="0.0" />
+			<GradientStop color="#0056b8" alpha="1" ratio="1.0" />
+		</LinearGradientStroke>
+	</strokes>
+	
+	<!-- Fills -->
+	
+	<fills>
+		<LinearGradientFill id="upFill" angle="90">
+			<GradientStop color="#fdfdfd" alpha="0.8" ratio="0.0" />
+			<GradientStop color="#ebebeb" alpha="0.8" ratio="1.0" />
+		</LinearGradientFill>
+		
+		<LinearGradientFill id="overFill" angle="90">
+			<GradientStop color="#fdfdfd" alpha="0.8" ratio="0.0" />
+			<GradientStop color="#ebebeb" alpha="0.8" ratio="1.0" />
+		</LinearGradientFill>
+		
+		<LinearGradientFill id="downFill" angle="90">
+			<GradientStop color="#dff2ff" alpha="0.8" ratio="0.0" />
+			<GradientStop color="#9bd7ff" alpha="0.8" ratio="1.0" />
+		</LinearGradientFill>
+	</fills>
+	
+	<!-- Geometry -->
+	
+	<geometry>
+		<RoundedRectangle 
+			id="backgroundRectangle"
+			width="{ skinWidth }" height="{ skinHeight }" 
+			fill="{ upFill }" stroke="{ upStroke }"
+			cornerRadius="0" />
+	</geometry>
+	
+</GraphicBorderSkin>

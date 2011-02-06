@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="utf-8"?>
+<GraphicBorderSkin
+	filters="{ [ new DropShadowFilter( 2, 90, 0x000000, 0.25, 0, 4 ) ] }"
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	xmlns="http://www.degrafa.com/2007"
+	implements="mx.core.IStateClient">
+	
+	<mx:Script>
+		<![CDATA[
+			import com.codecatalyst.component.date.DateRangeSliderThumb;
+			
+			// ========================================
+			// Protected properties
+			// ========================================
+			
+			/**
+			 * Grip height
+			 */
+			protected static const GRIP_HEIGHT:int = 15;
+			
+			// ========================================
+			// Public properties
+			// ========================================
+			
+			[Bindable]
+			/**
+			 * Grip Y location.
+			 */
+			protected var gripY:Number;
+			
+			[Bindable]
+			/**
+			 * Grip bottom corner radius.
+			 */
+			protected var gripBottomCornerRadius:Number;
+			
+			[Bindable]
+			/**
+			 * Grip top corner radius.
+			 */
+			protected var gripTopCornerRadius:Number;
+			
+			[Bindable]
+			/**
+			 * Grip pattern horizontal position.
+			 */
+			protected var gripPatternX:Number;
+			
+			[Bindable]
+			/**
+			 * Grip pattern width.
+			 */
+			protected var gripPatternWidth:Number;	
+			
+			[Bindable]
+			/**
+			 * Indicates whether the grip is visible.
+			 */
+			protected var isGripVisible:Boolean;
+			
+			// ========================================
+			// Protected methods
+			// ========================================
+			
+			/**
+			 * @inheritDoc
+			 */
+			override protected function updateDisplayList( unscaledWidth:Number, unscaledHeight:Number ):void
+			{
+				super.updateDisplayList( unscaledWidth, unscaledHeight );
+				
+				var thumb:DateRangeSliderThumb = parent as DateRangeSliderThumb;
+				
+				if ( thumb != null )
+					isGripVisible = thumb.isDraggable;
+				
+				if ( getStyle( "gripPosition" ) == "top" )
+				{
+					gripY = ( GRIP_HEIGHT * -1 );
+					gripTopCornerRadius = 5;
+					gripBottomCornerRadius = 0;
+				}
+				else
+				{
+					gripY = skinHeight;
+					gripTopCornerRadius = 0;
+					gripBottomCornerRadius = 5;
+				}
+				
+				gripPatternWidth = 
+					Math.min( 
+						Math.max( 
+							( Math.round( ( skinWidth - 14 ) / 4 ) * 4 ) + 2, 
+							0
+						),
+						14
+					);
+				gripPatternX = ( skinWidth / 2.0 ) - ( gripPatternWidth / 2.0 );
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<!-- States -->
+	
+	<states>
+		
+		<State name="upSkin">
+			<SetProperty target="{ gripRectangle }" name="fill"   value="{ gripUpFill }" />
+			<SetProperty target="{ gripRectangle }" name="stroke" value="{ gripUpStroke }" />
+		</State>
+		
+		<State name="overSkin">
+			<SetProperty target="{ gripRectangle }" name="fill"   value="{ gripOverFill }" />
+			<SetProperty target="{ gripRectangle }" name="stroke" value="{ gripOverStroke }" />
+		</State>
+		
+		<State name="downSkin">
+			<SetProperty target="{ gripRectangle }" name="fill"   value="{ gripDownFill }" />
+			<SetProperty target="{ gripRectangle }" name="stroke" value="{ gripDownStroke }" />
+		</State>
+		
+		<State name="selectedUpSkin" basedOn="upSkin" />
+		
+		<State name="selectedOverSkin" basedOn="overSkin" />
+		
+		<State name="selectedDownSkin" basedOn="downSkin" />
+		
+	</states>
+	
+	<!-- Fills -->
+	
+	<fills>
+		<SolidFill id="backgroundFill" color="#ffffff" alpha="0.0" />
+		
+		<LinearGradientFill id="gripUpFill" angle="90">
+			<GradientStop color="#fdfdfd" alpha="0.8" ratio="0.0" />
+			<GradientStop color="#ebebeb" alpha="0.8" ratio="1.0" />
+		</LinearGradientFill>
+		
+		<LinearGradientFill id="gripOverFill" angle="90">
+			<GradientStop color="#fdfdfd" alpha="0.8" ratio="0.0" />
+			<GradientStop color="#ebebeb" alpha="0.8" ratio="1.0" />
+		</LinearGradientFill>
+		
+		<LinearGradientFill id="gripDownFill" angle="90">
+			<GradientStop color="#dff2ff" alpha="0.8" ratio="0.0" />
+			<GradientStop color="#9bd7ff" alpha="0.8" ratio="1.0" />
+		</LinearGradientFill>
+		
+		<BitmapFill id="gripPatternFill" source="@Embed(source='grip-pattern.png')" />
+	</fills>
+	
+	<!-- Strokes -->
+	
+	<strokes>
+		<LinearGradientStroke id="backgroundStroke" angle="90">
+			<GradientStop color="#898b8d" alpha="1" ratio="0.0" />
+			<GradientStop color="#5d5f60" alpha="1" ratio="1.0" />
+		</LinearGradientStroke>
+		
+		<LinearGradientStroke id="gripUpStroke" angle="90">
+			<GradientStop color="#898b8d" alpha="1" ratio="0.0" />
+			<GradientStop color="#5d5f60" alpha="1" ratio="1.0" />
+		</LinearGradientStroke>
+		
+		<LinearGradientStroke id="gripOverStroke" angle="90">
+			<GradientStop color="#009dff" alpha="1" ratio="0.0" />
+			<GradientStop color="#0056b8" alpha="1" ratio="1.0" />
+		</LinearGradientStroke>
+		
+		<LinearGradientStroke id="gripDownStroke" angle="90">
+			<GradientStop color="#009dff" alpha="1" ratio="0.0" />
+			<GradientStop color="#0056b8" alpha="1" ratio="1.0" />
+		</LinearGradientStroke>
+	</strokes> 
+	
+	<!-- Geometry -->
+	
+	<geometry>
+		
+		<!-- Background -->
+		
+		<RegularRectangle
+			id="backgroundRectangle"
+			width="{ skinWidth }" height="{ skinHeight }"
+			fill="{ backgroundFill }"
+			stroke="{ backgroundStroke }" />
+		
+		<!-- Grip -->
+		
+		<RoundedRectangleComplex 
+			id="gripRectangle"
+			y="{ gripY }"
+			width="{ skinWidth }" height="{ GRIP_HEIGHT }" 
+			fill="{ gripUpFill }" 
+			stroke="{ gripUpStroke }"
+			topLeftRadius="{ gripTopCornerRadius }" topRightRadius="{ gripTopCornerRadius }" 
+			bottomLeftRadius="{ gripBottomCornerRadius }" bottomRightRadius="{ gripBottomCornerRadius }" 
+			visible="{ isGripVisible }" />
+		
+		<RegularRectangle 
+			x="{ gripPatternX }" y="{ gripY + 5 }"
+			width="{ gripPatternWidth }" height="5" 
+			fill="{ gripPatternFill }" 
+			visible="{ isGripVisible }" />		
+		
+	</geometry>
+	
+</GraphicBorderSkin>
