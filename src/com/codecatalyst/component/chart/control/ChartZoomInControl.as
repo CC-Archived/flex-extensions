@@ -28,8 +28,22 @@ package com.codecatalyst.component.chart.control
 	import flash.geom.Point;
 	import flash.geom.Rectangle;
 	
+	import mx.graphics.IFill;
+	import mx.graphics.IStroke;
+	import mx.graphics.SolidColor;
+	import mx.graphics.Stroke;
 	import mx.styles.CSSStyleDeclaration;
 	import mx.styles.StyleManager;
+	
+	/**
+	 * Fill.
+	 */
+	[Style(name="fill", type="mx.graphics.IFill", inherit="no")]
+	
+	/**
+	 * Stroke.
+	 */
+	[Style(name="stroke", type="mx.graphics.IStroke", inherit="no")]
 	
 	/**
 	 * Dispatched when the user clicks to zoom in to a chart coordinate.
@@ -143,12 +157,15 @@ package com.codecatalyst.component.chart.control
 			
 			if ( ( isZooming == true ) && ( zoomCurrent != null ) )
 			{
+				var fill:IFill     = getStyle( "fill" )   as IFill   || new SolidColor( 0x999999, 0.5 );
+				var stroke:IStroke = getStyle( "stroke" ) as IStroke || new Stroke( 0x000000, 1.0, 0.0, true );
+				
 				var rectangle:Rectangle = calculateCurrentZoomRectangle();
 				
-				graphics.lineStyle( 1, 0, 0, true );
-				graphics.beginFill( 0x999999, 0.5 );
+				stroke.apply( graphics );
+				fill.begin( graphics, rectangle );
 				graphics.drawRect( rectangle.x, rectangle.y, rectangle.width, rectangle.height );
-				graphics.endFill();
+				fill.end( graphics );
 			}
 		}
 		
