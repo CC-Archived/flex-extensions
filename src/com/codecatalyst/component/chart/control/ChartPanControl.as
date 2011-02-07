@@ -28,6 +28,9 @@ package com.codecatalyst.component.chart.control
 	import mx.styles.CSSStyleDeclaration;
 	import mx.styles.StyleManager;
 	
+	/**
+	 * Dispatched when the user clicks and drags to pan by a chart coordinate offset.
+	 */
 	[Event(name="pan", type="com.codecatalyst.component.chart.control.ChartPanEvent")]
 	
 	public class ChartPanControl extends AbstractChartControl
@@ -51,7 +54,7 @@ package com.codecatalyst.component.chart.control
 		/**
 		 * Default 'Panning' cursor.
 		 */
-		protected static const DEFAULT_PANNING_CURSOR:Class
+		protected static const DEFAULT_PANNING_CURSOR:Class;
 		
 		/**
 		 * Default 'Panning' cursor offset.
@@ -74,10 +77,10 @@ package com.codecatalyst.component.chart.control
 			declaration.defaultFactory = 
 				function ():void
 				{
-					this.mouseDownCursor 		= DEFAULT_PAN_CURSOR;
-					this.mouseDownCursorOffset 	= DEFAULT_PAN_CURSOR_OFFSET;
-					this.rollOverCursor  		= DEFAULT_PANNING_CURSOR;
-					this.rollOverCursorOffset 	= DEFAULT_PANNING_CURSOR_OFFSET;
+					this.mouseDownCursor        = DEFAULT_PANNING_CURSOR;
+					this.mouseDownCursorOffset  = DEFAULT_PANNING_CURSOR_OFFSET;
+					this.rollOverCursor         = DEFAULT_PAN_CURSOR;
+					this.rollOverCursorOffset   = DEFAULT_PAN_CURSOR_OFFSET;
 				};
 			
 			StyleManager.setStyleDeclaration( "ChartPanControl", declaration, false );

@@ -63,6 +63,7 @@
     <classEntry path="com.codecatalyst.util.StyleUtil"/>
     <classEntry path="qs.charts.DashedLineRenderer"/>
     <classEntry path="qs.utils.GraphicsUtils"/>
+    <classEntry path="asset.image.cursor.CursorAsset"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests>

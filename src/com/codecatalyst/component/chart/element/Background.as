@@ -79,6 +79,8 @@ package com.codecatalyst.component.chart.element
 			
 			var borderRectangle:Rectangle = new Rectangle( -1, -1, unscaledWidth + 1, unscaledHeight + 1 );
 			
+			graphics.clear();
+			
 			borderStroke.apply( graphics );
 			backgroundFill.begin( graphics, borderRectangle );
 			graphics.drawRect( borderRectangle.x, borderRectangle.y, borderRectangle.width, borderRectangle.height );

@@ -22,6 +22,7 @@
 
 package com.codecatalyst.component.date
 {
+	import asset.skin.slider.BackgroundSkin;
 	import asset.skin.slider.HandleSkin;
 	import asset.skin.slider.ThumbSkin;
 	
@@ -201,21 +202,21 @@ package com.codecatalyst.component.date
 			declaration.defaultFactory = 
 				function ():void
 				{
-					this.backgroundSkin 					= null;
-					this.thumbSkin 							= ThumbSkin;
-					this.handleSkin 						= HandleSkin;
-					this.handleWidth 						= DEFAULT_HANDLE_WIDTH;
-					this.handleHeight 						= DEFAULT_HANDLE_HEIGHT;
-					this.gripPosition 						= "bottom";
-					this.alternateOverlappingGripPositions 	= true;
-					this.panMouseDownCursor 				= DEFAULT_PAN_MOUSE_DOWN_CURSOR;
-					this.panMouseDownCursorOffset 			= DEFAULT_PAN_MOUSE_DOWN_CURSOR_OFFSET;
-					this.panMouseUpCursor 					= DEFAULT_PAN_MOUSE_UP_CURSOR;
-					this.panMouseUpCursorOffset 			= DEFAULT_PAN_MOUSE_UP_CURSOR_OFFSET;
-					this.resizeMouseDownCursor 				= DEFAULT_RESIZE_CURSOR;
-					this.resizeMouseDownCursorOffset 		= DEFAULT_RESIZE_CURSOR_OFFSET;
-					this.resizeMouseUpCursor 				= DEFAULT_RESIZE_CURSOR;
-					this.resizeMouseUpCursorOffset 			= DEFAULT_RESIZE_CURSOR_OFFSET;
+					this.backgroundSki                      = BackgroundSkin;
+					this.thumbSkin                          = ThumbSkin;
+					this.handleSkin                         = HandleSkin;
+					this.handleWidth                        = DEFAULT_HANDLE_WIDTH;
+					this.handleHeight                       = DEFAULT_HANDLE_HEIGHT;
+					this.gripPosition                       = "bottom";
+					this.alternateOverlappingGripPositions  = true;
+					this.panMouseDownCursor                 = DEFAULT_PAN_MOUSE_DOWN_CURSOR;
+					this.panMouseDownCursorOffset           = DEFAULT_PAN_MOUSE_DOWN_CURSOR_OFFSET;
+					this.panMouseUpCursor                   = DEFAULT_PAN_MOUSE_UP_CURSOR;
+					this.panMouseUpCursorOffset             = DEFAULT_PAN_MOUSE_UP_CURSOR_OFFSET;
+					this.resizeMouseDownCursor              = DEFAULT_RESIZE_CURSOR;
+					this.resizeMouseDownCursorOffset        = DEFAULT_RESIZE_CURSOR_OFFSET;
+					this.resizeMouseUpCursor                = DEFAULT_RESIZE_CURSOR;
+					this.resizeMouseUpCursorOffset          = DEFAULT_RESIZE_CURSOR_OFFSET;
 				};
 					
 			StyleManager.setStyleDeclaration( "DateRangeSlider", declaration, false );
