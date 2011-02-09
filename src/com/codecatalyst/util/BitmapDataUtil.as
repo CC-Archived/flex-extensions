@@ -83,7 +83,7 @@ package com.codecatalyst.util
 		 */
 		public static function brightness( bitmapData:BitmapData, percentage:Number ):BitmapData
 		{
-			percentage = Math.min( 1.0, Math.max( -1.0, percentage ) ) * 100;
+			percentage = Math.max( -1.0, Math.min( 1.0, percentage ) ) * 255;
 			
 			if ( percentage != 0 )
 			{
@@ -100,6 +100,29 @@ package com.codecatalyst.util
 				
 				bitmapData.applyFilter( bitmapData, bitmapBounds, new Point( 0, 0 ), filter );
 			}
+			
+			return bitmapData;
+		}
+		
+		/**
+		 * Adjust the transparency of the specified BitmapData by the specified percentage.
+		 */
+		public static function transparency( bitmapData:BitmapData, percentage:Number ):BitmapData
+		{
+			percentage = Math.max( 0.0, Math.min( 1.0, percentage ) );
+			
+			var matrix:Array = 
+				[ 
+					1, 0, 0, 0,          0,
+					0, 1, 0, 0,          0,
+					0, 0, 1, 0,          0,
+					0, 0, 0, percentage, 0
+				];
+				 
+			var bitmapBounds:Rectangle = new Rectangle( 0, 0, bitmapData.width, bitmapData.height );
+			var filter:ColorMatrixFilter = new ColorMatrixFilter( matrix );
+			
+			bitmapData.applyFilter( bitmapData, bitmapBounds, new Point( 0, 0 ), filter );
 			
 			return bitmapData;
 		}
