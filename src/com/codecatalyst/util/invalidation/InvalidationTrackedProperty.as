@@ -20,7 +20,7 @@
 // THE SOFTWARE.	
 ////////////////////////////////////////////////////////////////////////////////
 
-package com.codecatalyst.util
+package com.codecatalyst.util.invalidation
 {
 	import flash.events.Event;
 	import flash.events.IEventDispatcher;
@@ -28,6 +28,7 @@ package com.codecatalyst.util
 	import mx.binding.utils.ChangeWatcher;
 	import mx.core.IInvalidating;
 	import mx.events.PropertyChangeEvent;
+	import com.codecatalyst.util.PropertyUtil;
 	
 	[ExcludeClass]
 	public class InvalidationTrackedProperty
@@ -42,6 +43,13 @@ package com.codecatalyst.util
 		 * @see #invalidated
 		 */
 		protected var _invalidated:Boolean = false;
+		
+		/**
+		 * Backing variable for <code>previousValue</code> property.
+		 * 
+		 * @see #previousValue
+		 */
+		protected var _previousValue:* = null;
 		
 		/**
 		 * Source instance (containing this property).
@@ -82,6 +90,14 @@ package com.codecatalyst.util
 			return _invalidated;
 		}
 		
+		/**
+		 * Previous value for this property, if it is currently invalidated.
+		 */
+		public function get previousValue():*
+		{
+			return _previousValue;
+		}
+		
 		// ========================================
 		// Constructor
 		// ========================================
@@ -102,6 +118,8 @@ package com.codecatalyst.util
 				throw new Error( "The specified property is not [Bindable]." );
 			
 			watcher = ChangeWatcher.watch( source, [ propertyName ], changeEventHandler );
+			
+			reset();
 		}
 		
 		// ========================================
@@ -136,7 +154,11 @@ package com.codecatalyst.util
 			}
 			
 			if ( callback != null )
-				callback( propertyName );
+			{
+				var currentValue:* = PropertyUtil.getObjectPropertyValue( source, propertyName );
+				
+				callback( propertyName, previousValue, currentValue );
+			}
 		}
 		
 		/**
@@ -145,6 +167,8 @@ package com.codecatalyst.util
 		public function reset():void
 		{
 			_invalidated = false;
+			
+			_previousValue = PropertyUtil.getObjectPropertyValue( source, propertyName );
 		}
 		
 		// ========================================

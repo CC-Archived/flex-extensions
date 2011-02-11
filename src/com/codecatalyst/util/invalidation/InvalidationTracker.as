@@ -20,7 +20,7 @@
 // THE SOFTWARE.	
 ////////////////////////////////////////////////////////////////////////////////
 
-package com.codecatalyst.util
+package com.codecatalyst.util.invalidation
 {
 	import flash.events.IEventDispatcher;
 	import flash.utils.Dictionary;
@@ -39,7 +39,7 @@ package com.codecatalyst.util
 		// ========================================
 		
 		/**
-		 * Source.
+		 * Source instance.
 		 */
 		protected var source:IEventDispatcher = null;
 		
@@ -52,7 +52,7 @@ package com.codecatalyst.util
 		 * Callback function (optional).
 		 */
 		protected var callback:Function = null;
-		
+				
 		// ========================================
 		// Constructor
 		// ========================================
@@ -67,9 +67,7 @@ package com.codecatalyst.util
 			this.source   = source;
 			this.callback = callback;
 			
-			processTrackAnnotations();
-			
-			source.addEventListener( FlexEvent.UPDATE_COMPLETE, updateCompleteHandler, false, 0, true );
+			setup();
 		}
 		
 		// ========================================
@@ -123,6 +121,14 @@ package com.codecatalyst.util
 		}
 		
 		/**
+		 * Returns the previous value for the specified tracked property, if that property is currently invalidated.
+		 */
+		public function previousValue( identifier:String ):*
+		{
+			return _previousValue( identifier );
+		}
+		
+		/**
 		 * Resets the specified invalidated tracked property(s).
 		 * 
 		 * @param identifier A parameter name String or Array of parameter name Strings.
@@ -135,6 +141,16 @@ package com.codecatalyst.util
 		// ========================================
 		// Protected methods
 		// ========================================
+		
+		/**
+		 * Setup.
+		 */
+		protected function setup():void
+		{
+			processInvalidateAnnotations();
+			
+			source.addEventListener( FlexEvent.UPDATE_COMPLETE, updateCompleteHandler, false, 0, true );
+		}
 		
 		/**
 		 * Executes the specified method for the specified identifer(s), with optional additional parameters.
@@ -171,9 +187,9 @@ package com.codecatalyst.util
 		}
 		
 		/**
-		 * Process any [Track] annotations in the specified <code>source</code>.
+		 * Process any [Invalidate] annotations in the specified <code>source</code>.
 		 */
-		protected function processTrackAnnotations():void
+		protected function processInvalidateAnnotations():void
 		{
 			var description:XML = DescribeTypeCache.describeType( source ).typeDescription;
 		
@@ -181,35 +197,33 @@ package com.codecatalyst.util
 			
 			for each ( var item:XML in list )
 			{
-				var property:XML = item.parent();
-				var invalidateMetadata:XML = property.metadata.(@name == 'Invalidate')[ 0 ];
+				// Parse the type description.
 				
-				var propertyName:String = property.@name;
+				var property:XML                    = item.parent();
+				var invalidateMetadata:XML          = property.metadata.(@name == 'Invalidate')[ 0 ];
+				var invalidateMetdataOptions:String = invalidateMetadata.arg.(@key == '').@value;
 				
-				var invalidationFlags:uint = InvalidationFlags.NONE;
-				( invalidateMetadata.arg.(@key == '').@value ).split(",").map( 
-					function (item:String, index:int, array:Array):uint
-					{ 
+				// Determine the property name and invalidation flags.
+				
+				var propertyName:String             = property.@name;
+				var invalidationFlags:uint          = InvalidationFlags.NONE;
+				
+				invalidateMetdataOptions
+					.split(",")
+					.map( function ( item:String, index:int, array:Array ):uint { 
 						switch( StringUtil.trim( item ) )
 						{
-							case "displaylist":
-								return InvalidationFlags.DISPLAY_LIST;
-							case "size":
-								return InvalidationFlags.SIZE;
-							case "properties":
-								return InvalidationFlags.PROPERTIES;
-							case "none":
-								return InvalidationFlags.NONE;
-							default:
-								throw new Error( "Unsupported invalidation option specified." );
+							case "displaylist":	 return InvalidationFlags.DISPLAY_LIST;
+							case "size":         return InvalidationFlags.SIZE;
+							case "properties":   return InvalidationFlags.PROPERTIES;
+							default:             throw new Error( "Unsupported invalidation option specified." );
 						}
-					}
-				).forEach(
-					function (invalidationFlag:uint, index:int, array:Array):void
-					{ 
+					})
+					.forEach( function ( invalidationFlag:uint, index:int, array:Array ):void { 
 						invalidationFlags = invalidationFlags | invalidationFlag;
-					}
-				);
+					});
+					
+				// Track the specified property name with the specified invalidation flags.
 				
 				_track( propertyName, invalidationFlags );
 			}
@@ -250,6 +264,14 @@ package com.codecatalyst.util
 		protected function _invalidated( propertyName:String ):Boolean
 		{
 			return getTrackedPropertyByName( propertyName ).invalidated;
+		}
+		
+		/**
+		 * Returns the previous value for the specified tracked property, if that property is currently invalidated.
+		 */
+		protected function _previousValue( propertyName:String ):*
+		{
+			return getTrackedPropertyByName( propertyName ).previousValue;
 		}
 		
 		/**
