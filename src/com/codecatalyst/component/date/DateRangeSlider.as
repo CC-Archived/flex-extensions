@@ -29,7 +29,7 @@ package com.codecatalyst.component.date
 	import com.codecatalyst.data.DateRange;
 	import com.codecatalyst.util.ArrayUtil;
 	import com.codecatalyst.util.BitmapDataUtil;
-	import com.codecatalyst.util.ClassFactory;
+	import com.codecatalyst.factory.ClassFactory;
 	import com.codecatalyst.util.FactoryPool;
 	import com.codecatalyst.util.RectangleUtil;
 	import com.codecatalyst.util.SkinUtil;

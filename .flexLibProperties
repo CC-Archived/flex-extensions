@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <flexLibProperties includeAllClasses="false" version="3">
   <includeClasses>
+    <classEntry path="asset.image.cursor.CursorAsset"/>
     <classEntry path="asset.skin.slider.BackgroundSkin"/>
     <classEntry path="asset.skin.slider.HandleSkin"/>
     <classEntry path="asset.skin.slider.ThumbSkin"/>
@@ -31,15 +32,18 @@
     <classEntry path="com.codecatalyst.component.renderer.CanvasItemRenderer"/>
     <classEntry path="com.codecatalyst.component.renderer.IContainerItemRenderer"/>
     <classEntry path="com.codecatalyst.component.renderer.IItemRenderer"/>
+    <classEntry path="com.codecatalyst.component.templates.MasterDetails"/>
     <classEntry path="com.codecatalyst.data.DateRange"/>
     <classEntry path="com.codecatalyst.data.NumericRange"/>
     <classEntry path="com.codecatalyst.data.Property"/>
     <classEntry path="com.codecatalyst.data.SampleSet"/>
     <classEntry path="com.codecatalyst.data.TemporalData"/>
     <classEntry path="com.codecatalyst.data.TimeInterval"/>
+    <classEntry path="com.codecatalyst.factory.ClassFactory"/>
+    <classEntry path="com.codecatalyst.factory.ItemRendererFactory"/>
+    <classEntry path="com.codecatalyst.factory.UIClassFactory"/>
     <classEntry path="com.codecatalyst.util.ArrayUtil"/>
     <classEntry path="com.codecatalyst.util.BitmapDataUtil"/>
-    <classEntry path="com.codecatalyst.util.ClassFactory"/>
     <classEntry path="com.codecatalyst.util.ClassUtil"/>
     <classEntry path="com.codecatalyst.util.CollectionViewUtil"/>
     <classEntry path="com.codecatalyst.util.ComparatorUtil"/>
@@ -50,6 +54,9 @@
     <classEntry path="com.codecatalyst.util.GraphicsUtil"/>
     <classEntry path="com.codecatalyst.util.IObjectPool"/>
     <classEntry path="com.codecatalyst.util.ImageUtil"/>
+    <classEntry path="com.codecatalyst.util.InvalidationFlags"/>
+    <classEntry path="com.codecatalyst.util.InvalidationTrackedProperty"/>
+    <classEntry path="com.codecatalyst.util.InvalidationTracker"/>
     <classEntry path="com.codecatalyst.util.IterableUtil"/>
     <classEntry path="com.codecatalyst.util.LogicUtil"/>
     <classEntry path="com.codecatalyst.util.NumberUtil"/>
@@ -63,10 +70,6 @@
     <classEntry path="com.codecatalyst.util.StyleUtil"/>
     <classEntry path="qs.charts.DashedLineRenderer"/>
     <classEntry path="qs.utils.GraphicsUtils"/>
-    <classEntry path="asset.image.cursor.CursorAsset"/>
-    <classEntry path="com.codecatalyst.util.InvalidationTracker"/>
-    <classEntry path="com.codecatalyst.util.InvalidationFlags"/>
-    <classEntry path="com.codecatalyst.util.InvalidationTrackedProperty"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests>

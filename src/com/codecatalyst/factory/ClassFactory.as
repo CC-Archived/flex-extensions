@@ -20,11 +20,14 @@
 // THE SOFTWARE.	
 ////////////////////////////////////////////////////////////////////////////////
 
-package com.codecatalyst.util
+package com.codecatalyst.factory
 {
+	import com.codecatalyst.util.ClassUtil;
+	
 	import mx.core.ClassFactory;
+	import mx.core.IFactory;
 
-	public class ClassFactory extends mx.core.ClassFactory
+	public class ClassFactory extends mx.core.ClassFactory implements IFactory
 	{
 		// ========================================
 		// Public properties
