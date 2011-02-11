@@ -51,7 +51,7 @@ package com.codecatalyst.util
 		/**
 		 * Callback function (optional).
 		 */
-		protected var callback:Function;
+		protected var callback:Function = null;
 		
 		// ========================================
 		// Constructor
@@ -102,10 +102,23 @@ package com.codecatalyst.util
 		/**
 		 * Returns a Boolean indicating whether the specified tracked property(s) have been invalidated.
 		 * 
+		 * NOTE: If no parameter name identifier is specified, returns a Boolean indicating whether any tracked property has been invalidated.
+		 * 
 		 * @param identifier A parameter name String or Array of parameter name Strings.
 		 */
-		public function invalidated( identifier:* ):Boolean
+		public function invalidated( identifier:* = null ):Boolean
 		{
+			if ( identifier == null )
+			{
+				for each ( var trackedProperty:InvalidationTrackedProperty in trackedProperties )
+				{
+					if ( trackedProperty.invalidated )
+						return true;
+				}
+				
+				return false;
+			}
+			
 			return execute( _invalidated, identifier );
 		}
 		
