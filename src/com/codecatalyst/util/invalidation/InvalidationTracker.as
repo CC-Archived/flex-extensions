@@ -20,7 +20,7 @@
 // THE SOFTWARE.	
 ////////////////////////////////////////////////////////////////////////////////
 
-package com.codecatalyst.util
+package com.codecatalyst.util.invalidation
 {
 	import flash.events.IEventDispatcher;
 	import flash.utils.Dictionary;
@@ -39,7 +39,7 @@ package com.codecatalyst.util
 		// ========================================
 		
 		/**
-		 * Source.
+		 * Source instance.
 		 */
 		protected var source:IEventDispatcher = null;
 		
@@ -52,7 +52,7 @@ package com.codecatalyst.util
 		 * Callback function (optional).
 		 */
 		protected var callback:Function = null;
-		
+				
 		// ========================================
 		// Constructor
 		// ========================================
@@ -67,9 +67,7 @@ package com.codecatalyst.util
 			this.source   = source;
 			this.callback = callback;
 			
-			processTrackAnnotations();
-			
-			source.addEventListener( FlexEvent.UPDATE_COMPLETE, updateCompleteHandler, false, 0, true );
+			setup();
 		}
 		
 		// ========================================
@@ -123,6 +121,14 @@ package com.codecatalyst.util
 		}
 		
 		/**
+		 * Returns the previous value for the specified tracked property, if that property is currently invalidated.
+		 */
+		public function previousValue( identifier:String ):*
+		{
+			return _previousValue( identifier );
+		}
+		
+		/**
 		 * Resets the specified invalidated tracked property(s).
 		 * 
 		 * @param identifier A parameter name String or Array of parameter name Strings.
@@ -135,6 +141,16 @@ package com.codecatalyst.util
 		// ========================================
 		// Protected methods
 		// ========================================
+		
+		/**
+		 * Setup.
+		 */
+		protected function setup():void
+		{
+			processInvalidateAnnotations();
+			
+			source.addEventListener( FlexEvent.UPDATE_COMPLETE, updateCompleteHandler, false, 0, true );
+		}
 		
 		/**
 		 * Executes the specified method for the specified identifer(s), with optional additional parameters.
@@ -171,9 +187,9 @@ package com.codecatalyst.util
 		}
 		
 		/**
-		 * Process any [Track] annotations in the specified <code>source</code>.
+		 * Process any [Invalidate] annotations in the specified <code>source</code>.
 		 */
-		protected function processTrackAnnotations():void
+		protected function processInvalidateAnnotations():void
 		{
 			var description:XML = DescribeTypeCache.describeType( source ).typeDescription;
 		
@@ -198,8 +214,6 @@ package com.codecatalyst.util
 								return InvalidationFlags.SIZE;
 							case "properties":
 								return InvalidationFlags.PROPERTIES;
-							case "none":
-								return InvalidationFlags.NONE;
 							default:
 								throw new Error( "Unsupported invalidation option specified." );
 						}
@@ -250,6 +264,14 @@ package com.codecatalyst.util
 		protected function _invalidated( propertyName:String ):Boolean
 		{
 			return getTrackedPropertyByName( propertyName ).invalidated;
+		}
+		
+		/**
+		 * Returns the previous value for the specified tracked property, if that property is currently invalidated.
+		 */
+		protected function _previousValue( propertyName:String ):*
+		{
+			return getTrackedPropertyByName( propertyName ).previousValue;
 		}
 		
 		/**

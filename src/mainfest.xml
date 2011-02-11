@@ -40,4 +40,12 @@
 		<component id="BoxItemRenderer" class="com.codecatalyst.component.renderer.BoxItemRenderer" />
 		<component id="CanvasItemRenderer" class="com.codecatalyst.component.renderer.CanvasItemRenderer" />
 		
+		<!-- Util -->
+		
+			<!-- Invalidation -->
+			
+				<!-- MXML -->
+			
+				<component id="InvalidationTracker" class="com.codecatalyst.util.invalidation.mxml.InvalidationTracker" />
+		
 </componentPackage>
