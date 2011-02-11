@@ -64,6 +64,9 @@
     <classEntry path="qs.charts.DashedLineRenderer"/>
     <classEntry path="qs.utils.GraphicsUtils"/>
     <classEntry path="asset.image.cursor.CursorAsset"/>
+    <classEntry path="com.codecatalyst.util.InvalidationTracker"/>
+    <classEntry path="com.codecatalyst.util.InvalidationFlags"/>
+    <classEntry path="com.codecatalyst.util.InvalidationTrackedProperty"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests>
