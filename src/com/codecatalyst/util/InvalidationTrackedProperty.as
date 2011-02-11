@@ -33,15 +33,6 @@ package com.codecatalyst.util
 	public class InvalidationTrackedProperty
 	{
 		// ========================================
-		// Protected constants
-		// ========================================
-		
-		/**
-		 * Priority for event listeners.
-		 */
-		protected static var PRIORITY:int = int.MAX_VALUE;
-		
-		// ========================================
 		// Protected properties
 		// ========================================
 		

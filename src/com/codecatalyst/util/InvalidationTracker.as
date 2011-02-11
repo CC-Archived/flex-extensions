@@ -25,11 +25,12 @@ package com.codecatalyst.util
 	import flash.events.IEventDispatcher;
 	import flash.utils.Dictionary;
 	
+	import mx.events.FlexEvent;
 	import mx.utils.DescribeTypeCache;
 	import mx.utils.StringUtil;
 	
 	/**
-	 * Implements support for [Track(invalidate="displaylist,properties,size")] metadata on [Bindable] public properties as an alternative to the common pattern of writing custom get / set method pairs w/ backing variable and changed flags.
+	 * Implements support for [Invalidate("displaylist,properties,size")] metadata on [Bindable] public properties as an alternative to the common pattern of writing custom get / set method pairs w/ backing variable and changed flags.
 	 */
 	public class InvalidationTracker
 	{
@@ -47,6 +48,11 @@ package com.codecatalyst.util
 		 */
 		protected var trackedProperties:Dictionary = new Dictionary();
 		
+		/**
+		 * Callback function (optional).
+		 */
+		protected var callback:Function;
+		
 		// ========================================
 		// Constructor
 		// ========================================
@@ -54,13 +60,16 @@ package com.codecatalyst.util
 		/**
 		 * Constructor.
 		 */
-		public function InvalidationTracker( source:IEventDispatcher )
+		public function InvalidationTracker( source:IEventDispatcher, callback:Function = null )
 		{
 			super();
 			
-			this.source = source;
+			this.source   = source;
+			this.callback = callback;
 			
 			processTrackAnnotations();
+			
+			source.addEventListener( FlexEvent.UPDATE_COMPLETE, updateCompleteHandler, false, 0, true );
 		}
 		
 		// ========================================
@@ -155,17 +164,17 @@ package com.codecatalyst.util
 		{
 			var description:XML = DescribeTypeCache.describeType( source ).typeDescription;
 		
-			var list:XMLList = description..metadata.(@name == 'Track');
+			var list:XMLList = description..metadata.(@name == 'Invalidate');
 			
 			for each ( var item:XML in list )
 			{
 				var property:XML = item.parent();
-				var trackMetadata:XML = property.metadata.(@name == 'Track')[ 0 ];
+				var invalidateMetadata:XML = property.metadata.(@name == 'Invalidate')[ 0 ];
 				
 				var propertyName:String = property.@name;
 				
 				var invalidationFlags:uint = InvalidationFlags.NONE;
-				( trackMetadata.arg.(@key == 'invalidate').@value ).split(",").map( 
+				( invalidateMetadata.arg.(@key == '').@value ).split(",").map( 
 					function (item:String, index:int, array:Array):uint
 					{ 
 						switch( StringUtil.trim( item ) )
@@ -211,7 +220,7 @@ package com.codecatalyst.util
 		 */
 		protected function _track( propertyName:String, invalidationFlags:uint, callback:Function = null ):void
 		{
-			trackedProperties[ propertyName ] = new InvalidationTrackedProperty( source, propertyName, invalidationFlags, callback );
+			trackedProperties[ propertyName ] = new InvalidationTrackedProperty( source, propertyName, invalidationFlags, callback || this.callback );
 		}
 		
 		/**
@@ -236,6 +245,17 @@ package com.codecatalyst.util
 		protected function _reset( propertyName:String ):void
 		{
 			getTrackedPropertyByName( propertyName ).reset();
+		}
+		
+		/**
+		 * Handle FlexEvent.UPDATE_COMPLETE.
+		 */
+		protected function updateCompleteHandler( event:FlexEvent ):void
+		{
+			for each ( var trackedProperty:InvalidationTrackedProperty in trackedProperties )
+			{
+				trackedProperty.reset();
+			}
 		}
 	}
 }
