@@ -197,33 +197,33 @@ package com.codecatalyst.util.invalidation
 			
 			for each ( var item:XML in list )
 			{
-				var property:XML = item.parent();
-				var invalidateMetadata:XML = property.metadata.(@name == 'Invalidate')[ 0 ];
+				// Parse the type description.
 				
-				var propertyName:String = property.@name;
+				var property:XML                    = item.parent();
+				var invalidateMetadata:XML          = property.metadata.(@name == 'Invalidate')[ 0 ];
+				var invalidateMetdataOptions:String = invalidateMetadata.arg.(@key == '').@value;
 				
-				var invalidationFlags:uint = InvalidationFlags.NONE;
-				( invalidateMetadata.arg.(@key == '').@value ).split(",").map( 
-					function (item:String, index:int, array:Array):uint
-					{ 
+				// Determine the property name and invalidation flags.
+				
+				var propertyName:String             = property.@name;
+				var invalidationFlags:uint          = InvalidationFlags.NONE;
+				
+				invalidateMetdataOptions
+					.split(",")
+					.map( function ( item:String, index:int, array:Array ):uint { 
 						switch( StringUtil.trim( item ) )
 						{
-							case "displaylist":
-								return InvalidationFlags.DISPLAY_LIST;
-							case "size":
-								return InvalidationFlags.SIZE;
-							case "properties":
-								return InvalidationFlags.PROPERTIES;
-							default:
-								throw new Error( "Unsupported invalidation option specified." );
+							case "displaylist":	 return InvalidationFlags.DISPLAY_LIST;
+							case "size":         return InvalidationFlags.SIZE;
+							case "properties":   return InvalidationFlags.PROPERTIES;
+							default:             throw new Error( "Unsupported invalidation option specified." );
 						}
-					}
-				).forEach(
-					function (invalidationFlag:uint, index:int, array:Array):void
-					{ 
+					})
+					.forEach( function ( invalidationFlag:uint, index:int, array:Array ):void { 
 						invalidationFlags = invalidationFlags | invalidationFlag;
-					}
-				);
+					});
+					
+				// Track the specified property name with the specified invalidation flags.
 				
 				_track( propertyName, invalidationFlags );
 			}
