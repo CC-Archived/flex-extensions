@@ -1,11 +1,30 @@
+////////////////////////////////////////////////////////////////////////////////
+// Copyright (c) 2011 CodeCatalyst, LLC - http://www.codecatalyst.com/
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.	
+////////////////////////////////////////////////////////////////////////////////
+
 package com.codecatalyst.util
 {
-	import flash.events.Event;
 	import flash.events.IEventDispatcher;
 	import flash.utils.Dictionary;
 	
-	import mx.core.IInvalidating;
-	import mx.core.IUIComponent;
 	import mx.utils.DescribeTypeCache;
 	import mx.utils.StringUtil;
 	
@@ -56,7 +75,7 @@ package com.codecatalyst.util
 		 * @param invalidationFlags The InvalidationFlags corresponding to the IInvalidating methods to automatically initiate.
 		 * @param callback An optional callback triggered whenever this property changes.
 		 */
-		public function track( identifier:*, changeEventType:String, invalidationFlags:uint, callback:Function = null ):void
+		public function track( identifier:*, invalidationFlags:uint, callback:Function = null ):void
 		{
 			execute( _track, identifier, arguments.slice( 1 ) );
 		}
@@ -136,17 +155,14 @@ package com.codecatalyst.util
 		{
 			var description:XML = DescribeTypeCache.describeType( source ).typeDescription;
 		
-			var list:XMLList = description.accessor.metadata.(@name == 'Track');
+			var list:XMLList = description..metadata.(@name == 'Track');
 			
 			for each ( var item:XML in list )
 			{
-				var accessor:XML = item.parent();
+				var property:XML = item.parent();
+				var trackMetadata:XML = property.metadata.(@name == 'Track')[ 0 ];
 				
-				var bindableMetdata:XML = accessor.metadata.(@name == 'Bindable')[ 0 ];
-				var trackMetadata:XML = accessor.metadata.(@name == 'Track')[ 0 ];
-				
-				var propertyName:String = accessor.@name;
-				var changeEventType:String = bindableMetdata.arg.(@key == 'event').@value;
+				var propertyName:String = property.@name;
 				
 				var invalidationFlags:uint = InvalidationFlags.NONE;
 				( trackMetadata.arg.(@key == 'invalidate').@value ).split(",").map( 
@@ -173,7 +189,7 @@ package com.codecatalyst.util
 					}
 				);
 				
-				_track( propertyName, changeEventType, invalidationFlags );
+				_track( propertyName, invalidationFlags );
 			}
 		}
 		
@@ -193,9 +209,9 @@ package com.codecatalyst.util
 		/**
 		 * Track the specified property by name, change event type with the specified invalidation flags.
 		 */
-		protected function _track( propertyName:String, changeEventType:String, invalidationFlags:uint, callback:Function = null ):void
+		protected function _track( propertyName:String, invalidationFlags:uint, callback:Function = null ):void
 		{
-			trackedProperties[ propertyName ] = new InvalidationTrackedProperty( source, propertyName, changeEventType, invalidationFlags, callback );
+			trackedProperties[ propertyName ] = new InvalidationTrackedProperty( source, propertyName, invalidationFlags, callback );
 		}
 		
 		/**

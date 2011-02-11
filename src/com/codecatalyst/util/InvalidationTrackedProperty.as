@@ -1,10 +1,31 @@
+////////////////////////////////////////////////////////////////////////////////
+// Copyright (c) 2011 CodeCatalyst, LLC - http://www.codecatalyst.com/
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.	
+////////////////////////////////////////////////////////////////////////////////
+
 package com.codecatalyst.util
 {
-	import com.codecatalyst.util.InvalidationFlags;
-	
 	import flash.events.Event;
 	import flash.events.IEventDispatcher;
 	
+	import mx.binding.utils.ChangeWatcher;
 	import mx.core.IInvalidating;
 	import mx.events.PropertyChangeEvent;
 	
@@ -42,9 +63,9 @@ package com.codecatalyst.util
 		protected var propertyName:String = null;
 		
 		/**
-		 * Change event type.
+		 * Change watcher.
 		 */
-		protected var changeEventType:String = null;
+		protected var watcher:ChangeWatcher;
 		
 		/**
 		 * Invalidation flags.
@@ -77,17 +98,19 @@ package com.codecatalyst.util
 		/**
 		 * Constructor.
 		 */
-		public function InvalidationTrackedProperty( source:IEventDispatcher, propertyName:String, changeEventType:String, invalidationFlags:uint, callback:Function = null )
+		public function InvalidationTrackedProperty( source:IEventDispatcher, propertyName:String, invalidationFlags:uint, callback:Function = null )
 		{
 			super();
 			
 			this.source            = source;
 			this.propertyName      = propertyName;
-			this.changeEventType   = changeEventType;
 			this.invalidationFlags = invalidationFlags;
 			this.callback          = callback;
 			
-			source.addEventListener( changeEventType, changeEventHandler, false, PRIORITY, true );
+			if ( ! ChangeWatcher.canWatch( source, propertyName ) )
+				throw new Error( "The specified property is not [Bindable]." );
+			
+			watcher = ChangeWatcher.watch( source, [ propertyName ], changeEventHandler );
 		}
 		
 		// ========================================
