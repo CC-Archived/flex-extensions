@@ -40,7 +40,18 @@
 		<component id="BoxItemRenderer" class="com.codecatalyst.component.renderer.BoxItemRenderer" />
 		<component id="CanvasItemRenderer" class="com.codecatalyst.component.renderer.CanvasItemRenderer" />
 		
-		<!-- Util -->
+		
+		<!-- Templates -->
+		
+        <component id="MasterDetails" class="com.codecatalyst.component.templates.MasterDetails" />
+    
+    
+        <!-- Factory -->
+        
+        <component id="UIClassFactory" class="com.codecatalyst.factory.UIClassFactory" />
+        <component id="ItemRendererFactory" class="com.codecatalyst.factory.ItemRendererFactory" />
+    
+        <!-- Util -->
 		
 			<!-- Invalidation -->
 			
