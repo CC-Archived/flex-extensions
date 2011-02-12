@@ -47,7 +47,7 @@ package com.codecatalyst.component.template
 		
 		protected static function initializeStyles():Boolean
 		{
-			var declaration:CSSStyleDeclaration = StyleManager.getStyleDeclaration( "MasterDetails" ) || new CSSStyleDeclaration();
+			var declaration:CSSStyleDeclaration = StyleManager.getStyleDeclaration( "MasterDetail" ) || new CSSStyleDeclaration();
 			
 			declaration.defaultFactory = 
 				function ():void
@@ -56,7 +56,7 @@ package com.codecatalyst.component.template
 					this.verticalScrollPolicy   = ScrollPolicy.OFF;
 				};
 			
-			StyleManager.setStyleDeclaration( "MasterDetails", declaration, false );
+			StyleManager.setStyleDeclaration( "MasterDetail", declaration, false );
 			
 			return true;
 		}
