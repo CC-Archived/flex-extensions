@@ -54,9 +54,6 @@
     <classEntry path="com.codecatalyst.util.GraphicsUtil"/>
     <classEntry path="com.codecatalyst.util.IObjectPool"/>
     <classEntry path="com.codecatalyst.util.ImageUtil"/>
-    <classEntry path="com.codecatalyst.util.InvalidationFlags"/>
-    <classEntry path="com.codecatalyst.util.InvalidationTrackedProperty"/>
-    <classEntry path="com.codecatalyst.util.InvalidationTracker"/>
     <classEntry path="com.codecatalyst.util.IterableUtil"/>
     <classEntry path="com.codecatalyst.util.LogicUtil"/>
     <classEntry path="com.codecatalyst.util.NumberUtil"/>

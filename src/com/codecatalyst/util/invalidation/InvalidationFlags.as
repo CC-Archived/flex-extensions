@@ -20,7 +20,7 @@
 // THE SOFTWARE.	
 ////////////////////////////////////////////////////////////////////////////////
 
-package com.codecatalyst.util
+package com.codecatalyst.util.invalidation
 {
 	[ExcludeClass]
 	public class InvalidationFlags
@@ -32,21 +32,21 @@ package com.codecatalyst.util
 		/**
 		 * None.
 		 */
-		public static const NONE:uint = 1;
+		public static const NONE:uint = 0;
 		
 		/**
 		 * Display list.
 		 */
-		public static const DISPLAY_LIST:uint = 2;
+		public static const DISPLAY_LIST:uint = 1;
 		
 		/**
 		 * Properties.
 		 */
-		public static const PROPERTIES:uint = 4;
+		public static const PROPERTIES:uint = 2;
 		
 		/**
 		 * Size.
 		 */
-		public static const SIZE:uint = 8;
+		public static const SIZE:uint = 4;
 	}
 }

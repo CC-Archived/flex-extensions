@@ -39,14 +39,24 @@
 		
 		<component id="BoxItemRenderer" class="com.codecatalyst.component.renderer.BoxItemRenderer" />
 		<component id="CanvasItemRenderer" class="com.codecatalyst.component.renderer.CanvasItemRenderer" />
-	
-		<!-- Templates -->
-	
-		<component id="MasterDetails" class="com.codecatalyst.component.templates.MasterDetails" />
 		
-		<!-- Factory -->
-	
-		<component id="UIClassFactory" class="com.codecatalyst.factory.UIClassFactory" />
-		<component id="ItemRendererFactory" class="com.codecatalyst.factory.ItemRendererFactory" />
-	
+		
+		<!-- Templates -->
+		
+        <component id="MasterDetails" class="com.codecatalyst.component.templates.MasterDetails" />
+    
+    
+        <!-- Factory -->
+        
+        <component id="UIClassFactory" class="com.codecatalyst.factory.UIClassFactory" />
+        <component id="ItemRendererFactory" class="com.codecatalyst.factory.ItemRendererFactory" />
+    
+        <!-- Util -->
+		
+			<!-- Invalidation -->
+			
+				<!-- MXML -->
+			
+				<component id="InvalidationTracker" class="com.codecatalyst.util.invalidation.mxml.InvalidationTracker" />
+		
 </componentPackage>
