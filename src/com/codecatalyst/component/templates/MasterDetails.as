@@ -1,9 +1,11 @@
 package com.codecatalyst.component.templates
 {
 	import com.codecatalyst.factory.UIClassFactory;
+	import com.codecatalyst.util.invalidation.InvalidationTracker;
 	
 	import flash.display.DisplayObject;
 	import flash.events.Event;
+	import flash.events.IEventDispatcher;
 	
 	import mx.containers.BoxDirection;
 	import mx.containers.Canvas;
@@ -24,7 +26,13 @@ package com.codecatalyst.component.templates
 		// ***********************************************************************************************
 		// Public Properties
 		// ***********************************************************************************************
-
+		
+		/**
+		 * If animate is true, then the Resize tweening is enabled
+		 * otherwise the tweening duration is zero. 
+		 */
+		public var enableTween : Boolean = true; 
+		
 		/**
 		 * When expanded, the detail component will have its height animated to 
 		 * to the heightTo value  
@@ -35,46 +43,27 @@ package com.codecatalyst.component.templates
 		public function set heightTo(value:Number):void {
 			_heightTo = (value < 0) ? NaN : value;
 		}
-
-		[Bindable("expandedChange")]
-		public function get expanded():Boolean {
-			return _show; 
-		}
-		public function set expanded(val:Boolean):void {
-			if (val != _show) {
-				_show = val;
-				_showChanged = true;
-				
-				invalidateProperties();
-			}
-		}
 		
 		/**
-		 * Mutators for the "master" view 
+		 * Mutators to toggle the visibility of the lower detail view component 
 		 */
-		public function get master():IUIComponent {
-			return _master;
-		}
-		public function set master(value:IUIComponent):void {
-			if (value === _master) return;
-			
-			_master        = value;
-			_masterChanged = true;
-			
-			invalidateProperties();
-		}
-
+		[Bindable]
+		[Invalidate("displaylist")]
+		public var expanded : Boolean = false;
+		
 		/**
-		 * Mutators for the "detail" view 
+		 * UIComponent instance that will be displayed in the upper "master" view 
 		 */
-		public function get detail():IUIComponent {			
-			return _detail;
-		}
-		public function set detail(value:IUIComponent):void {
-			if (value === _detail) return;
-			_detail 		= value;
-			_detailChanged 	= true;
-		}
+		[Bindable]
+		[Invalidate("displaylist,size,properties")]
+		public var master : IUIComponent = null;
+		
+		/**
+		 * UIComponent instance that will be displayed in the lower "detail" view 
+		 */
+		[Bindable]
+		[Invalidate("displaylist,size,properties")]
+		public var detail : IUIComponent = null;
 		
 		
 		// ***********************************************************************************************
@@ -87,8 +76,6 @@ package com.codecatalyst.component.templates
 		public function MasterDetails() {
 			super();
 			
-			mx_internal::layoutObject.direction = BoxDirection.VERTICAL;
-			
 			percentHeight = percentWidth = 100;
 			visible       = true;
 			
@@ -96,6 +83,8 @@ package com.codecatalyst.component.templates
 			setStyle("dividerAffordance", 0);
 			setStyle("horizontalScrollPolicy", "off");
 			setStyle("verticalScrollPolicy"	 , "off");
+			
+			mx_internal::layoutObject.direction = BoxDirection.VERTICAL;
 			
 		}
 		
@@ -118,52 +107,43 @@ package com.codecatalyst.component.templates
 		override protected function commitProperties():void {
 			super.commitProperties();
 			
-			if (_masterChanged || _detailChanged) {
-				var oldHeight : Number = (_detail ? _detail.height : 0);
+			if ( _changes.invalidated(["master","detail"]) ) {
+				var oldDetail : DisplayObject = _changes.previousValue("detail") as DisplayObject;
+				var oldHeight : int           = oldDetail ? oldDetail.height : 0;
 				
 				removeAllChildren();
-				addChild( (_master ? _master : _factory.newInstance()) as DisplayObject );
+				addChild( (master ? master : _factory.newInstance()) as DisplayObject );
 				
-				if (_detail != null) {
-					addChild ( _detail as DisplayObject );
+				if (detail != null) {
+					addChild ( detail as DisplayObject );
 					
-					_detail.height    = oldHeight;
-					_detail.visible &&= (oldHeight != 0);
+					detail.height    = oldHeight;
+					detail.visible &&= (oldHeight != 0);
 				}
-
-				_masterChanged = false;
-				_detailChanged = false;
 			}
 			
-			_resizer.target = _detail;
-			
-			invalidateSize();
-			invalidateDisplayList();
+			_resizer.target = detail;
 		}
 		
 		override protected function updateDisplayList(unscaledWidth:Number, unscaledHeight:Number):void {
 			super.updateDisplayList(unscaledWidth,unscaledHeight);
 			
-			if (_showChanged == true) {
-				_showChanged = false;
-				showDetailsView(_show);
-			}
+			if ( _changes.invalidated("expanded") ) showDetailsView(expanded);
 		}
 		
 		// ***********************************************************************************************
 		// Protected Methods
 		// ***********************************************************************************************
-
+		
 		protected function onResizeFinished(event:EffectEvent):void {
-			if (_detail == null) return;
+			if (detail == null) return;
 			
-			if (_detail.height == 0) {
+			if (detail.height == 0) {
 				
 				setStyle("verticalGap"		, 0);
 				setStyle("dividerAffordance", 0);
 				
-				_detail.visible = false;
-				_show           = false;
+				detail.visible = false;
 			}
 			
 			dispatchEvent(new Event("expandedChange"));
@@ -177,14 +157,15 @@ package com.codecatalyst.component.templates
 		// ***********************************************************************************************
 		// Private Methods
 		// ***********************************************************************************************
-
+		
 		protected function showDetailsView(show:Boolean):void {
-			if (_detail == null) 				return;
-			if (!show && !_detail.visible) 		return;
-			if ( show &&  _detail.visible)		return;
+			if (detail == null) 				return;
+			
+			if (!show && !detail.visible) 		return;
+			if ( show &&  detail.visible)		return;
 			
 			if (show == true) {
-				_detail.visible = true;
+				detail.visible = true;
 				
 				setStyle("verticalGap"		, 8);
 				setStyle("dividerAffordance", 5);
@@ -193,28 +174,19 @@ package com.codecatalyst.component.templates
 			if (_resizer.isPlaying == true) _resizer.stop();
 			
 			_resizer.heightTo = show ? heightTo : 0;
-			_resizer.target   = _detail;
+			_resizer.target   = detail;
+			_resizer.duration = enableTween ? 1000 : 0;
 			_resizer.play();					
 		}
-
+		
 		// ***********************************************************************************************
 		// Private Attributes
 		// ***********************************************************************************************
 		
-		private var _show			: Boolean       = false;
-		private var _showChanged    : Boolean       = false;
-		
 		private var _resizer 		: Resize		= null;   
-		
-		private var _master 		: IUIComponent 	= null;
-		private var _detail 		: IUIComponent 	= null;
-
-		private var _masterChanged 	: Boolean 		= true;
-		private var _detailChanged 	: Boolean 		= true;
-		
-		
 		private var _heightTo 		: Number 		= NaN;
 		
-		private var _factory        : UIClassFactory= new UIClassFactory(Canvas,{percentHeight:100,percentWidth:100});
+		private var _changes        : InvalidationTracker 	= new InvalidationTracker(this as IEventDispatcher);
+		private var _factory        : UIClassFactory		= new UIClassFactory(Canvas,{percentHeight:100,percentWidth:100});
 	}
 }
