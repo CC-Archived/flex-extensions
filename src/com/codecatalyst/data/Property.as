@@ -64,7 +64,7 @@ package com.codecatalyst.data
 		// ========================================
 		
 		/**
-		 * Utility method - gets the value for a property of this type for a given object instance.
+		 * Gets the value for a property of this type for a given object instance.
 		 */
 		public function getValue( object:Object ):*
 		{
@@ -72,11 +72,19 @@ package com.codecatalyst.data
 		}
 		
 		/**
-		 * Utility method - sets the value for a property of this type for a given object instance.
+		 * Sets the value for a property of this type for a given object instance.
 		 */
 		public function setValue( object:Object, value:* ):void
 		{
 			object[ path ] = value;
+		}
+		
+		/**
+		 * Returns a Boolean indicating whether the specified object instance has this property.
+		 */
+		public function exists( object:Object ):Boolean
+		{
+			return PropertyUtil.hasProperty( object, path );
 		}
 		
 		/**

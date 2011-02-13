@@ -29,36 +29,65 @@ package com.codecatalyst.util
 		// ========================================
 		
 		/**
-		 * Traverse a 'dot notation' style property path.
+		 * Traverse a 'dot notation' style property path for the specified object instance and return the corresponding value.
 		 */
 		public static function getObjectPropertyValue( object:Object, propertyPath:String ):Object
 		{
-			var value:Object = null;
+			try
+			{
+				return traversePropertyPath( object, propertyPath );
+			}
+			catch ( error:ReferenceError )
+			{
+				// return null;
+			}
 			
+			return null;
+		}
+		
+		/**
+		 * Traverse a 'dot notation' style property path for the specified object instance and return a Boolean indicating whether the property exists.
+		 */
+		public static function hasProperty( object:Object, propertyPath:String ):Boolean
+		{
+			try
+			{
+				traversePropertyPath( object, propertyPath );
+				
+				return true;
+			}
+			catch ( error:ReferenceError )
+			{
+				// return false;
+			}
+			
+			return false;
+		}
+		
+		// ========================================
+		// Public methods
+		// ========================================
+		
+		/**
+		 * Traverse a 'dot notation' style property path for the specified object instance and return the corresponding value.
+		 */
+		protected static function traversePropertyPath( object:Object, propertyPath:String ):*	
+		{
 			// Split the 'dot notation' path into segments
 			
 			var path:Array = propertyPath.split( "." );
 			
-			try
+			// Traverse the path segments to the matching property value
+			
+			var node:Object = object;
+			for each ( var segment:String in path )
 			{
-				// Traverse the path segments to the matching property value
+				// Set the new parent for traversal
 				
-				var node:Object = object;
-				for each ( var segment:String in path )
-				{
-					// Set the new parent for traversal
-					
-					node = node[ segment ];
-				}
-				
-				value = node;
-			}
-			catch ( e:ReferenceError )
-			{
-				value = null;
+				node = node[ segment ];
 			}
 			
-			return value;
+			return node;			
 		}
 	}
 }

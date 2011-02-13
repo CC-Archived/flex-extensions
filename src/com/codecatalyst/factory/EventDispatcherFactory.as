@@ -1,5 +1,5 @@
 ////////////////////////////////////////////////////////////////////////////////
-// Copyright (c) 2009 CodeCatalyst, LLC - http://www.codecatalyst.com/
+// Copyright (c) 2011 CodeCatalyst, LLC - http://www.codecatalyst.com/
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -22,21 +22,20 @@
 
 package com.codecatalyst.factory
 {
-	import com.codecatalyst.util.ClassUtil;
+	import com.codecatalyst.util.EventDispatcherUtil;
 	
-	import mx.core.ClassFactory;
-	import mx.core.IFactory;
+	import flash.events.IEventDispatcher;
 
-	public class ClassFactory extends mx.core.ClassFactory implements IFactory
+	public class EventDispatcherFactory extends ClassFactory
 	{
 		// ========================================
 		// Public properties
 		// ========================================
 		
 		/**
-		 * Parameters supplied to the constructor when generating instances of the generator Class.
+		 * Event listeners to apply when generating instances of the generator Class.
 		 */
-		public var parameters:Array = null;
+		public var eventListeners:Object = null;
 		
 		// ========================================
 		// Constructor
@@ -45,12 +44,11 @@ package com.codecatalyst.factory
 		/**
 		 * Constructor.
 		 */
-		public function ClassFactory( generator:Class, parameters:Array = null, properties:Object = null )
+		public function EventDispatcherFactory( generator:Class, parameters:Array = null, properties:Object = null, eventListeners:Object = null )
 		{
-			super( generator );
+			super( generator, parameters, properties );
 			
-			this.parameters = parameters;
-			this.properties = properties;
+			this.eventListeners = eventListeners;
 		}
 		
 		// ========================================
@@ -62,17 +60,11 @@ package com.codecatalyst.factory
 		 */
 		public override function newInstance():*
 		{
-			var instance:Object = ClassUtil.createInstance( generator, parameters );
+			var instance:Object = super.newInstance();
 			
-			// Apply properties.
+			// Add event listeners.
 			
-			if ( properties != null )
-			{
-				for ( var property:String in properties )
-				{
-					instance[ property ] = properties[ property ];
-				}
-			}
+			EventDispatcherUtil.addEventListeners( IEventDispatcher( instance ), eventListeners, false, 0, true );
 			
 			return instance;
 		}

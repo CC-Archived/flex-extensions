@@ -20,61 +20,25 @@
 // THE SOFTWARE.	
 ////////////////////////////////////////////////////////////////////////////////
 
-package com.codecatalyst.factory
+package com.codecatalyst.util
 {
-	import com.codecatalyst.util.ClassUtil;
-	
-	import mx.core.ClassFactory;
-	import mx.core.IFactory;
+	import flash.events.IEventDispatcher;
 
-	public class ClassFactory extends mx.core.ClassFactory implements IFactory
+	public class EventDispatcherUtil
 	{
-		// ========================================
-		// Public properties
-		// ========================================
-		
-		/**
-		 * Parameters supplied to the constructor when generating instances of the generator Class.
-		 */
-		public var parameters:Array = null;
-		
-		// ========================================
-		// Constructor
-		// ========================================
-		
-		/**
-		 * Constructor.
-		 */
-		public function ClassFactory( generator:Class, parameters:Array = null, properties:Object = null )
-		{
-			super( generator );
-			
-			this.parameters = parameters;
-			this.properties = properties;
-		}
-		
 		// ========================================
 		// Public methods
 		// ========================================
 		
 		/**
-		 * @inheritDoc
+		 * Applies the specified styles to the specified style client.
 		 */
-		public override function newInstance():*
+		public static function addEventListeners( eventDispatcher:IEventDispatcher, eventListeners:Object, useCapture:Boolean = false, priority:int = 0, useWeakReference:Boolean = true ):void
 		{
-			var instance:Object = ClassUtil.createInstance( generator, parameters );
-			
-			// Apply properties.
-			
-			if ( properties != null )
+			for ( var eventType:String in eventListeners )
 			{
-				for ( var property:String in properties )
-				{
-					instance[ property ] = properties[ property ];
-				}
+				eventDispatcher.addEventListener( eventType, eventListeners[ eventType ], useCapture, priority, useWeakReference );
 			}
-			
-			return instance;
-		}
+		}		
 	}
 }

@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <componentPackage>
-    
+	
 	<!-- Component -->
 	
 		<!-- Behavior -->
@@ -40,12 +40,20 @@
 			<component id="BoxItemRenderer" class="com.codecatalyst.component.renderer.BoxItemRenderer" />
 			<component id="CanvasItemRenderer" class="com.codecatalyst.component.renderer.CanvasItemRenderer" />
 			
-			
 			<!-- Templates -->
 			
-	        <component id="MasterDetail" class="com.codecatalyst.component.template.MasterDetail" />
-    
-        <!-- Util -->
+			<component id="MasterDetail" class="com.codecatalyst.component.template.MasterDetail" />
+			
+		<!-- Factory -->
+		
+		<component id="ClassFactory" class="com.codecatalyst.factory.ClassFactory" />
+		<component id="DataRendererFactory" class="com.codecatalyst.factory.DataRendererFactory" />
+		<component id="EventDispatcherFactory" class="com.codecatalyst.factory.EventDispatcherFactory" />
+		<component id="ItemRendererFactory" class="com.codecatalyst.factory.ItemRendererFactory" />
+		<component id="StyleClientFactory" class="com.codecatalyst.factory.StyleClientFactory" />
+		<component id="UIComponentFactory" class="com.codecatalyst.factory.UIComponentFactory" />
+		
+		<!-- Util -->
 		
 			<!-- Invalidation -->
 			

@@ -1,5 +1,5 @@
 ////////////////////////////////////////////////////////////////////////////////
-// Copyright (c) 2009 CodeCatalyst, LLC - http://www.codecatalyst.com/
+// Copyright (c) 2011 CodeCatalyst, LLC - http://www.codecatalyst.com/
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -22,21 +22,26 @@
 
 package com.codecatalyst.factory
 {
-	import com.codecatalyst.util.ClassUtil;
+	import com.codecatalyst.util.EventDispatcherUtil;
+	import com.codecatalyst.util.StyleUtil;
 	
-	import mx.core.ClassFactory;
-	import mx.core.IFactory;
-
-	public class ClassFactory extends mx.core.ClassFactory implements IFactory
+	import mx.core.UIComponent;
+	
+	public class UIComponentFactory extends ClassFactory
 	{
 		// ========================================
 		// Public properties
 		// ========================================
 		
 		/**
-		 * Parameters supplied to the constructor when generating instances of the generator Class.
+		 * Styles applied when generating instances of the generator Class.
 		 */
-		public var parameters:Array = null;
+		public var styles:Object = null;
+		
+		/**
+		 * Event listeners to apply when generating instances of the generator Class.
+		 */
+		public var eventListeners:Object = null;
 		
 		// ========================================
 		// Constructor
@@ -45,12 +50,12 @@ package com.codecatalyst.factory
 		/**
 		 * Constructor.
 		 */
-		public function ClassFactory( generator:Class, parameters:Array = null, properties:Object = null )
+		public function UIComponentFactory( generator:Class, parameters:Array = null, properties:Object = null, styles:Object = null, eventListeners:Object = null )
 		{
-			super( generator );
+			super( generator, parameters, properties );
 			
-			this.parameters = parameters;
-			this.properties = properties;
+			this.styles = styles;
+			this.eventListeners = eventListeners;
 		}
 		
 		// ========================================
@@ -62,17 +67,17 @@ package com.codecatalyst.factory
 		 */
 		public override function newInstance():*
 		{
-			var instance:Object = ClassUtil.createInstance( generator, parameters );
+			var instance:Object = super.newInstance();
 			
-			// Apply properties.
+			var component:UIComponent = UIComponent( instance );
 			
-			if ( properties != null )
-			{
-				for ( var property:String in properties )
-				{
-					instance[ property ] = properties[ property ];
-				}
-			}
+			// Apply styles.
+			
+			StyleUtil.applyStyles( component, styles );
+			
+			// Add event listeners.
+			
+			EventDispatcherUtil.addEventListeners( component, eventListeners, false, 0, true );
 			
 			return instance;
 		}

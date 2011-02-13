@@ -213,7 +213,7 @@ package com.codecatalyst.util.invalidation
 					.map( function ( item:String, index:int, array:Array ):uint { 
 						switch( StringUtil.trim( item ) )
 						{
-							case "displaylist":	 return InvalidationFlags.DISPLAY_LIST;
+							case "displaylist":  return InvalidationFlags.DISPLAY_LIST;
 							case "size":         return InvalidationFlags.SIZE;
 							case "properties":   return InvalidationFlags.PROPERTIES;
 							default:             throw new Error( "Unsupported invalidation option specified." );

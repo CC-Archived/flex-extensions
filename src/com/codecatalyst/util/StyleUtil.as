@@ -24,11 +24,24 @@ package com.codecatalyst.util
 {
 	import flash.geom.Point;
 	
+	import mx.styles.IStyleClient;
+	
 	public class StyleUtil
 	{
 		// ========================================
 		// Public methods
 		// ========================================
+		
+		/**
+		 * Applies the specified styles to the specified style client.
+		 */
+		public static function applyStyles( styleClient:IStyleClient, styles:Object ):void
+		{
+			for ( var style:String in styles )
+			{
+				styleClient.setStyle( style, styles[ style ] );
+			}
+		}
 		
 		/**
 		 * Parses a style value into a Point.

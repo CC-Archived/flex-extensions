@@ -40,6 +40,11 @@
     <classEntry path="com.codecatalyst.data.TemporalData"/>
     <classEntry path="com.codecatalyst.data.TimeInterval"/>
     <classEntry path="com.codecatalyst.factory.ClassFactory"/>
+    <classEntry path="com.codecatalyst.factory.DataRendererFactory"/>
+    <classEntry path="com.codecatalyst.factory.EventDispatcherFactory"/>
+    <classEntry path="com.codecatalyst.factory.ItemRendererFactory"/>
+    <classEntry path="com.codecatalyst.factory.StyleClientFactory"/>
+    <classEntry path="com.codecatalyst.factory.UIComponentFactory"/>
     <classEntry path="com.codecatalyst.util.ArrayUtil"/>
     <classEntry path="com.codecatalyst.util.BitmapDataUtil"/>
     <classEntry path="com.codecatalyst.util.ClassUtil"/>
@@ -48,6 +53,7 @@
     <classEntry path="com.codecatalyst.util.DateUtil"/>
     <classEntry path="com.codecatalyst.util.DelayedCall"/>
     <classEntry path="com.codecatalyst.util.DictionaryUtil"/>
+    <classEntry path="com.codecatalyst.util.EventDispatcherUtil"/>
     <classEntry path="com.codecatalyst.util.FactoryPool"/>
     <classEntry path="com.codecatalyst.util.GraphicsUtil"/>
     <classEntry path="com.codecatalyst.util.IObjectPool"/>

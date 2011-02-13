@@ -1,229 +1,108 @@
 ////////////////////////////////////////////////////////////////////////////////
+// Copyright (c) 2011 CodeCatalyst, LLC - http://www.codecatalyst.com/
+// 
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
 //
-//  Copyright 2009 Farata Systems LLC
-//  All Rights Reserved.
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
 //
-//  NOTICE: Farata Systems permits you to use, modify, and distribute this file
-//  in accordance with the terms of the license agreement accompanying it.
-//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.	
 ////////////////////////////////////////////////////////////////////////////////
 
-package com.codecatalyst.factory 
+package com.codecatalyst.factory
 {
-/**
- *  ItemRendererFactory is an implementation of the Class Factory design pattern
- *  for dynamic creaion of DataRenderer components. It allows dynamic passing of the 
- *  propeties, styles and event listeners during the object creation.
- *  Additionally, when the "data" value is changed, runtime styles and properties can
- *  be assigned... thus adding power to IList containers and Datagrid     
- *  
- *  @see mx.core.IFactory
- */	
-	import flash.events.IEventDispatcher;
-	import flash.utils.getDefinitionByName;
-	import flash.utils.getQualifiedClassName;
-	import flash.utils.Dictionary;
-	import flash.utils.Proxy;
+	import com.codecatalyst.util.StyleUtil;
 	
-	import mx.core.ClassFactory;
-	import mx.core.IFactory;
+	import mx.core.IDataRenderer;
 	import mx.events.FlexEvent;
 	import mx.styles.IStyleClient;
-	import mx.utils.*;
-
-
-	public class ItemRendererFactory extends UIClassFactory implements IFactory {
-		
-		//Styles for the UI object to be created 
-		//Event Listeners for the UI object to be created
+	
+	public class ItemRendererFactory extends DataRendererFactory
+	{
+		// ========================================
+		// Public properties
+		// ========================================
 		
 		/**
-		 * Hashmap of key/values assigned to itemRenderer instance during EACH
-		 * data change/assignment.
-		 * 
-		 * NOTE: this map may include "style" keys which will be assigned as styles if possible
+		 * Styles applied when generating instances of the generator Class.
 		 */
-		public var runtimeProperties:Object = {};
-		
+		public var styles:Object = null;
 		
 		/**
-		 * Hashmap of style settings assigned to itemRenderer instance during EACH
-		 * data change/assignment.
-		 * 
-		 * NOTE: the instance must be an IStyleClient instance 
+		 * Hashmap of style key / value pairs evaluated and applied to resulting instances during each data change/assignment.
 		 */
-		public var runtimeStyles	:Object = {};
+		public var runtimeStyles:Object = null;
 		
-			
-		
-		public function ItemRendererFactory( 	cf				 :Object = null , 
-												props			 :Object = null, 
-												styles			 :Object = null, 
-												eventListeners	 :Object = null,
-												runtimeProperties:Object = null,
-												runtimeStyles	 :Object = null) {
-			
-			super (cf,props,styles,eventListeners);
-			
-			this.runtimeProperties = runtimeProperties || { }
-			this.runtimeStyles     = runtimeStyles     || { };  
-		}
-		
+		// ========================================
+		// Constructor
+		// ========================================
 		
 		/**
-		 * IFactory-required method to create a new instance from the factory.
-		 * This process will assign any constructor properties, styles, and event listeners configured.
-		 * 
-		 * @return Object instance of the generator
-		 */ 
-		override public function newInstance():* {
-			var inst : * = super.newInstance();
-			
-			if (inst is IEventDispatcher) {
-				inst.addEventListener(FlexEvent.DATA_CHANGE, onDataChange, false, 0, true);
-			}
-			
-			return inst;
-		}
-		
-		/**
-		 * onDataChange is the handler for the DATA_CHANGE events. It uses runtimeStyles and
-		 * runtimeProperties, which were added to Clear Toolkit’s version of 
-		 * the DataGridColumn to handle styles and properties that were added dynamically.
-		 * If you’ll use this UIClassFactory with regular DataGridColumns that does not 
-		 * support dynamic styles, the onDataChange function won’t find any 
-		 * runtimeStyles or runtimeProperties and won’t do anything. 
-		 */   
-		private function onDataChange(event:FlexEvent):void{
-			var renderer:Object = event.currentTarget;
-			
-			/**
-			 * Returns whether or not the given object is simple data type.
-			 *
-			 * @param object 	Object instance check
-			 * @return true 	if the given object is a simple data type; false if not
-			 */
-			function shouldEnumerate(object:Object):Boolean {
-				
-				switch (typeof(object)) {
-					case "function"	: return false;
-					case "object"	: return !(object is Date) && !(object is Array);
-				}
-				
-				return false;
-			}
-			
-			/**
-			 * Powerful method to update render properties with values.
-			 * Supports property chains and dynamic value calculations
-			 * 
-			 * Then will update either the "final" target properties or styles
-			 * 
-			 * @param target 		Renderer instance
-			 * @param attributes	Hashmap of runtime property or style key/value pairs
-			 */
-			function updateTargetWith(target : Object, attributes:Object):void {
-				for (var key:String in attributes) {
-					var value    : * 		= attributes[key];
-					var callBack : Function = value as Function;
-					
-					if (callBack != null ) {
-						try { 
-							// Ask originator to build the value of the property dynamically with the itemRenderer data
-							// NOTE: this data is used regardless of property chain recursion depth
-							
-							value = callBack(renderer.data);
-							
-						} catch (e:Error) {
-							trace(e.message);
-							continue;
-						}
-					}
-					
-					if ( !callBack && shouldEnumerate(value) && target.hasOwnProperty(key)) {
-						// The key value is an Object that we should enumerate like a "property chain"
-						
-						updateTargetWith(target[key],value as Object);
-						
-					} else {
-						// Accommodate shared usage where style settings are mixed with the 
-						// property settings; set the style if the propertyKey does not exist.
-						
-						if (target.hasOwnProperty(key)) 	target[key] = value;
-						else								target.setStyle(key, value);
-					}
-				}														
-			}
-			
-			// Skip this call if caused by header renderers; we want to skip assignments to listData
-			if ( isType(renderer.data, getType("mx.controls.dataGridClasses.DataGridColumn")) ) 					return;
-			if ( isType(renderer.data, getType("mx.controls.advancedDataGridClasses.AdvancedDataGridColumn")) ) 	return;
-			
-			updateTargetWith( renderer, runtimeProperties );
-			updateTargetWith( renderer, runtimeStyles );
-		}	
-		
-		
-		// ******************************************************************************************
-		// Special Type utilities 
-		// ******************************************************************************************
-		
-		/**
-		 * Evaluates whether an object or class is derived from a specific
-		 * data type, class or interface. The isType() method is comparable to
-		 * ActionScript's <code>is</code> operator except that it also makes
-		 * class to class evaluations.
-		 * 
-		 * @param	value			The object or class to evaluate.
-		 * @param	type			The data type to check against.
-		 * 
-		 * @return					True if the object or class is derived from
-		 * 							the data type.
+		 * Constructor.
 		 */
-		private static function isType(value:Object, type:Class):Boolean
+		public function ItemRendererFactory( generator:Class, parameters:Array = null, properties:Object = null, styles:Object = null,  eventListeners:Object = null, runtimeProperties:Object = null, runtimeStyles:Object = null )
 		{
-			if ( !(value is Class) ) 		return value is type;
-			if ( value == type )			return true;
+			super( generator, parameters, properties, eventListeners, runtimeProperties );
 			
-			var inheritance:XMLList = describeInheritance(value);
-			return Boolean( inheritance.(@type == getQualifiedClassName(type)).length() > 0 );
+			this.styles = styles;
+			this.runtimeStyles = runtimeStyles;
 		}
 		
+		// ========================================
+		// Public methods
+		// ========================================
+		
 		/**
-		 * Targeted reflection describing an object's inheritance, including
-		 * extended classes and implemented interfaces.
-		 * 
-		 * @param	value			The object or class to introspect.
-		 * 
-		 * @return					A list of XML inheritance descriptions.
+		 * @inheritDoc
 		 */
-		public static function describeInheritance(value:Object):XMLList
+		public override function newInstance():*
 		{
-			var dtcr : DescribeTypeCacheRecord = DescribeTypeCache.describeType(value);
-			return (dtcr.typeDescription as XML).factory.*.(localName() == "extendsClass" || localName() == "implementsInterface");
+			var instance:Object = super.newInstance();
+			
+			// Apply styles (if applicable).
+			
+			if ( instance is IStyleClient )
+				StyleUtil.applyStyles( instance as IStyleClient, styles );
+			
+			return instance;
 		}
 		
-		public static function getType(value:Object):Class
+		// ========================================
+		// Protected methods
+		// ========================================
+		
+		/**
+		 * Handle FlexEvent.DATA_CHANGE.
+		 */
+		override protected function renderer_dataChangeHandler( event:FlexEvent ):void
 		{
-			var results : Class = (value is String) ? typeCache[String(value)] as Class : null;
+			super.renderer_dataChangeHandler( event );
 			
-			if (results == null) {
-				
-				if (value is Class) 		results = value as Class;
-				else if (value is Proxy)	results = getDefinitionByName(getQualifiedClassName(value as Proxy)) as Class;
-				else if (value is String)   results = getDefinitionByName(String(value)) as Class;
-				else						results = value.constructor as Class;
-				
-				if (value is String) 		typeCache[String(value)] = results;
-			}
+			var renderer:IDataRenderer = IDataRenderer( event.target );
 			
-			return results;
+			applyRuntimeStyles( IStyleClient( renderer ), runtimeStyles );
 		}
 		
 		/**
-		 * Dictionary of Class values for registered string class names 
-		 */		
-		private static var typeCache:Dictionary    = new Dictionary();
-		
+		 * Evaluate and apply the specified runtime styles to the specified IStyleClient.
+		 */
+		protected static function applyRuntimeStyles( styleClient:IStyleClient, runtimeStyles:Object ):void
+		{
+			for ( var targetStyle:String in runtimeStyles )
+			{
+				styleClient.setStyle( targetStyle, evaluateRuntimeValue( styleClient, runtimeStyles[ targetStyle ] ) );
+			}
+		}
 	}
 }
