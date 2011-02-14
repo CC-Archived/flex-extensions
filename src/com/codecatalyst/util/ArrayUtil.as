@@ -33,7 +33,7 @@ package com.codecatalyst.util
 		 */
 		public static function clone( array:Array ):Array
 		{
-			return array ? array.concat() : null;
+			return ( array != null ) ? array.concat() : null;
 		}
 		
 		/**
@@ -76,7 +76,7 @@ package com.codecatalyst.util
 		 */
 		public static function contains( array:Array, item:Object ):Boolean
 		{
-			return ( array.indexOf( item ) != -1 );
+			return ( array != null ) ? ( array.indexOf( item ) != -1 ) : false;
 		}
 		
 		/**

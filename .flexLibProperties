@@ -75,6 +75,9 @@
     <classEntry path="com.codecatalyst.util.invalidation.mxml.InvalidationTracker"/>
     <classEntry path="qs.charts.DashedLineRenderer"/>
     <classEntry path="qs.utils.GraphicsUtils"/>
+    <classEntry path="com.codecatalyst.component.CheckBoxSet"/>
+    <classEntry path="com.codecatalyst.util.DisplayObjectContainerUtil"/>
+    <classEntry path="com.codecatalyst.component.RadioButtonSet"/>
   </includeClasses>
   <includeResources/>
   <namespaceManifests>

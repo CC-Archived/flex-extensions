@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Box 
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	xmlns="http://www.codecatalyst.com/2011/flex-extensions">
+	
+	<mx:Metadata>
+		
+		/**
+		* Dispatched when the user changes the selected RadioButton.
+		*/
+		[Event(name="change",type="flash.events.Event")]
+		
+	</mx:Metadata>
+	
+	<mx:Script>
+		<![CDATA[
+			////////////////////////////////////////////////////////////////////////////////
+			// Copyright (c) 2011 CodeCatalyst, LLC - http://www.codecatalyst.com/
+			// 
+			// Permission is hereby granted, free of charge, to any person obtaining a copy
+			// of this software and associated documentation files (the "Software"), to deal
+			// in the Software without restriction, including without limitation the rights
+			// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+			// copies of the Software, and to permit persons to whom the Software is
+			// furnished to do so, subject to the following conditions:
+			//
+			// The above copyright notice and this permission notice shall be included in
+			// all copies or substantial portions of the Software.
+			//
+			// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+			// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+			// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+			// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+			// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+			// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+			// THE SOFTWARE.	
+			////////////////////////////////////////////////////////////////////////////////
+			
+			import com.codecatalyst.util.CollectionViewUtil;
+			
+			import mx.collections.ICollectionView;
+			
+			// ========================================
+			// Protected properties
+			// ========================================			
+			
+			/**
+			 * Backing variable for <code>dataProvider</code> property.
+			 * 
+			 * @see #dataProvider
+			 */
+			protected var _dataProvider:ICollectionView;
+			
+			/**
+			 * Backing variable for <code>selectedItem</code> property.
+			 * 
+			 * @see #selectedItem
+			 */
+			protected var _selectedItem:Object;
+			
+			// ========================================
+			// Public properties
+			// ========================================
+			
+			[Bindable("dataProviderChanged")]
+			/**
+			 * Data provider.
+			 */
+			public function get dataProvider():Object
+			{
+				return _dataProvider;
+			}
+			
+			public function set dataProvider( value:Object ):void
+			{
+				if ( _dataProvider != value )
+				{
+					_dataProvider = CollectionViewUtil.create( value );
+					
+					dispatchEvent( new Event( "dataProviderChanged" ) );
+				}
+			}
+			
+			[Bindable]
+			/**
+			 * Label field.
+			 */
+			public var labelField:String = "label";
+			
+			[Bindable("change")]
+			[Bindable("selectedItemChanged")]
+			/**
+			 * Selected item.
+			 */
+			public function get selectedItem():Object
+			{
+				return _selectedItem;
+			}
+			
+			public function set selectedItem( value:Object ):void
+			{
+				if ( _selectedItem != value )
+				{
+					_selectedItem = value;
+					
+					dispatchEvent( new Event( "selectedItemChanged" ) );
+				}
+			}
+			
+			// ========================================
+			// Protected methods
+			// ========================================
+			
+			/**
+			 * Handle RadioButtonGroup Event.CHANGE.
+			 */
+			internal function radioButtonGroup_changeHandler( event:Event ):void
+			{
+				_selectedItem = ( radioButtonGroup.selection != null ) ? radioButtonGroup.selection.data : null;
+				
+				dispatchEvent( new Event( Event.CHANGE ) );
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<mx:RadioButtonGroup 
+		id="radioButtonGroup"
+		change="radioButtonGroup_changeHandler( event )" />
+	
+	<Populator 
+		target="{ this }"
+		dataProvider="{ dataProvider }">
+		<itemRenderer>
+			<mx:Component>
+				<mx:RadioButton
+					width="100%"
+					group="{ outerDocument.radioButtonGroup }"
+					label="{ PropertyUtil.getObjectPropertyValue( data, outerDocument.labelField ) }" 
+					selected="{ ( outerDocument.selectedItem == data ) }">
+					<mx:Script>
+						<![CDATA[
+							import com.codecatalyst.util.ArrayUtil;
+							import com.codecatalyst.util.PropertyUtil;
+						]]>
+					</mx:Script>
+				</mx:RadioButton>
+			</mx:Component>
+		</itemRenderer>
+	</Populator>
+	
+</mx:Box>

@@ -3,6 +3,9 @@
 	
 	<!-- Component -->
 	
+		<component id="CheckBoxSet" class="com.codecatalyst.component.CheckBoxSet" />
+		<component id="RadioButtonSet" class="com.codecatalyst.component.RadioButtonSet" />
+	
 		<!-- Behavior -->
 		
 			<!-- UI -->
@@ -26,39 +29,39 @@
 			<component id="HighlightedRegion" class="com.codecatalyst.component.chart.element.HighlightedRegion" />
 			<component id="LinearTrendLine" class="com.codecatalyst.component.chart.element.LinearTrendLine" />
 		
-			<!-- Container -->
+		<!-- Container -->
+	
+		<component id="BoxFrame" class="com.codecatalyst.component.container.BoxFrame"/>
 		
-			<component id="BoxFrame" class="com.codecatalyst.component.container.BoxFrame"/>
-			
-			<!-- Date -->
-			
-			<component id="DateRangeInput" class="com.codecatalyst.component.date.DateRangeInput" />
-			<component id="DateRangeSlider" class="com.codecatalyst.component.date.DateRangeSlider" />
-			
-			<!-- Renderer -->
-			
-			<component id="BoxItemRenderer" class="com.codecatalyst.component.renderer.BoxItemRenderer" />
-			<component id="CanvasItemRenderer" class="com.codecatalyst.component.renderer.CanvasItemRenderer" />
-			
-			<!-- Templates -->
-			
-			<component id="MasterDetail" class="com.codecatalyst.component.template.MasterDetail" />
-			
-		<!-- Factory -->
+		<!-- Date -->
 		
-		<component id="ClassFactory" class="com.codecatalyst.factory.ClassFactory" />
-		<component id="DataRendererFactory" class="com.codecatalyst.factory.DataRendererFactory" />
-		<component id="EventDispatcherFactory" class="com.codecatalyst.factory.EventDispatcherFactory" />
-		<component id="ItemRendererFactory" class="com.codecatalyst.factory.ItemRendererFactory" />
-		<component id="StyleClientFactory" class="com.codecatalyst.factory.StyleClientFactory" />
-		<component id="UIComponentFactory" class="com.codecatalyst.factory.UIComponentFactory" />
+		<component id="DateRangeInput" class="com.codecatalyst.component.date.DateRangeInput" />
+		<component id="DateRangeSlider" class="com.codecatalyst.component.date.DateRangeSlider" />
 		
-		<!-- Util -->
+		<!-- Renderer -->
 		
-			<!-- Invalidation -->
-			
-				<!-- MXML -->
-			
-				<component id="InvalidationTracker" class="com.codecatalyst.util.invalidation.mxml.InvalidationTracker" />
+		<component id="BoxItemRenderer" class="com.codecatalyst.component.renderer.BoxItemRenderer" />
+		<component id="CanvasItemRenderer" class="com.codecatalyst.component.renderer.CanvasItemRenderer" />
+		
+		<!-- Templates -->
+		
+		<component id="MasterDetail" class="com.codecatalyst.component.template.MasterDetail" />
+	
+	<!-- Factory -->
+	
+	<component id="ClassFactory" class="com.codecatalyst.factory.ClassFactory" />
+	<component id="DataRendererFactory" class="com.codecatalyst.factory.DataRendererFactory" />
+	<component id="EventDispatcherFactory" class="com.codecatalyst.factory.EventDispatcherFactory" />
+	<component id="ItemRendererFactory" class="com.codecatalyst.factory.ItemRendererFactory" />
+	<component id="StyleClientFactory" class="com.codecatalyst.factory.StyleClientFactory" />
+	<component id="UIComponentFactory" class="com.codecatalyst.factory.UIComponentFactory" />
+	
+	<!-- Util -->
+	
+		<!-- Invalidation -->
+		
+			<!-- MXML -->
+		
+			<component id="InvalidationTracker" class="com.codecatalyst.util.invalidation.mxml.InvalidationTracker" />
 		
 </componentPackage>
