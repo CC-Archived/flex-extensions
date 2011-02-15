@@ -22,6 +22,7 @@
 
 package com.codecatalyst.factory
 {
+	import com.codecatalyst.data.Property;
 	import com.codecatalyst.util.StyleUtil;
 	
 	import mx.core.IDataRenderer;
@@ -91,13 +92,38 @@ package com.codecatalyst.factory
 			
 			var renderer:IDataRenderer = IDataRenderer( event.target );
 			
-			applyRuntimeStyles( IStyleClient( renderer ), runtimeStyles );
+			if ( renderer is IStyleClient )
+				applyRuntimeStyles( renderer as IStyleClient, runtimeStyles );
+		}
+		
+		/**
+		 * Evaluate and apply the specified runtime properties to the specified object instance.
+		 */
+		override protected function applyRuntimeProperties( instance:Object, runtimeProperties:Object ):void
+		{
+			for ( var targetPropertyPath:String in runtimeProperties )
+			{
+				var targetProperty:Property = new Property( targetPropertyPath );
+				
+				if ( targetProperty.exists( instance ) )
+				{
+					targetProperty.setValue( instance, evaluateRuntimeValue( instance, runtimeProperties[ targetPropertyPath ] ) );
+				}
+				else if ( instance is IStyleClient )
+				{
+					( instance as IStyleClient ).setStyle( targetPropertyPath, evaluateRuntimeValue( instance, runtimeProperties[ targetPropertyPath ] ) );
+				}
+				else
+				{
+					throw new Error( "Specified property does not exist." );
+				}
+			}
 		}
 		
 		/**
 		 * Evaluate and apply the specified runtime styles to the specified IStyleClient.
 		 */
-		protected static function applyRuntimeStyles( styleClient:IStyleClient, runtimeStyles:Object ):void
+		protected function applyRuntimeStyles( styleClient:IStyleClient, runtimeStyles:Object ):void
 		{
 			for ( var targetStyle:String in runtimeStyles )
 			{

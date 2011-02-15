@@ -6,6 +6,11 @@
 	<mx:Metadata>
 		
 		/**
+		* RadioButton style.
+		*/
+		[Style(name="radioButtonStyleName", type="String", inherit="no")]
+		
+		/**
 		* Dispatched when the user changes the selected RadioButton.
 		*/
 		[Event(name="change",type="flash.events.Event")]
@@ -59,6 +64,17 @@
 			protected var _selectedItem:Object;
 			
 			// ========================================
+			// Internal properties
+			// ========================================
+			
+			[Bindable]
+			[Exclude]
+			/**
+			 * RadioButton style declaration.
+			 */
+			public var radioButtonStyleDeclaration:CSSStyleDeclaration = null;
+			
+			// ========================================
 			// Public properties
 			// ========================================
 			
@@ -108,7 +124,7 @@
 			}
 			
 			// ========================================
-			// Protected methods
+			// Internal methods
 			// ========================================
 			
 			/**
@@ -119,6 +135,35 @@
 				_selectedItem = ( radioButtonGroup.selection != null ) ? radioButtonGroup.selection.data : null;
 				
 				dispatchEvent( new Event( Event.CHANGE ) );
+			}
+			
+			// ========================================
+			// Protected methods
+			// ========================================
+			
+			/**
+			 * @inheritDoc
+			 */
+			override public function styleChanged( styleProp:String ):void
+			{
+				super.styleChanged( styleProp );
+				
+				var allStyles:Boolean = ( ( styleProp == null ) || ( styleProp == "styleName" ) );
+				
+				// RadioButton styles.
+				
+				if ( ( allStyles == true ) || ( styleProp == "radioButtonStyleName" ) )
+				{
+					var radioButtonStyleName:String = getStyle( "radioButtonStyleName" ) as String;
+					if ( radioButtonStyleName != null )
+					{
+						radioButtonStyleDeclaration = StyleManager.getStyleDeclaration( "." + radioButtonStyleName );
+					}
+					else
+					{
+						radioButtonStyleDeclaration = null;
+					}
+				}
 			}
 			
 		]]>
@@ -134,6 +179,7 @@
 		<itemRenderer>
 			<mx:Component>
 				<mx:RadioButton
+					styleName="{ outerDocument.radioButtonStyleDeclaration }"
 					width="100%"
 					group="{ outerDocument.radioButtonGroup }"
 					label="{ PropertyUtil.getObjectPropertyValue( data, outerDocument.labelField ) }" 

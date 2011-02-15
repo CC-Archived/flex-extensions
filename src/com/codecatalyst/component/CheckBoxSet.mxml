@@ -6,6 +6,11 @@
 	<mx:Metadata>
 		
 		/**
+		* CheckBox style.
+		*/
+		[Style(name="checkBoxStyleName", type="String", inherit="no")]
+		
+		/**
 		* Dispatched when the user changes the selected CheckBox(es).
 		*/
 		[Event(name="change",type="flash.events.Event")]
@@ -61,6 +66,17 @@
 			protected var _selectedItems:Array = new Array();
 			
 			// ========================================
+			// Internal properties
+			// ========================================
+			
+			[Bindable]
+			[Exclude]
+			/**
+			 * CheckBox style declaration.
+			 */
+			public var checkBoxStyleDeclaration:CSSStyleDeclaration = null;
+			
+			// ========================================
 			// Public properties
 			// ========================================
 			
@@ -114,6 +130,35 @@
 			// ========================================
 			
 			/**
+			 * @inheritDoc
+			 */
+			override public function styleChanged( styleProp:String ):void
+			{
+				super.styleChanged( styleProp );
+				
+				var allStyles:Boolean = ( ( styleProp == null ) || ( styleProp == "styleName" ) );
+				
+				// CheckBox styles.
+				
+				if ( ( allStyles == true ) || ( styleProp == "checkBoxStyleName" ) )
+				{
+					var checkBoxStyleName:String = getStyle( "checkBoxStyleName" ) as String;
+					if ( checkBoxStyleName != null )
+					{
+						checkBoxStyleDeclaration = StyleManager.getStyleDeclaration( "." + checkBoxStyleName );
+					}
+					else
+					{
+						checkBoxStyleDeclaration = null;
+					}
+				}
+			}
+			
+			// ========================================
+			// Internal methods
+			// ========================================
+			
+			/**
 			 * Handle CheckBox Event.CHANGE.
 			 */
 			internal function checkBox_changeHandler( event:Event ):void
@@ -138,7 +183,8 @@
 		<itemRenderer>
 			<mx:Component>
 				<mx:CheckBox
-					width="100%"
+					styleName="{ outerDocument.checkBoxStyleDeclaration }"
+					width="100%" 
 					label="{ PropertyUtil.getObjectPropertyValue( data, outerDocument.labelField ) }"
 					selected="{ ArrayUtil.contains( outerDocument.selectedItems, data ) }"
 					change="outerDocument.checkBox_changeHandler( event )">

@@ -102,20 +102,23 @@ package com.codecatalyst.factory
 		/**
 		 * Evaluate and apply the specified runtime properties to the specified object instance.
 		 */
-		protected static function applyRuntimeProperties( instance:Object, runtimeProperties:Object ):void
+		protected function applyRuntimeProperties( instance:Object, runtimeProperties:Object ):void
 		{
 			for ( var targetPropertyPath:String in runtimeProperties )
 			{
 				var targetProperty:Property = new Property( targetPropertyPath );
 				
-				targetProperty.setValue( instance, evaluateRuntimeValue( instance, runtimeProperties[ targetPropertyPath ] ) );
+				if ( targetProperty.exists( instance ) )
+					targetProperty.setValue( instance, evaluateRuntimeValue( instance, runtimeProperties[ targetPropertyPath ] ) );
+				else
+					throw new Error( "Specified property does not exist." );
 			}
 		}
 		
 		/**
 		 * Evaluate the specified value - which may be a (nested 'dot notation') property path, callback or just a standalone value.
 		 */
-		protected static function evaluateRuntimeValue( instance:Object, value:* ):*
+		protected function evaluateRuntimeValue( instance:Object, value:* ):*
 		{
 			if ( value is String )
 			{
