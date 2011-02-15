@@ -47,6 +47,8 @@ package com.codecatalyst.component.behavior
 		 */
 		public function invalidateProperties():void
 		{
+			super.invalidateProperties();
+			
 			// TODO: Add scheduling logic.
 			// TODO: Move to AbstractFacelessComponent?
 			

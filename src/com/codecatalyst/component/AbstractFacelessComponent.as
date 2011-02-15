@@ -25,6 +25,7 @@ package com.codecatalyst.component
 	import flash.events.EventDispatcher;
 	import flash.events.IEventDispatcher;
 	
+	import mx.core.IInvalidating;
 	import mx.core.IMXMLObject;
 	import mx.core.UIComponent;
 	import mx.events.FlexEvent;
@@ -39,7 +40,7 @@ package com.codecatalyst.component
 	 */
 	[Event( name="creationComplete", type="mx.events.FlexEvent" )]
 	
-	public class AbstractFacelessComponent extends EventDispatcher implements IMXMLObject
+	public class AbstractFacelessComponent extends EventDispatcher implements IMXMLObject, IInvalidating
 	{
 		// ========================================
 		// Protected properties
@@ -122,7 +123,7 @@ package com.codecatalyst.component
 		// ========================================
 		
 		/**
-		 * Method to satisfy IMXMLObject interface contract.
+		 * @inheritDoc
 		 */
 		public function initialized( document:Object, id:String ):void
 		{
@@ -133,6 +134,38 @@ package com.codecatalyst.component
 			_initialized = true;
 			
 			dispatchEvent( new FlexEvent( FlexEvent.INITIALIZE ) );
+		}
+		
+		/**
+		 * @inheritDoc
+		 */
+		public function invalidateProperties():void
+		{
+			// Implement in subclasses (if applicable).
+		}
+		
+		/**
+		 * @inheritDoc
+		 */
+		public function invalidateSize():void
+		{
+			// Implement in subclasses (if applicable).
+		}
+		
+		/**
+		 * @inheritDoc
+		 */
+		public function invalidateDisplayList():void
+		{
+			// Implement in subclasses (if applicable).
+		}
+		
+		/**
+		 * @inheritDoc
+		 */
+		public function validateNow():void
+		{
+			// Implement in subclasses (if applicable).
 		}
 		
 		// ========================================
