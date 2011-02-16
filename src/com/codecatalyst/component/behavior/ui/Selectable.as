@@ -258,7 +258,7 @@ package com.codecatalyst.component.behavior.ui
 		}
 		
 		/**
-		 * Add Event.CHANGE handler to the specified DisplayObject.
+		 * Add change event handler to the specified DisplayObject.
 		 */
 		protected function addChangeListener( child:DisplayObject, changeEventType:String ):void
 		{
@@ -266,7 +266,7 @@ package com.codecatalyst.component.behavior.ui
 		}	
 		
 		/**
-		 * Remove Event.CHANGE handler from the specified DisplayObject.
+		 * Remove change event handler from the specified DisplayObject.
 		 */
 		protected function removeChangeListener( child:DisplayObject, changeEventType:String ):void
 		{
@@ -304,7 +304,11 @@ package com.codecatalyst.component.behavior.ui
 		}
 		
 		/**
-		 * Handle Event.CHANGE.
+		 * Handle DisplayObject change event.
+		 * 
+		 * @see #addChangeListener()
+		 * @see #removeChangeListener()
+		 * @see #changeEventType
 		 */
 		protected function child_changeHandler( event:Event ):void
 		{
