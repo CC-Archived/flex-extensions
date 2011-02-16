@@ -98,6 +98,13 @@ package com.codecatalyst.component.behavior.ui
 		 */
 		public var dataField:String = "data";
 		
+		[Bindable]
+		[Invalidate("properties")]
+		/**
+		 * Target container child selection change event.
+		 */
+		public var changeEventType:String = Event.CHANGE;
+		
 		[Bindable("selectedItemsChanged")]
 		[Invalidate("properties")]
 		/**
@@ -179,14 +186,22 @@ package com.codecatalyst.component.behavior.ui
 				if ( previousTarget != null )
 				{
 					removeContainerListeners( previousTarget );
-					apply( previousTarget, removeChangeListener );
+					apply( previousTarget, removeChangeListener, changeEventType );
 				}
 				
 				if ( target != null )
 				{
-					apply( target, addChangeListener );
+					apply( target, addChangeListener, changeEventType );
 					addContainerListeners( target );
 				}
+			}
+			
+			if ( propertyTracker.invalidated( "changeEventType" ) )
+			{
+				var previousChangeEventType:String = propertyTracker.previousValue( "changeEventType" );
+				
+				apply( target, removeChangeListener, previousChangeEventType );
+				apply( target, addChangeListener, changeEventType );
 			}
 			
 			if ( propertyTracker.invalidated( "dataField" ) )
@@ -209,11 +224,11 @@ package com.codecatalyst.component.behavior.ui
 		/**
 		 * Apply the specified method to the children of the specified container.
 		 */
-		protected function apply( container:Container, method:Function ):void
+		protected function apply( container:Container, method:Function, ...additionalParameters ):void
 		{
 			DisplayObjectContainerUtil.children( container )
 				.forEach( function ( child:DisplayObject, index:int, array:Array ):void {
-					method( child );
+					method.apply( null, [ child ].concat( additionalParameters ) );
 				});
 		}
 		
@@ -238,17 +253,17 @@ package com.codecatalyst.component.behavior.ui
 		/**
 		 * Add Event.CHANGE handler to the specified DisplayObject.
 		 */
-		protected function addChangeListener( child:DisplayObject ):void
+		protected function addChangeListener( child:DisplayObject, changeEventType:String ):void
 		{
-			child.addEventListener( Event.CHANGE, child_changeHandler, false, 0, true );
+			child.addEventListener( changeEventType, child_changeHandler, false, 0, true );
 		}	
 		
 		/**
 		 * Remove Event.CHANGE handler from the specified DisplayObject.
 		 */
-		protected function removeChangeListener( child:DisplayObject ):void
+		protected function removeChangeListener( child:DisplayObject, changeEventType:String ):void
 		{
-			child.removeEventListener( Event.CHANGE, child_changeHandler );
+			child.removeEventListener( changeEventType, child_changeHandler );
 		}
 		
 		/**
@@ -270,7 +285,7 @@ package com.codecatalyst.component.behavior.ui
 		 */
 		protected function container_childAddHandler( event:ChildExistenceChangedEvent ):void
 		{
-			addChangeListener( event.relatedObject );
+			addChangeListener( event.relatedObject, changeEventType );
 		}
 		
 		/**
@@ -278,7 +293,7 @@ package com.codecatalyst.component.behavior.ui
 		 */
 		protected function container_childRemoveHandler( event:ChildExistenceChangedEvent ):void
 		{
-			removeChangeListener( event.relatedObject );
+			removeChangeListener( event.relatedObject, changeEventType );
 		}
 		
 		/**

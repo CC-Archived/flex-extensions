@@ -23,6 +23,8 @@
 package com.codecatalyst.component.behavior
 {
 	import com.codecatalyst.component.AbstractFacelessComponent;
+	
+	import mx.events.FlexEvent;
 
 	public class AbstractBehavior extends AbstractFacelessComponent implements IBehavior
 	{
@@ -61,6 +63,8 @@ package com.codecatalyst.component.behavior
 		override public function validateNow():void
 		{
 			commitProperties();
+			
+			dispatchEvent( new FlexEvent( FlexEvent.UPDATE_COMPLETE ) );
 		}
 		
 		// ========================================
