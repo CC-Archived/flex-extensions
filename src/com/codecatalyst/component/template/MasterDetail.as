@@ -183,7 +183,7 @@ package com.codecatalyst.component.template
 			
 			// Update master and detail views.
 			
-			if ( changes.invalidated( "master" ) || changes.invalidated( "detail" ) )
+			if ( changes.invalidated( [ "master", "detail" ] ) )
 			{
 				removeAllChildren();
 				

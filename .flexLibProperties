@@ -6,9 +6,12 @@
     <classEntry path="asset.skin.slider.HandleSkin"/>
     <classEntry path="asset.skin.slider.ThumbSkin"/>
     <classEntry path="com.codecatalyst.component.AbstractFacelessComponent"/>
+    <classEntry path="com.codecatalyst.component.CheckBoxSet"/>
+    <classEntry path="com.codecatalyst.component.RadioButtonSet"/>
     <classEntry path="com.codecatalyst.component.behavior.AbstractBehavior"/>
     <classEntry path="com.codecatalyst.component.behavior.IBehavior"/>
     <classEntry path="com.codecatalyst.component.behavior.ui.Populator"/>
+    <classEntry path="com.codecatalyst.component.behavior.ui.Selectable"/>
     <classEntry path="com.codecatalyst.component.chart.control.AbstractChartControl"/>
     <classEntry path="com.codecatalyst.component.chart.control.ChartPanControl"/>
     <classEntry path="com.codecatalyst.component.chart.control.ChartPanEvent"/>
@@ -53,6 +56,7 @@
     <classEntry path="com.codecatalyst.util.DateUtil"/>
     <classEntry path="com.codecatalyst.util.DelayedCall"/>
     <classEntry path="com.codecatalyst.util.DictionaryUtil"/>
+    <classEntry path="com.codecatalyst.util.DisplayObjectContainerUtil"/>
     <classEntry path="com.codecatalyst.util.EventDispatcherUtil"/>
     <classEntry path="com.codecatalyst.util.FactoryPool"/>
     <classEntry path="com.codecatalyst.util.GraphicsUtil"/>
@@ -75,11 +79,18 @@
     <classEntry path="com.codecatalyst.util.invalidation.mxml.InvalidationTracker"/>
     <classEntry path="qs.charts.DashedLineRenderer"/>
     <classEntry path="qs.utils.GraphicsUtils"/>
-    <classEntry path="com.codecatalyst.component.CheckBoxSet"/>
-    <classEntry path="com.codecatalyst.util.DisplayObjectContainerUtil"/>
-    <classEntry path="com.codecatalyst.component.RadioButtonSet"/>
   </includeClasses>
-  <includeResources/>
+  <includeResources>
+    <resourceEntry destPath="asset/image/cursor/grab.png" sourcePath="asset/image/cursor/grab.png"/>
+    <resourceEntry destPath="asset/image/cursor/grabbing.png" sourcePath="asset/image/cursor/grabbing.png"/>
+    <resourceEntry destPath="asset/image/cursor/resize-column.png" sourcePath="asset/image/cursor/resize-column.png"/>
+    <resourceEntry destPath="asset/image/cursor/resize-row.png" sourcePath="asset/image/cursor/resize-row.png"/>
+    <resourceEntry destPath="asset/image/cursor/zoom-in.png" sourcePath="asset/image/cursor/zoom-in.png"/>
+    <resourceEntry destPath="asset/image/cursor/zoom-out.png" sourcePath="asset/image/cursor/zoom-out.png"/>
+    <resourceEntry destPath="asset/skin/slider/grip-pattern.png" sourcePath="asset/skin/slider/grip-pattern.png"/>
+    <resourceEntry destPath="com/codecatalyst/component/chart/element/.DS_Store" sourcePath="com/codecatalyst/component/chart/element/.DS_Store"/>
+    <resourceEntry destPath="mainfest.xml" sourcePath="mainfest.xml"/>
+  </includeResources>
   <namespaceManifests>
     <namespaceManifestEntry manifest="mainfest.xml" namespace="http://www.codecatalyst.com/2011/flex-extensions"/>
   </namespaceManifests>
