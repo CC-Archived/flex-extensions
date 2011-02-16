@@ -105,6 +105,13 @@ package com.codecatalyst.component.behavior.ui
 		 */
 		public var changeEventType:String = Event.CHANGE;
 		
+		[Bindable]
+		[Invalidate("properties")]
+		/**
+		 * Allow multiple selection.
+		 */
+		public var allowMultipleSelection:Boolean = true;
+		
 		[Bindable("selectedItemsChanged")]
 		[Invalidate("properties")]
 		/**
@@ -214,7 +221,7 @@ package com.codecatalyst.component.behavior.ui
 				selectedProperty = new Property( selectedField );
 			}
 
-			if ( propertyTracker.invalidated( [ "target", "dataField", "selectedField", "selectedItems", "selectedItem" ] ) )
+			if ( propertyTracker.invalidated( [ "target", "dataField", "selectedField", "allowMultipleSelection", "selectedItems", "selectedItem" ] ) )
 			{
 				if ( target != null )
 					apply( target, updateSelection );
@@ -274,7 +281,7 @@ package com.codecatalyst.component.behavior.ui
 			if ( dataProperty.exists( child ) && selectedProperty.exists( child ) )
 			{
 				var data:Object = dataProperty.getValue( child );
-				var selected:Boolean = ArrayUtil.contains( selectedItems, data );
+				var selected:Boolean = allowMultipleSelection ? ArrayUtil.contains( selectedItems, data ) : ( selectedItem == data );
 				
 				selectedProperty.setValue( child, selected );
 			}
@@ -308,10 +315,17 @@ package com.codecatalyst.component.behavior.ui
 				var data:Object      = dataProperty.getValue( child );
 				var selected:Boolean = selectedProperty.getValue( child );
 				
-				if ( selected )
-					selectedItems = ArrayUtil.merging( selectedItems, data );
+				if ( allowMultipleSelection )
+				{
+					if ( selected )
+						selectedItems = ArrayUtil.merging( selectedItems, data );
+					else
+						selectedItems = ArrayUtil.excluding( selectedItems, data );
+				}
 				else
-					selectedItems = ArrayUtil.excluding( selectedItems, data );
+				{
+					selectedItem = data;
+				}
 				
 				dispatchEvent( new Event( Event.CHANGE ) );
 			}
