@@ -68,7 +68,7 @@ package com.codecatalyst.data
 		 */
 		public function getValue( object:Object ):*
 		{
-			PropertyUtil.getObjectPropertyValue( object, path );
+			return PropertyUtil.getObjectPropertyValue( object, path );
 		}
 		
 		/**
