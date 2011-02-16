@@ -84,7 +84,7 @@ package com.codecatalyst.util.invalidation
 		 */
 		public function track( identifier:*, invalidationFlags:uint, callback:Function = null ):void
 		{
-			execute( _track, identifier, arguments.slice( 1 ) );
+			execute( _track, identifier, true, arguments.slice( 1 ) );
 		}
 		
 		/**
@@ -98,7 +98,7 @@ package com.codecatalyst.util.invalidation
 		}
 		
 		/**
-		 * Returns a Boolean indicating whether the specified tracked property(s) have been invalidated.
+		 * Returns a Boolean indicating whether (any of) the specified tracked property(s) have been invalidated.
 		 * 
 		 * NOTE: If no parameter name identifier is specified, returns a Boolean indicating whether any tracked property has been invalidated.
 		 * 
@@ -117,7 +117,7 @@ package com.codecatalyst.util.invalidation
 				return false;
 			}
 			
-			return execute( _invalidated, identifier );
+			return execute( _invalidated, identifier, false );
 		}
 		
 		/**
@@ -157,15 +157,18 @@ package com.codecatalyst.util.invalidation
 		 * 
 		 * @param method The method to execute.
 		 * @param identifier A parameter name String or Array of parameter name Strings.
+		 * @param every A Boolean indicating whether to iterate using Array.every() or Array.some().
 		 * @param additionalParameters Optional additional parameters to supply when calling the specified method.
 		 * 
 		 * @return The aggregated return value.
 		 */
-		protected function execute( method:Function, identifier:*, additionalParameters:Array = null ):*
+		protected function execute( method:Function, identifier:*, every:Boolean = true, additionalParameters:Array = null ):*
 		{
 			if ( identifier is Array )
 			{
-				return identifier.every( 
+				var iterator:Function = ( every ) ? identifier.every : identifier.some;
+				
+				return iterator( 
 					function ( item:*, index:int, array:Array ):*
 					{
 						return execute( method, item, additionalParameters );
