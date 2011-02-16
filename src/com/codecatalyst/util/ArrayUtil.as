@@ -124,7 +124,7 @@ package com.codecatalyst.util
 		 */
 		public static function exclude( array:Array, items:Array ):Array
 		{
-			var result:Array = clone( array );
+			var result:Array = clone( array ) || new Array();
 			
 			for each ( var item:Object in items )
 			{
