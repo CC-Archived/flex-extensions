@@ -171,7 +171,7 @@ package com.codecatalyst.util.invalidation
 				return iterator( 
 					function ( item:*, index:int, array:Array ):*
 					{
-						return execute( method, item, additionalParameters );
+						return execute( method, item, every, additionalParameters );
 					}
 				);
 			}
