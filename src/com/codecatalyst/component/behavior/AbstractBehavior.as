@@ -43,15 +43,23 @@ package com.codecatalyst.component.behavior
 		// ========================================
 		
 		/**
-		 * Marks a component so that its commitProperties() method will eventually be called.
+		 * @inheritDoc
 		 */
-		public function invalidateProperties():void
+		override public function invalidateProperties():void
 		{
 			super.invalidateProperties();
 			
 			// TODO: Add scheduling logic.
 			// TODO: Move to AbstractFacelessComponent?
-			
+
+			validateNow();
+		}
+		
+		/**
+		 * @inheritDoc
+		 */
+		override public function validateNow():void
+		{
 			commitProperties();
 		}
 		

@@ -30,10 +30,13 @@ package com.codecatalyst.component.behavior.ui
 	import com.codecatalyst.util.invalidation.InvalidationTracker;
 	
 	import flash.display.DisplayObject;
-	import flash.display.DisplayObjectContainer;
+	import flash.events.Event;
 	
+	import mx.core.Container;
+	import mx.events.ChildExistenceChangedEvent;
+
 	/**
-	 * Dispatched when the user selects a Selectable DisplayObject.
+	 * Dispatched when the user selects a child DisplayObject.
 	 */
 	[Event(name="change",type="flash.events.Event")]
 	
@@ -44,52 +47,59 @@ package com.codecatalyst.component.behavior.ui
 		// ========================================
 		
 		/**
-		 * Backing variable for <code>selectedItems</code> property.
+		 * Backing variable for <code>selectedItem</code> and <code>selectedItems</code> properties.
 		 * 
+		 * @see #selectedItem
 		 * @see #selectedItems
 		 */
 		protected var _selectedItems:Array = new Array();
 		
 		/**
-		 * Indicates whether the <code>selectedItems</code> property has been invalidated.
-		 * 
-		 * @see #selectedItems
-		 * @see #commitProperties()
+		 * Property invalidation tracker.
 		 */
-		protected var selectedItemsChanged:Boolean = false;
+		protected var propertyTracker:InvalidationTracker = new InvalidationTracker( this as IEventDispatcher );
 		
 		/**
-		 * Invalidation tracker.
+		 * 'data' Property.
+		 * 
+		 * @see #dataField
 		 */
-		protected var tracker:InvalidationTracker = new InvalidationTracker( this as IEventDispatcher );
+		protected var dataProperty:Property = null;
+		
+		/**
+		 * 'selected' Property.
+		 * 
+		 * @see #selectedField
+		 */
+		protected var selectedProperty:Property = null;
 		
 		// ========================================
 		// Public properties
 		// ========================================
 		
 		[Bindable]
-		[Invalidate]
+		[Invalidate("properties")]
+		/**
+		 * Target container.
+		 */
+		public var target:Container = null;
+		
+		[Bindable]
+		[Invalidate("properties")]
 		/**
 		 * Target item 'selected' property path.
 		 */
 		public var selectedField:String = "selected";
 		
 		[Bindable]
-		[Invalidate]
+		[Invalidate("properties")]
 		/**
 		 * Target item 'data' property path.
 		 */
-		public var dataField:String = "dataField";
-		
-		[Bindable]
-		[Invalidate]
-		/**
-		 * Target container.
-		 */
-		public var target:DisplayObjectContainer = null;
+		public var dataField:String = "data";
 		
 		[Bindable("selectedItemsChanged")]
-		[Invalidate]
+		[Invalidate("properties")]
 		/**
 		 * Selected items.
 		 */
@@ -97,7 +107,7 @@ package com.codecatalyst.component.behavior.ui
 		{
 			try
 			{
-				return selectedItems[ 0 ] as DateRange;
+				return selectedItems[ 0 ];
 			}
 			catch ( error:Error )
 			{
@@ -118,11 +128,11 @@ package com.codecatalyst.component.behavior.ui
 		}
 		
 		[Bindable( "selectedItemsChanged" )]
-		[Invalidate]
+		[Invalidate("properties")]
 		/**
 		 * Selected items.
 		 */
-		public function get selectedItems():void
+		public function get selectedItems():Array
 		{
 			return _selectedItems;
 		}
@@ -147,6 +157,9 @@ package com.codecatalyst.component.behavior.ui
 		public function Selectable()
 		{
 			super();
+			
+			dataProperty     = new Property( dataField );
+			selectedProperty = new Property( selectedField );
 		}
 		
 		// ========================================
@@ -160,34 +173,131 @@ package com.codecatalyst.component.behavior.ui
 		{
 			super.commitProperties();
 			
-			if ( targetChanged )
+			if ( propertyTracker.invalidated( "target" ) )
 			{
-				updateSelection();
+				var previousTarget:Container = propertyTracker.previousValue( "target" );
+				if ( previousTarget != null )
+				{
+					removeContainerListeners( previousTarget );
+					apply( previousTarget, removeChangeListener );
+				}
 				
-				targetChanged = false;
+				if ( target != null )
+				{
+					apply( target, addChangeListener );
+					addContainerListeners( target );
+				}
 			}
 			
-			if ( selectedItemsChanged )
+			if ( propertyTracker.invalidated( "dataField" ) )
 			{
-				updateSelection();
-				
-				selectedItemsChanged = false;
+				dataProperty = new Property( dataField );
+			}
+			
+			if ( propertyTracker.invalidated( "selectedField" ) )
+			{
+				selectedProperty = new Property( selectedField );
+			}
+
+			if ( propertyTracker.invalidated( [ "target", "dataField", "selectedField", "selectedItems", "selectedItem" ] ) )
+			{
+				if ( target != null )
+					apply( target, updateSelection );
 			}
 		}
 		
 		/**
-		 * Update the target children to reflect the selection state.
+		 * Apply the specified method to the children of the specified container.
 		 */
-		protected function updateSelection():void
+		protected function apply( container:Container, method:Function ):void
 		{
-			var children:Array = DisplayObjectContainerUtil.children( target );
-			
-			for each ( var child:DisplayObject in children )
+			DisplayObjectContainerUtil.children( container )
+				.forEach( function ( child:DisplayObject, index:int, array:Array ):void {
+					method( child );
+				});
+		}
+		
+		/**
+		 * Add Container ChildExistenceChangedEvent listeners.
+		 */
+		protected function addContainerListeners( container:Container ):void
+		{
+			container.addEventListener( ChildExistenceChangedEvent.CHILD_ADD, container_childAddHandler, false, 0, true );
+			container.addEventListener( ChildExistenceChangedEvent.CHILD_REMOVE, container_childRemoveHandler, false, 0, true );
+		}
+		
+		/**
+		 * Remove Container ChildExistenceChangedEvent listeners.
+		 */
+		protected function removeContainerListeners( container:Container ):void
+		{
+			container.removeEventListener( ChildExistenceChangedEvent.CHILD_ADD, container_childAddHandler );
+			container.removeEventListener( ChildExistenceChangedEvent.CHILD_REMOVE, container_childRemoveHandler );
+		}
+		
+		/**
+		 * Add Event.CHANGE handler to the specified DisplayObject.
+		 */
+		protected function addChangeListener( child:DisplayObject ):void
+		{
+			child.addEventListener( Event.CHANGE, child_changeHandler, false, 0, true );
+		}	
+		
+		/**
+		 * Remove Event.CHANGE handler from the specified DisplayObject.
+		 */
+		protected function removeChangeListener( child:DisplayObject ):void
+		{
+			child.removeEventListener( Event.CHANGE, child_changeHandler );
+		}
+		
+		/**
+		 * Update the specified DisplayObject to reflect the current selection state.
+		 */
+		protected function updateSelection( child:DisplayObject ):void
+		{
+			if ( dataProperty.exists( child ) && selectedProperty.exists( child ) )
 			{
-				var selectedProperty:Property = new Property( selectedField );
-				var dataProperty:Property     = new Property( dataField );
+				var selected:Boolean = selectedProperty.getValue( child );
 				
-				dataProperty.setValue( ArrayUtil.contains( selectedItems, selectedProperty.getValue( child ) );
+				selectedProperty.setValue( child, selected );
+			}
+		}
+		
+		/**
+		 * Handle Container ChildExistenceChangedEvent.CHILD_ADD.
+		 */
+		protected function container_childAddHandler( event:ChildExistenceChangedEvent ):void
+		{
+			addChangeListener( event.relatedObject );
+		}
+		
+		/**
+		 * Handle Container ChildExistenceChangedEvent.CHILD_REMOVE.
+		 */
+		protected function container_childRemoveHandler( event:ChildExistenceChangedEvent ):void
+		{
+			removeChangeListener( event.relatedObject );
+		}
+		
+		/**
+		 * Handle Event.CHANGE.
+		 */
+		protected function child_changeHandler( event:Event ):void
+		{
+			var child:DisplayObject = event.target as DisplayObject;
+			
+			if ( dataProperty.exists( child ) && selectedProperty.exists( child ) )
+			{
+				var data:Object      = dataProperty.getValue( child );
+				var selected:Boolean = selectedProperty.getValue( child );
+				
+				if ( selected )
+					selectedItems = ArrayUtil.merging( selectedItems, data );
+				else
+					selectedItems = ArrayUtil.excluding( selectedItems, data );
+				
+				dispatchEvent( new Event( Event.CHANGE ) );
 			}
 		}
 	}
