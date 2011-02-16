@@ -258,7 +258,8 @@ package com.codecatalyst.component.behavior.ui
 		{
 			if ( dataProperty.exists( child ) && selectedProperty.exists( child ) )
 			{
-				var selected:Boolean = selectedProperty.getValue( child );
+				var data:Object = dataProperty.getValue( child );
+				var selected:Boolean = ArrayUtil.contains( selectedItems, data );
 				
 				selectedProperty.setValue( child, selected );
 			}
