@@ -240,7 +240,7 @@ package com.codecatalyst.util.invalidation
 			var trackedProperty:InvalidationTrackedProperty = trackedProperties[ propertyName ] as InvalidationTrackedProperty;
 			
 			if ( trackedProperty == null )
-				throw new Error( "The specified property is not being tracked." );
+				throw new Error( "The specified property is not being tracked: " + propertyName );
 			
 			return trackedProperty;
 		}
