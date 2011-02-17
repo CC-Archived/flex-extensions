@@ -45,7 +45,7 @@ package com.codecatalyst.factory
 		/**
 		 * Constructor.
 		 */
-		public function ClassFactory( generator:Class, parameters:Array = null, properties:Object = null )
+		public function ClassFactory( generator:Class = null, parameters:Array = null, properties:Object = null )
 		{
 			super( generator );
 			

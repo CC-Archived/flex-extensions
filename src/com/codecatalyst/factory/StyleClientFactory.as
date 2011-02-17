@@ -44,7 +44,7 @@ package com.codecatalyst.factory
 		/**
 		 * Constructor.
 		 */
-		public function StyleClientFactory( generator:Class, parameters:Array = null, properties:Object = null, styles:Object = null )
+		public function StyleClientFactory( generator:Class = null, parameters:Array = null, properties:Object = null, styles:Object = null )
 		{
 			super( generator, parameters, properties );
 			

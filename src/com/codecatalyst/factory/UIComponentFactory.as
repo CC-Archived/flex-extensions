@@ -50,7 +50,7 @@ package com.codecatalyst.factory
 		/**
 		 * Constructor.
 		 */
-		public function UIComponentFactory( generator:Class, parameters:Array = null, properties:Object = null, styles:Object = null, eventListeners:Object = null )
+		public function UIComponentFactory( generator:Class = null, parameters:Array = null, properties:Object = null, styles:Object = null, eventListeners:Object = null )
 		{
 			super( generator, parameters, properties );
 			

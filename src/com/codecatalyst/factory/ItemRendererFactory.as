@@ -52,7 +52,7 @@ package com.codecatalyst.factory
 		/**
 		 * Constructor.
 		 */
-		public function ItemRendererFactory( generator:Class, parameters:Array = null, properties:Object = null, styles:Object = null,  eventListeners:Object = null, runtimeProperties:Object = null, runtimeStyles:Object = null )
+		public function ItemRendererFactory( generator:Class = null, parameters:Array = null, properties:Object = null, styles:Object = null,  eventListeners:Object = null, runtimeProperties:Object = null, runtimeStyles:Object = null )
 		{
 			super( generator, parameters, properties, eventListeners, runtimeProperties );
 			
