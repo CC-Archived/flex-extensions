@@ -82,11 +82,10 @@
   </includeClasses>
   <includeResources>
     <resourceEntry destPath="asset/image/cursor/resize-row.png" sourcePath="asset/image/cursor/resize-row.png"/>
-    <resourceEntry destPath="asset/image/cursor/zoom-in.png" sourcePath="asset/image/cursor/zoom-in.png"/>
     <resourceEntry destPath="asset/image/cursor/grabbing.png" sourcePath="asset/image/cursor/grabbing.png"/>
+    <resourceEntry destPath="asset/image/cursor/zoom-in.png" sourcePath="asset/image/cursor/zoom-in.png"/>
     <resourceEntry destPath="asset/image/cursor/zoom-out.png" sourcePath="asset/image/cursor/zoom-out.png"/>
     <resourceEntry destPath="mainfest.xml" sourcePath="mainfest.xml"/>
-    <resourceEntry destPath="com/codecatalyst/component/chart/element/.DS_Store" sourcePath="com/codecatalyst/component/chart/element/.DS_Store"/>
     <resourceEntry destPath="asset/image/cursor/resize-column.png" sourcePath="asset/image/cursor/resize-column.png"/>
     <resourceEntry destPath="asset/skin/slider/grip-pattern.png" sourcePath="asset/skin/slider/grip-pattern.png"/>
     <resourceEntry destPath="asset/image/cursor/grab.png" sourcePath="asset/image/cursor/grab.png"/>

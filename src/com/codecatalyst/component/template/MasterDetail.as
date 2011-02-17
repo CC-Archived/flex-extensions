@@ -3,6 +3,7 @@ package com.codecatalyst.component.template
 	import com.codecatalyst.util.invalidation.InvalidationTracker;
 	
 	import flash.display.DisplayObject;
+	import flash.events.Event;
 	
 	import mx.containers.BoxDirection;
 	import mx.containers.Canvas;
@@ -28,54 +29,6 @@ package com.codecatalyst.component.template
 	public class MasterDetail extends DividedBox
 	{
 		// ========================================
-		// Protected constants
-		// ========================================
-
-		/**
-		 * Divider toggle threshold.
-		 */
-		protected static const DIVIDER_TOGGLE_THRESHOLD:int = 3;
-		
-		// ========================================
-		// Static initializers
-		// ========================================
-		
-		/**
-		 * Static initializer for default CSS styles.
-		 */
-		protected static var stylesInitialized:Boolean = initializeStyles();
-		
-		protected static function initializeStyles():Boolean
-		{
-			var declaration:CSSStyleDeclaration = StyleManager.getStyleDeclaration( "MasterDetail" ) || new CSSStyleDeclaration();
-			
-			declaration.defaultFactory = 
-				function ():void
-				{
-					this.horizontalScrollPolicy = ScrollPolicy.OFF;
-					this.verticalScrollPolicy   = ScrollPolicy.OFF;
-				};
-			
-			StyleManager.setStyleDeclaration( "MasterDetail", declaration, false );
-			
-			return true;
-		}
-		
-		// ========================================
-		// Protected properties
-		// ========================================
-		
-		/**
-		 * Invalidation tracker.
-		 */
-		protected var changes:InvalidationTracker = null;
-		
-		/**
-		 * Resize effect.
-		 */
-		protected var resizeEffect:Resize = null;
-		
-		// ========================================
 		// Public properties
 		// ========================================
 		
@@ -86,25 +39,55 @@ package com.codecatalyst.component.template
 		public var animate:Boolean = true;
 		
 		[Bindable]
-		[Invalidate("properties")]
 		/**
 		 * Resize animation duration.
 		 */
 		public var resizeDuration:Number = 1000;
 		
 		[Bindable]
-		[Invalidate("properties")]
 		/**
 		 * Resize animation easing function.
 		 */
 		public var resizeEasingFunction:Function = Quartic.easeInOut;
 		
-		[Bindable]
-		[PercentProxy("expandToPercentage")]
 		/**
-		 * The default width or height percentange to use when expanding the detail view.
+		 * The percentage width or height value to use when expanding/showing the Detail view.
 		 */
-		public var expandToPercentage:Number = 0.5;
+		[Bindable("expandToChanged")]
+		public function get percentExpandTo():Number {
+			return _percentExpandTo;
+		}
+		public function set percentExpandTo(val:Number):void {
+			if (val != _percentExpandTo) {
+				if (val < 0) val = 0;
+				if (val > 1) val = val / 100;
+				
+				_percentExpandTo = val;
+				_expandTo        = NaN;
+				
+				dispatchEvent(new Event('expandToChanged'));
+			}
+		}
+		
+		/**
+		 * 
+		 */
+		[Bindable("expandToChanged")]
+		[PercentProxy("percentExpandTo")]
+		/**
+		 * The default width or height to target when expanding the detail view.
+		 */
+		public function get expandTo():Number {
+			return _expandTo;
+		}
+		public function set expandTo(val:Number):void {
+			if (val != _expandTo) {
+				_expandTo 		 = val > 0 ? val : 0;
+				_percentExpandTo = NaN;
+				
+				dispatchEvent(new Event('expandToChanged'));
+			}
+		}
 		
 		[Bindable]
 		[Invalidate("displaylist")]
@@ -174,13 +157,6 @@ package com.codecatalyst.component.template
 		{
 			super.commitProperties();
 			
-			// Update resizeEffect easing function to reflect resizeEasingFunction property value.
-			
-			if ( changes.invalidated( "resizeEasingFunction" ) )
-			{
-				resizeEffect.easingFunction = resizeEasingFunction;
-			}
-			
 			// Update master and detail views.
 			
 			if ( changes.invalidated( [ "master", "detail" ] ) )
@@ -195,14 +171,8 @@ package com.codecatalyst.component.template
 				{
 					addChild ( detail as DisplayObject );
 					
-					if ( layoutObject.direction == BoxDirection.VERTICAL )
-					{
-						detail.height = ( expanded ) ? expandToPercentage * height : 0;
-					}
-					else // ( layoutObject.direction == BoxDirection.HORIZONTAL )
-					{
-						detail.width  = ( expanded ) ? expandToPercentage * width : 0;
-					}
+					if ( layoutObject.direction == BoxDirection.VERTICAL )  detail.height = this.desiredHeight;
+					else													detail.width  = this.desiredWidth;
 						
 					detail.visible = expanded;
 				}
@@ -231,8 +201,7 @@ package com.codecatalyst.component.template
 		 */
 		protected function updateDetailView():void
 		{
-			if ( detail == null )
-				return;
+			if ( detail == null )  return;
 			
 			if ( expanded != detail.visible )
 			{
@@ -242,19 +211,11 @@ package com.codecatalyst.component.template
 				if ( resizeEffect.isPlaying ) 
 					resizeEffect.pause();
 				
-				resizeEffect.duration = animate ? resizeDuration : 0;
-				resizeEffect.target   = detail;
-
-				if ( layoutObject.direction == BoxDirection.VERTICAL )
-				{
-					resizeEffect.widthTo  = Number.NaN;
-					resizeEffect.heightTo = expanded ? expandToPercentage * height : 0;
-				}
-				else // ( layoutObject.direction == BoxDirection.HORIZONTAL )
-				{
-					resizeEffect.widthTo  = expanded ? expandToPercentage * width : 0;
-					resizeEffect.heightTo = Number.NaN;
-				}
+				resizeEffect.target   		= detail;
+				resizeEffect.duration 		= animate ? resizeDuration 			: 0;
+				resizeEffect.easingFunction = animate ? resizeEasingFunction	: null;
+				resizeEffect.widthTo  		= ( layoutObject.direction == BoxDirection.VERTICAL ) ? Number.NaN			: this.desiredWidth;
+				resizeEffect.heightTo 		= ( layoutObject.direction == BoxDirection.VERTICAL ) ? this.desiredHeight	: Number.NaN;
 				
 				resizeEffect.play();
 			}
@@ -288,10 +249,80 @@ package com.codecatalyst.component.template
 		{
 			// If the divider moves less than the toggle threshold, treat it as a 'click' and toggle expansion.
 			
-			if ( Math.abs( event.delta ) < DIVIDER_TOGGLE_THRESHOLD )
+			if ( Math.abs( event.delta ) < DELTA_THRESHOLD )
 			{
 				expanded = ! expanded;
 			}
 		}
+
+		
+		// ========================================
+		// Protected properties
+		// ========================================
+		
+		protected function get desiredHeight():Number {
+			return	( !expanded 	  ) 		? 0  						  	:
+					( isNaN(expandTo) ) 		? percentExpandTo * height 	:
+					( isNaN(percentExpandTo) )  ? expandTo                      : 0;
+		}
+		
+		protected function get desiredWidth():Number {
+			return  ( !expanded 	  ) 		? 0  						  	:	
+					( isNaN(expandTo) ) 		? percentExpandTo * width   :
+					( isNaN(percentExpandTo) )  ? expandTo                    	: 0;			
+		}
+		
+		
+		/**
+		 * Invalidation tracker.
+		 */
+		protected var changes:InvalidationTracker = null;
+		
+		/**
+		 * Resize effect.
+		 */
+		protected var resizeEffect:Resize = null;
+
+		
+		// ========================================
+		// Protected constants
+		// ========================================
+		
+		/**
+		 * Divider toggle threshold.
+		 */
+		protected static const DELTA_THRESHOLD:int = 3;
+
+		
+		// ========================================
+		// Static initializers
+		// ========================================
+		
+		/**
+		 * Static initializer for default CSS styles.
+		 */
+		protected static var stylesInitialized:Boolean = initializeStyles();
+		
+		protected static function initializeStyles():Boolean
+		{
+			var declaration:CSSStyleDeclaration = StyleManager.getStyleDeclaration( "MasterDetail" ) || new CSSStyleDeclaration();
+			
+			declaration.defaultFactory = 
+				function ():void
+				{
+					this.horizontalScrollPolicy = ScrollPolicy.OFF;
+					this.verticalScrollPolicy   = ScrollPolicy.OFF;
+				};
+			
+			StyleManager.setStyleDeclaration( "MasterDetail", declaration, false );
+			
+			return true;
+		}
+		
+
+		
+		private var _percentExpandTo : Number = 0.5;
+		private var _expandTo        : Number = NaN;
+		
 	}
 }
