@@ -3,9 +3,6 @@
 	
 	<!-- Component -->
 	
-		<component id="CheckBoxSet" class="com.codecatalyst.component.CheckBoxSet" />
-		<component id="RadioButtonSet" class="com.codecatalyst.component.RadioButtonSet" />
-	
 		<!-- Behavior -->
 		
 			<!-- UI -->
@@ -46,7 +43,10 @@
 		
 		<!-- Templates -->
 		
+		<component id="CheckGroup" class="com.codecatalyst.component.template.CheckGroup" />
+		<component id="Group" class="com.codecatalyst.component.template.Group" />
 		<component id="MasterDetail" class="com.codecatalyst.component.template.MasterDetail" />
+		<component id="RadioGroup" class="com.codecatalyst.component.template.RadioGroup" />
 	
 	<!-- Factory -->
 	

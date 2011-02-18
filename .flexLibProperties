@@ -6,8 +6,6 @@
     <classEntry path="asset.skin.slider.HandleSkin"/>
     <classEntry path="asset.skin.slider.ThumbSkin"/>
     <classEntry path="com.codecatalyst.component.AbstractFacelessComponent"/>
-    <classEntry path="com.codecatalyst.component.CheckBoxSet"/>
-    <classEntry path="com.codecatalyst.component.RadioButtonSet"/>
     <classEntry path="com.codecatalyst.component.behavior.AbstractBehavior"/>
     <classEntry path="com.codecatalyst.component.behavior.IBehavior"/>
     <classEntry path="com.codecatalyst.component.behavior.ui.Populator"/>
@@ -35,7 +33,10 @@
     <classEntry path="com.codecatalyst.component.renderer.CanvasItemRenderer"/>
     <classEntry path="com.codecatalyst.component.renderer.IContainerItemRenderer"/>
     <classEntry path="com.codecatalyst.component.renderer.IItemRenderer"/>
+    <classEntry path="com.codecatalyst.component.template.CheckGroup"/>
+    <classEntry path="com.codecatalyst.component.template.Group"/>
     <classEntry path="com.codecatalyst.component.template.MasterDetail"/>
+    <classEntry path="com.codecatalyst.component.template.RadioGroup"/>
     <classEntry path="com.codecatalyst.data.DateRange"/>
     <classEntry path="com.codecatalyst.data.NumericRange"/>
     <classEntry path="com.codecatalyst.data.Property"/>
@@ -85,6 +86,10 @@
     <resourceEntry destPath="asset/image/cursor/grabbing.png" sourcePath="asset/image/cursor/grabbing.png"/>
     <resourceEntry destPath="asset/image/cursor/zoom-in.png" sourcePath="asset/image/cursor/zoom-in.png"/>
     <resourceEntry destPath="asset/image/cursor/zoom-out.png" sourcePath="asset/image/cursor/zoom-out.png"/>
+<<<<<<< HEAD
+=======
+    <resourceEntry destPath="com/codecatalyst/component/chart/element/.DS_Store" sourcePath="com/codecatalyst/component/chart/element/.DS_Store"/>
+>>>>>>> 6c1de543b6411ad76a2a96d7023bf5a469f9ec23
     <resourceEntry destPath="mainfest.xml" sourcePath="mainfest.xml"/>
     <resourceEntry destPath="asset/image/cursor/resize-column.png" sourcePath="asset/image/cursor/resize-column.png"/>
     <resourceEntry destPath="asset/skin/slider/grip-pattern.png" sourcePath="asset/skin/slider/grip-pattern.png"/>
