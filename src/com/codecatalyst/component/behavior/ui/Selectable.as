@@ -292,6 +292,8 @@ package com.codecatalyst.component.behavior.ui
 		 */
 		protected function container_childAddHandler( event:ChildExistenceChangedEvent ):void
 		{
+			updateSelection( event.relatedObject );
+			
 			addChangeListener( event.relatedObject, changeEventType );
 		}
 		
