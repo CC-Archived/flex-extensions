@@ -45,7 +45,7 @@ package com.codecatalyst.factory
 		/**
 		 * Constructor.
 		 */
-		public function ClassFactory( generator:Class, parameters:Array = null, properties:Object = null )
+		public function ClassFactory( generator:Class = null, parameters:Array = null, properties:Object = null )
 		{
 			super( generator );
 			
@@ -66,12 +66,9 @@ package com.codecatalyst.factory
 			
 			// Apply properties.
 			
-			if ( properties != null )
+			for ( var property:String in properties )
 			{
-				for ( var property:String in properties )
-				{
-					instance[ property ] = properties[ property ];
-				}
+				instance[ property ] = properties[ property ];
 			}
 			
 			return instance;

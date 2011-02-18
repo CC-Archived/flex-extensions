@@ -44,7 +44,7 @@ package com.codecatalyst.factory
 		/**
 		 * Constructor.
 		 */
-		public function EventDispatcherFactory( generator:Class, parameters:Array = null, properties:Object = null, eventListeners:Object = null )
+		public function EventDispatcherFactory( generator:Class = null, parameters:Array = null, properties:Object = null, eventListeners:Object = null )
 		{
 			super( generator, parameters, properties );
 			

@@ -23,6 +23,7 @@
 package com.codecatalyst.component.chart.element
 {
 	import com.codecatalyst.util.NumberUtil;
+	import com.codecatalyst.util.RectangleUtil;
 	
 	import flash.events.Event;
 	import flash.geom.Point;
@@ -202,10 +203,12 @@ package com.codecatalyst.component.chart.element
 			graphics.clear();
 			
 			var rectangle:Rectangle = createLocalRectangleForDataRegion();
+			var boundaryRectangle:Rectangle = new Rectangle( 0, 0, unscaledWidth, unscaledHeight );
+			var boundedRectangle:Rectangle = rectangle.intersection( boundaryRectangle );
 			
 			stroke.apply( graphics );
-			fill.begin( graphics, rectangle );
-			graphics.drawRect( rectangle.x, rectangle.y, rectangle.width, rectangle.height );
+			fill.begin( graphics, boundedRectangle );
+			graphics.drawRect( boundedRectangle.x, boundedRectangle.y, boundedRectangle.width, boundedRectangle.height );
 			fill.end( graphics );
 		}
 		

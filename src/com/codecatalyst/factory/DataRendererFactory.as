@@ -53,7 +53,7 @@ package com.codecatalyst.factory
 		/**
 		 * Constructor.
 		 */
-		public function DataRendererFactory( generator:Class, parameters:Array = null, properties:Object = null, eventListeners:Object = null, runtimeProperties:Object = null )
+		public function DataRendererFactory( generator:Class = null, parameters:Array = null, properties:Object = null, eventListeners:Object = null, runtimeProperties:Object = null )
 		{
 			super( generator, parameters, properties );
 			
