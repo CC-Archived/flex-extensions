@@ -66,12 +66,9 @@ package com.codecatalyst.factory
 			
 			// Apply properties.
 			
-			if ( properties != null )
+			for ( var property:String in properties )
 			{
-				for ( var property:String in properties )
-				{
-					instance[ property ] = properties[ property ];
-				}
+				instance[ property ] = properties[ property ];
 			}
 			
 			return instance;
