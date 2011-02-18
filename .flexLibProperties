@@ -83,8 +83,8 @@
   </includeClasses>
   <includeResources>
     <resourceEntry destPath="asset/image/cursor/resize-row.png" sourcePath="asset/image/cursor/resize-row.png"/>
-    <resourceEntry destPath="asset/image/cursor/grabbing.png" sourcePath="asset/image/cursor/grabbing.png"/>
     <resourceEntry destPath="asset/image/cursor/zoom-in.png" sourcePath="asset/image/cursor/zoom-in.png"/>
+    <resourceEntry destPath="asset/image/cursor/grabbing.png" sourcePath="asset/image/cursor/grabbing.png"/>
     <resourceEntry destPath="asset/image/cursor/zoom-out.png" sourcePath="asset/image/cursor/zoom-out.png"/>
     <resourceEntry destPath="mainfest.xml" sourcePath="mainfest.xml"/>
     <resourceEntry destPath="asset/image/cursor/resize-column.png" sourcePath="asset/image/cursor/resize-column.png"/>
