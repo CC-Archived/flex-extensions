@@ -86,10 +86,6 @@
     <resourceEntry destPath="asset/image/cursor/grabbing.png" sourcePath="asset/image/cursor/grabbing.png"/>
     <resourceEntry destPath="asset/image/cursor/zoom-in.png" sourcePath="asset/image/cursor/zoom-in.png"/>
     <resourceEntry destPath="asset/image/cursor/zoom-out.png" sourcePath="asset/image/cursor/zoom-out.png"/>
-<<<<<<< HEAD
-=======
-    <resourceEntry destPath="com/codecatalyst/component/chart/element/.DS_Store" sourcePath="com/codecatalyst/component/chart/element/.DS_Store"/>
->>>>>>> 6c1de543b6411ad76a2a96d7023bf5a469f9ec23
     <resourceEntry destPath="mainfest.xml" sourcePath="mainfest.xml"/>
     <resourceEntry destPath="asset/image/cursor/resize-column.png" sourcePath="asset/image/cursor/resize-column.png"/>
     <resourceEntry destPath="asset/skin/slider/grip-pattern.png" sourcePath="asset/skin/slider/grip-pattern.png"/>
