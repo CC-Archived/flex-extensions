@@ -45,10 +45,8 @@
     <classEntry path="com.codecatalyst.data.TimeInterval"/>
     <classEntry path="com.codecatalyst.factory.ClassFactory"/>
     <classEntry path="com.codecatalyst.factory.DataRendererFactory"/>
-    <classEntry path="com.codecatalyst.factory.EventDispatcherFactory"/>
-    <classEntry path="com.codecatalyst.factory.ItemRendererFactory"/>
-    <classEntry path="com.codecatalyst.factory.StyleClientFactory"/>
-    <classEntry path="com.codecatalyst.factory.UIComponentFactory"/>
+    <classEntry path="com.codecatalyst.factory.styleable.StyleableFactory"/>
+    <classEntry path="com.codecatalyst.factory.styleable.StyleableRendererFactory"/>
     <classEntry path="com.codecatalyst.util.ArrayUtil"/>
     <classEntry path="com.codecatalyst.util.BitmapDataUtil"/>
     <classEntry path="com.codecatalyst.util.ClassUtil"/>
@@ -74,6 +72,7 @@
     <classEntry path="com.codecatalyst.util.StatisticUtil"/>
     <classEntry path="com.codecatalyst.util.StringInflectionUtil"/>
     <classEntry path="com.codecatalyst.util.StyleUtil"/>
+    <classEntry path="com.codecatalyst.util.XMLUtil"/>
     <classEntry path="com.codecatalyst.util.invalidation.InvalidationFlags"/>
     <classEntry path="com.codecatalyst.util.invalidation.InvalidationTrackedProperty"/>
     <classEntry path="com.codecatalyst.util.invalidation.InvalidationTracker"/>
@@ -83,15 +82,14 @@
   </includeClasses>
   <includeResources>
     <resourceEntry destPath="asset/image/cursor/resize-row.png" sourcePath="asset/image/cursor/resize-row.png"/>
-    <resourceEntry destPath="asset/image/cursor/zoom-in.png" sourcePath="asset/image/cursor/zoom-in.png"/>
     <resourceEntry destPath="asset/image/cursor/grabbing.png" sourcePath="asset/image/cursor/grabbing.png"/>
+    <resourceEntry destPath="asset/image/cursor/zoom-in.png" sourcePath="asset/image/cursor/zoom-in.png"/>
     <resourceEntry destPath="asset/image/cursor/zoom-out.png" sourcePath="asset/image/cursor/zoom-out.png"/>
-    <resourceEntry destPath="mainfest.xml" sourcePath="mainfest.xml"/>
     <resourceEntry destPath="asset/image/cursor/resize-column.png" sourcePath="asset/image/cursor/resize-column.png"/>
     <resourceEntry destPath="asset/skin/slider/grip-pattern.png" sourcePath="asset/skin/slider/grip-pattern.png"/>
     <resourceEntry destPath="asset/image/cursor/grab.png" sourcePath="asset/image/cursor/grab.png"/>
   </includeResources>
   <namespaceManifests>
-    <namespaceManifestEntry manifest="mainfest.xml" namespace="http://www.codecatalyst.com/2011/flex-extensions"/>
+    <namespaceManifestEntry manifest="manifest.xml" namespace="http://www.codecatalyst.com/2011/flex-extensions"/>
   </namespaceManifests>
 </flexLibProperties>

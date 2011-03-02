@@ -22,11 +22,93 @@
 
 package com.codecatalyst.util
 {
+	import com.codecatalyst.data.Property;
+	
+	import mx.styles.IStyleClient;
+	
 	public class PropertyUtil
 	{
 		// ========================================
 		// Public methods
 		// ========================================
+
+		/**
+		 * Evaluate and apply the specified properties to the specified object instance.
+		 */
+		public static function applyProperties( instance:Object, properties:Object, applyAsStyles:Boolean = false, enableRuntimeEvaluate:Boolean=false ):void
+		{
+			if (properties == null) properties = {};
+			
+			applyAsStyles = applyAsStyles && (instance is IStyleClient);
+
+			for ( var key:String in properties )
+			{
+				var value         : *        = evaluateValueOf( instance, properties[ key ], enableRuntimeEvaluate );
+				var targetProperty: Property = new Property( key );
+				
+				if ( targetProperty.exists( instance ) )
+				{
+					targetProperty.setValue( instance, value );
+				}
+				else 
+				{
+					// If not styleable, then interrupt on the FIRST error
+					
+					if ( applyAsStyles )  IStyleClient(instance).setStyle(key,value);					
+					else				  throw new ReferenceError( "Specified property '"+key+"' does not exist." );					
+				}
+			}
+		}
+		
+		
+		/**
+		 * Evaluate the specified value - which may be a (nested 'dot notation') property path, callback or just a standalone value.
+		 * 
+		 * NOTE: If the key is a Function, then the instance should be an IDataRenderer so the callback
+		 * 		 will evaluate based on the instance data values.
+		 */
+		public static function evaluateValueOf( instance:*, key:*, evaluate:Boolean=false ):*
+		{
+			if ( key is String )
+			{
+				var property : Property = new Property( key as String );
+				
+				return property.exists(instance) ? property.getValue( instance ) : key;
+			}
+			else if ( evaluate && (key is Function) )
+			{
+				// Functions such as labelFunctions are not evaluated. Functions for IDataRenderers [that use
+				// the instance data to determine the result] also should be supported and are 'evaluated' here
+				
+				var callback:Function = key as Function;
+				var data    : Object  = instance.hasOwnProperty("data") ? instance['data'] : null;
+				
+				return data ? callback( data ) : null;
+			}
+			else
+			{
+				return key;
+			}
+		}		
+		
+		// ========================================
+		// Public methods
+		// ========================================
+		
+		public static function setObjectPropertyValue(object:Object, propertyPath:Object, value:*):void 
+		{
+			try
+			{
+				var target  : Object = traversePropertyPath( object, String(propertyPath), true );
+				var segment : Object = propertyPath.split(".").pop();
+				
+				target[segment] = value;
+			}
+			catch ( error:ReferenceError )
+			{
+				// return null;
+			}
+		}
 		
 		/**
 		 * Traverse a 'dot notation' style property path for the specified object instance and return the corresponding value.
@@ -71,15 +153,22 @@ package com.codecatalyst.util
 		/**
 		 * Traverse a 'dot notation' style property path for the specified object instance and return the corresponding value.
 		 */
-		protected static function traversePropertyPath( object:Object, propertyPath:String ):*	
+		protected static function traversePropertyPath( object:Object, propertyPath:String, excludeLastSegment:Boolean = false ):*	
 		{
 			// Split the 'dot notation' path into segments
 			
 			var path:Array = propertyPath.split( "." );
 			
+				// Should we exclude the last property segment
+			    // Note: this effectively gives us the 'owning' instance of the last segment
+			
+			    if (excludeLastSegment == true) {
+					path = path.length > 1 ? path.splice(0, path.length-2) : [ ];
+				}
+			
 			// Traverse the path segments to the matching property value
 			
-			var node:Object = object;
+			var node:* = object;
 			for each ( var segment:String in path )
 			{
 				// Set the new parent for traversal

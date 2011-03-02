@@ -22,11 +22,28 @@
 
 package com.codecatalyst.util
 {
+	import flash.utils.getDefinitionByName;
+	import flash.utils.getQualifiedClassName;
+
 	public class ClassUtil
 	{
 		// ========================================
 		// Public methods
 		// ========================================
+		
+		public static function getClassFor(source:Object):Class {
+			try {
+				var className: String = (source is String) ? source as String 				:
+					                    (source is Object) ? getQualifiedClassName(source) 	: null;
+				
+				return Class( (source as Class) ? source : getDefinitionByName(className) );
+				
+			} catch (e:Error) 	{
+				throw new Error("Class '"+ className + "' definition not available.");
+			}
+			
+			return null;
+		}
 		
 		/**
 		 * Create an instance of the specified Class, using the specified parameters (up to 10 parameters).

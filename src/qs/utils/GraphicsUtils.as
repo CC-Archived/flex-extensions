@@ -110,6 +110,8 @@ package qs.utils
 
 class DashStruct
 {
+	public function DashStruct() {   }
+	
 	public function init():void
 	{
 		drawing = true;

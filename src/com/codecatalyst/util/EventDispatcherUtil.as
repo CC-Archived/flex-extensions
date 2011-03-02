@@ -33,11 +33,16 @@ package com.codecatalyst.util
 		/**
 		 * Applies the specified styles to the specified style client.
 		 */
-		public static function addEventListeners( eventDispatcher:IEventDispatcher, eventListeners:Object, useCapture:Boolean = false, priority:int = 0, useWeakReference:Boolean = true ):void
+		public static function addEventListeners( target:IEventDispatcher, eventListeners:Object, useCapture:Boolean = false, priority:int = 0, useWeakReference:Boolean = true ):void
 		{
-			for ( var eventType:String in eventListeners )
+			if (target == null) return;
+			
+			if (eventListeners != null) 
 			{
-				eventDispatcher.addEventListener( eventType, eventListeners[ eventType ], useCapture, priority, useWeakReference );
+				for ( var eventType:String in eventListeners )
+				{
+					target.addEventListener( eventType, eventListeners[ eventType ], useCapture, priority, useWeakReference );
+				}
 			}
 		}		
 	}

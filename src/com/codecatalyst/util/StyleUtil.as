@@ -26,6 +26,9 @@ package com.codecatalyst.util
 	
 	import mx.styles.IStyleClient;
 	
+	import com.codecatalyst.util.PropertyUtil;
+
+	
 	public class StyleUtil
 	{
 		// ========================================
@@ -35,13 +38,48 @@ package com.codecatalyst.util
 		/**
 		 * Applies the specified styles to the specified style client.
 		 */
-		public static function applyStyles( styleClient:IStyleClient, styles:Object ):void
+		public static function applyStyles( target:IStyleClient, settings:Object, runtimeEvaluate:Boolean=false):IStyleClient
 		{
-			for ( var style:String in styles )
+			settings ||= { };
+			
+			if (target != null) 
 			{
-				styleClient.setStyle( style, styles[ style ] );
+				for ( var style:String in settings )
+				{
+					var value : * = evaluateValueOf( target, settings[ style ], runtimeEvaluate );
+					
+					target.setStyle( style, value );
+				}
 			}
+			
+			return target;
 		}
+		
+		
+		/**
+		 * Evaluate the specified style; which may be based on a custom callback and the  IDataRenderer instance's data.
+		 * 
+		 * NOTE: If the key is a Function, then the instance should be an IDataRenderer so the callback
+		 * 		 will evaluate based on the instance data values.
+		 */
+		public static function evaluateValueOf( instance:*, key:*, evaluate:Boolean=false ):*
+		{
+			if ( evaluate && (key is Function) )
+			{
+				// Functions such as labelFunctions are not evaluated. Functions for IDataRenderers [that use
+				// the instance data to determine the result] also should be supported and are 'evaluated' here
+				
+				var callback:Function = key as Function;
+				var data    : Object  = instance.hasOwnProperty("data") ? instance['data'] : null;
+				
+				return data ? callback( data ) : null;
+			}
+			else
+			{
+				return key;
+			}
+		}		
+
 		
 		/**
 		 * Parses a style value into a Point.

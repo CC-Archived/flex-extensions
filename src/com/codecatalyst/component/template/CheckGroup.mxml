@@ -36,7 +36,7 @@
 			// THE SOFTWARE.	
 			////////////////////////////////////////////////////////////////////////////////
 			
-			import com.codecatalyst.factory.ItemRendererFactory;
+			import com.codecatalyst.factory.styleable.StyleableRendererFactory;
 			
 			import mx.controls.CheckBox;
 			
@@ -50,7 +50,7 @@
 			/**
 			 * Item renderer.
 			 */
-			public var itemRenderer:IFactory = new ItemRendererFactory( CheckBox, null, null, null, null, { label: "data.label" } );
+			public var itemRenderer:IFactory = new StyleableRendererFactory( CheckBox, null, null, null, null, { label: "data.label" } );
 			
 			[Bindable]
 			/**

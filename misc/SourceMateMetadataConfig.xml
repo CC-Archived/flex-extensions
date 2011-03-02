@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <tags>
-<metatag name="Invalidate" description="Tracks changes to the associated property and triggers IInvalidating invalidation phases." classes="false" variables="true" functions="false" getters="true" setters="true" public="true" private="false" protected="false" internal="false" defaultAttribute="phase" onlyDefaultSyntax="true" since="" allowCustomAttributes="false">
-     <attribute name="phase" datatype="3" description="Invalidation phases" required="false"  defaultValue="" choices="displaylist,properties,size," asType="" insertedByProposal="true" validForClasses="true" validForVariables="true" validForFunctions="true" validForGetters="true" validForSetters="true"  />
+<metatag name="Invalidate" description="Marks and tracks property changes to trigger 'IInvalidating' invalidations." classes="false" variables="true" functions="true" getters="true" setters="true" public="true" private="true" protected="true" internal="true" defaultAttribute="phase" onlyDefaultSyntax="true" since="" allowCustomAttributes="false">
+     <attribute name="phase" datatype="3" description="What is invalidated about the component when the property changes?" required="false"  defaultValue="" choices="displaylist,properties,size," asType="" insertedByProposal="false" validForClasses="true" validForVariables="true" validForFunctions="true" validForGetters="true" validForSetters="true"  />
 </metatag>
 </tags>

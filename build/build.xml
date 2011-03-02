@@ -1,0 +1,138 @@
+<!--
+   Suggested Usage:
+      ant -v clean package
+   
+   The goal of this build is compile the library SWC, generate FlexPMD reports, generate ASDocs, and 
+   bundle a binary distribution.
+-->
+<project name="flex-extensions" basedir="../" default="compile">
+
+	<property environment="env" />
+	
+	<!-- Build & Version config -->
+	
+	<property file="${basedir}/build/build.properties" />
+	
+	<!-- SDK config -->
+	<property name="FLEX_HOME" location="${env.FLEX_HOME}" />
+	<taskdef resource="flexTasks.tasks" classpath="${FLEX_HOME}/ant/lib/flexTasks.jar" />
+
+	<fail unless="FLEX_HOME" message="FLEX_HOME needs to be defined as an environment variable or in the Ant build." />
+
+	<!-- ============================== -->
+	<!--  Clean and Init Targets -->
+	<!-- ============================== -->
+	
+	<target name="clean" description="Removes artifacts from previous builds">
+		<delete includeemptydirs="true" failonerror="false">
+			<fileset dir="${bin.loc}" defaultexcludes="false">
+				<include name="**/*" />
+			</fileset>
+			<fileset dir="${docs.loc}" defaultexcludes="false">
+				<include name="**/*" />
+			</fileset>
+			<fileset dir="${dist.loc}" defaultexcludes="false">
+				<include name="**/*" />
+			</fileset>
+		</delete>
+	</target>	
+
+	<target name="init">
+		<echo message="Building ${lib.name}"/>
+
+		<mkdir dir="${dist.loc}" />
+		<mkdir dir="${bin.loc}" />
+		<mkdir dir="${doc.loc}" />
+	</target>
+
+	<target name="compile" depends="clean, init">
+	
+		<echo message="FLEX_HOME is set to: ${FLEX_HOME}"/>
+		
+		<!-- set up list of classes to include in library -->
+		<fileset id="src.include.fileset" dir="${src.loc}">
+			<include name="**/*.as" />
+			<include name="**/*.mxml" />
+		</fileset>
+		<property name="src.include.fileset" refid="src.include.fileset" />
+
+        <!-- Convert the test files into a compiler friendly format. -->
+    		<pathconvert property="src.include.classes" pathsep=" " refid="src.include.fileset">
+    		        <compositemapper>
+    		                <chainedmapper>
+    		                        <globmapper from="${src.loc}/*" to="*" handledirsep="true" />
+    		                        <mapper type="package" from="*.as" to="*" />
+    		                </chainedmapper>
+    		        </compositemapper>
+    		</pathconvert>
+    		
+    		
+		<compc output="${bin.loc}/${lib.name}.swc" include-classes="${src.include.classes}" debug="false">
+			  <source-path path-element="${src.loc}" />
+			
+			  <namespace uri="${lib.namespace}" manifest="${src.loc}/manifest.xml" />
+			  <include-namespaces uri="${lib.namespace}" />
+			
+			  <!-- Configure the flex framework libraries as external link dependencies -->
+  			<external-library-path dir="${FLEX_HOME}/frameworks" append="true">
+  				<include name="libs" />
+  				<include name="locale/{locale}" />  				
+  			</external-library-path>
+
+			  <!-- Configure the 3rd-party libraries as external link dependencies -->
+  			<external-library-path dir="${basedir}" append="true" >
+  				<include name="lib" />
+  			</external-library-path>
+  			
+  			<keep-as3-metadata name="Invalidate"/>
+
+  			<!-- Sets java.awt.headless=true so font compilation works in headless environments -->
+  			<headless-server>true</headless-server>
+		</compc>
+		
+		<echo message="${lib.name}.swc has been created in ${bin.loc}" />
+		
+	</target>
+
+
+	<target name="report" depends="clean">
+
+		<!-- Generate asdocs -->
+		
+		<echo message="src.loc = ${src.loc}"/>
+		<echo message="doc.loc = ${doc.loc}"/>
+		
+		<java jar="${asdoc.sdk.loc}/lib/asdoc.jar" dir="${asdoc.sdk.loc}/frameworks" fork="true" failonerror="true">
+			<arg line="-doc-sources ${src.loc}"/>
+			
+			<arg line="-namespace ${lib.namespace} ${src.loc}/manifest.xml " />
+			<arg line="-doc-namespaces ${lib.namespace}" />
+			
+			<arg line="-source-path ${src.loc}"/>
+			<arg line="-output ${doc.loc}"/>
+			<arg line="-window-title 'Flex Extensions ${lib.version}'"/>
+		</java>
+		
+	</target>
+
+	<target name="package" depends="report">
+	
+		<!-- Create distribution for binaries with docs -->
+		<!-- package flex bits -->
+		<zip destfile="${dist.loc}/${build.flexName}.zip">
+			<zipfileset dir="${doc.loc}" prefix="${build.flexName}/docs" />
+			<zipfileset dir="${bin.loc}" prefix="${build.flexName}">
+				<include name="${build.flexName}.swc" />
+			</zipfileset>
+		</zip>
+		
+		<!-- package as3 bits -->
+		<zip destfile="${dist.loc}/${build.as3Name}.zip">
+			<zipfileset dir="${doc.loc}" prefix="${build.as3Name}/docs" />
+			<zipfileset dir="${bin.loc}" prefix="${build.as3Name}">
+				<include name="${build.as3Name}.swc" />
+			</zipfileset>
+		</zip>
+		
+	</target>
+</project>
