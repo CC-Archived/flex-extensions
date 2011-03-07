@@ -22,6 +22,8 @@
 
 package com.codecatalyst.component.chart.control
 {
+	import com.codecatalyst.util.StyleUtil;
+	
 	import flash.events.MouseEvent;
 	import flash.geom.Point;
 	
@@ -61,7 +63,7 @@ package com.codecatalyst.component.chart.control
 		
 		protected static function initializeStyles():Boolean
 		{
-			var declaration:CSSStyleDeclaration = StyleManager.getStyleDeclaration( "ChartZoomOutControl" ) || new CSSStyleDeclaration();
+			var declaration:CSSStyleDeclaration = StyleUtil.getStyleDeclaration( "ChartZoomOutControl" );
 			
 			declaration.defaultFactory = 
 				function ():void
@@ -72,7 +74,7 @@ package com.codecatalyst.component.chart.control
 					this.rollOverCursorOffset 	= DEFAULT_ZOOM_OUT_CURSOR_OFFSET;
 				};
 			
-			StyleManager.setStyleDeclaration( "ChartZoomOutControl", declaration, false );
+			StyleUtil..setStyleDeclaration( "ChartZoomOutControl", declaration, false );
 			
 			return true;
 		}

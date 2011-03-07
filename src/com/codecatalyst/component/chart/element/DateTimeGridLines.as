@@ -178,7 +178,9 @@ package com.codecatalyst.component.chart.element
 								{
 									var rectangle:Rectangle = calculateGridLineRectangleForDate( date, gridLineSet.interval );
 									
-									fill.begin( graphics, rectangle );
+									CONFIG::FLEX3 {	fill.begin( graphics, rectangle );				}
+									CONFIG::FLEX4 {	fill.begin( graphics, rectangle, null );		}
+									
 									graphics.drawRect( rectangle.x, rectangle.y, rectangle.width, rectangle.height );
 									fill.end( graphics );
 								}

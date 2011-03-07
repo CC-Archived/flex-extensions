@@ -14,7 +14,7 @@
 	<property file="${basedir}/build/build.properties" />
 	
 	<!-- SDK config -->
-	<property name="FLEX_HOME" location="${env.FLEX_HOME}" />
+	<property name="FLEX_HOME" location="${flex4.sdk.loc}" />
 	<taskdef resource="flexTasks.tasks" classpath="${FLEX_HOME}/ant/lib/flexTasks.jar" />
 
 	<fail unless="FLEX_HOME" message="FLEX_HOME needs to be defined as an environment variable or in the Ant build." />
@@ -68,6 +68,9 @@
     		
     		
 		<compc output="${bin.loc}/${lib.name}.swc" include-classes="${src.include.classes}" debug="false">
+		  	 <define name="CONFIG::FLEX3" value="${define.FLEX3}" />
+		  	 <define name="CONFIG::FLEX4" value="${define.FLEX4}" />
+			
 			  <source-path path-element="${src.loc}" />
 			
 			  <namespace uri="${lib.namespace}" manifest="${src.loc}/manifest.xml" />
@@ -85,6 +88,8 @@
   			</external-library-path>
   			
   			<keep-as3-metadata name="Invalidate"/>
+			
+			
 
   			<!-- Sets java.awt.headless=true so font compilation works in headless environments -->
   			<headless-server>true</headless-server>

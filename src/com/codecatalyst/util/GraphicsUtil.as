@@ -48,7 +48,8 @@ package com.codecatalyst.util
 				if ( coordinates.length == 0 )
 					return;
 
-				stroke.apply( graphics );
+				CONFIG::FLEX3 {	stroke.apply( graphics );				}
+				CONFIG::FLEX4 {	stroke.apply( graphics, null, null );	}
 				
 				var coordinate:Object = coordinates[ 0 ];
 				graphics.moveTo( coordinate.x, coordinate.y );

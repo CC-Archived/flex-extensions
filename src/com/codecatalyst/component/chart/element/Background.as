@@ -81,8 +81,15 @@ package com.codecatalyst.component.chart.element
 			
 			graphics.clear();
 			
-			borderStroke.apply( graphics );
-			backgroundFill.begin( graphics, borderRectangle );
+			CONFIG::FLEX3 {
+				borderStroke.apply( graphics );
+				backgroundFill.begin( graphics, borderRectangle );
+			}
+			CONFIG::FLEX4 {
+				borderStroke.apply( graphics, null, null );
+				backgroundFill.begin( graphics, borderRectangle, null );
+			}
+			
 			graphics.drawRect( borderRectangle.x, borderRectangle.y, borderRectangle.width, borderRectangle.height );
 			backgroundFill.end( graphics );
 		}

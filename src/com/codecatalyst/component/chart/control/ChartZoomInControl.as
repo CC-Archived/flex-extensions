@@ -23,6 +23,7 @@
 package com.codecatalyst.component.chart.control
 {
 	import com.codecatalyst.util.RectangleUtil;
+	import com.codecatalyst.util.StyleUtil;
 	
 	import flash.events.MouseEvent;
 	import flash.geom.Point;
@@ -83,7 +84,7 @@ package com.codecatalyst.component.chart.control
 		
 		protected static function initializeStyles():Boolean
 		{
-			var declaration:CSSStyleDeclaration = StyleManager.getStyleDeclaration( "ChartZoomInControl" ) || new CSSStyleDeclaration();
+			var declaration:CSSStyleDeclaration = StyleUtil.getStyleDeclaration( "ChartZoomInControl" ) || new CSSStyleDeclaration();
 			
 			declaration.defaultFactory = 
 				function ():void
@@ -94,7 +95,7 @@ package com.codecatalyst.component.chart.control
 					this.rollOverCursorOffset 	= DEFAULT_ZOOM_IN_CURSOR_OFFSET;
 				};
 			
-			StyleManager.setStyleDeclaration( "ChartZoomInControl", declaration, false );
+			StyleUtil.setStyleDeclaration( "ChartZoomInControl", declaration, false );
 			
 			return true;
 		}
@@ -162,8 +163,15 @@ package com.codecatalyst.component.chart.control
 				
 				var rectangle:Rectangle = calculateCurrentZoomRectangle();
 				
-				stroke.apply( graphics );
-				fill.begin( graphics, rectangle );
+				CONFIG::FLEX3 {
+					stroke.apply( graphics );
+					fill.begin( graphics, rectangle );
+				}
+				CONFIG::FLEX4 {
+					stroke.apply( graphics, null, null );
+					fill.begin( graphics, rectangle, null );
+				}
+				
 				graphics.drawRect( rectangle.x, rectangle.y, rectangle.width, rectangle.height );
 				fill.end( graphics );
 			}

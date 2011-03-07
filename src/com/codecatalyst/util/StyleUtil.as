@@ -22,15 +22,43 @@
 
 package com.codecatalyst.util
 {
+	import com.codecatalyst.util.PropertyUtil;
+	
 	import flash.geom.Point;
 	
+	import mx.core.IFlexModuleFactory;
+	import mx.styles.CSSStyleDeclaration;
 	import mx.styles.IStyleClient;
-	
-	import com.codecatalyst.util.PropertyUtil;
+	import mx.styles.StyleManager;
 
 	
 	public class StyleUtil
 	{
+		
+		public static function getStyleDeclaration(style:String, module:IFlexModuleFactory=null) : CSSStyleDeclaration {
+			var result : CSSStyleDeclaration = null;
+			
+			CONFIG::FLEX3 {
+				result = StyleManager.getStyleDeclaration( style ); 
+			}
+			CONFIG::FLEX4 {
+				result = StyleManager.getStyleManager(module).getStyleDeclaration( style );
+			}
+			
+			return result || new CSSStyleDeclaration(); 
+		}
+		
+		
+		public static function setStyleDeclaration(style:String, declaration:CSSStyleDeclaration, update:Boolean=false, module:IFlexModuleFactory=null):void {
+			CONFIG::FLEX3 {
+				StyleManager.setStyleDeclaration( style, declaration, update ); 
+			}
+			CONFIG::FLEX4 {
+				StyleManager.getStyleManager(module).setStyleDeclaration( style, declaration, update ); 
+			}
+		}
+		
+		
 		// ========================================
 		// Public methods
 		// ========================================

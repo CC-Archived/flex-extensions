@@ -1,6 +1,7 @@
 package com.codecatalyst.component.template
 {
 	import com.codecatalyst.util.NumberUtil;
+	import com.codecatalyst.util.StyleUtil;
 	import com.codecatalyst.util.invalidation.InvalidationTracker;
 	
 	import flash.display.DisplayObject;
@@ -50,7 +51,7 @@ package com.codecatalyst.component.template
 		
 		protected static function initializeStyles():Boolean
 		{
-			var declaration:CSSStyleDeclaration = StyleManager.getStyleDeclaration( "MasterDetail" ) || new CSSStyleDeclaration();
+			var declaration:CSSStyleDeclaration = StyleUtil.getStyleDeclaration( "MasterDetail" ) || new CSSStyleDeclaration();
 			
 			declaration.defaultFactory = 
 				function ():void
@@ -59,7 +60,7 @@ package com.codecatalyst.component.template
 					this.verticalScrollPolicy   = ScrollPolicy.OFF;
 				};
 			
-			StyleManager.setStyleDeclaration( "MasterDetail", declaration, false );
+			StyleUtil.setStyleDeclaration( "MasterDetail", declaration, false );
 			
 			return true;
 		}

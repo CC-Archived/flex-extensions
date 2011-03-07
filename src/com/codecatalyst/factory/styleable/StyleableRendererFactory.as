@@ -54,7 +54,7 @@ package com.codecatalyst.factory.styleable
 	 * 		  
 	 * 			<!-- Notice, here we do not use the  Component wrapper "trick" -->
 	 * 
-	 *		  <fe:DataRendererFactory
+	 *		  <fe:StyleableRendererFactory
 	 * 				generator="{ USFlagSprite }"
 	 * 				properties="{ { 
 	 * 								horizontalCenter	: 0, 					// This is a style
@@ -76,6 +76,9 @@ package com.codecatalyst.factory.styleable
 	 * 													return data ? "Resident of " + data.state : "";
 	 * 												 }
  	 * 								   } }" 
+	 * 				runtimeStyles="{ {  
+	 * 									
+	 * 								} }"
 	 * 				xmlns:fe="http://www.codecatalyst.com/2011/flex-extensions" />
 	 *		</mx:itemRenderer>
 	 * 

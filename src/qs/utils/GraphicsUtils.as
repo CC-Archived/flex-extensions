@@ -65,8 +65,10 @@ package qs.utils
 				
 				if (styleInited == false)
 				{
-					if (bDrawing)
-						stroke.apply(target);
+					if (bDrawing) {
+						CONFIG::FLEX3 {	stroke.apply( target );				}
+						CONFIG::FLEX4 {	stroke.apply( target, null, null );	}
+					}
 					else
 						target.lineStyle(0, 0, 0);
 				}

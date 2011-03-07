@@ -206,8 +206,15 @@ package com.codecatalyst.component.chart.element
 			var boundaryRectangle:Rectangle = new Rectangle( 0, 0, unscaledWidth, unscaledHeight );
 			var boundedRectangle:Rectangle = rectangle.intersection( boundaryRectangle );
 			
-			stroke.apply( graphics );
-			fill.begin( graphics, boundedRectangle );
+			CONFIG::FLEX3 {
+				stroke.apply( graphics );
+				fill.begin( graphics, boundedRectangle );
+			}
+			CONFIG::FLEX4 {
+				stroke.apply( graphics, null, null );
+				fill.begin( graphics, boundedRectangle, null );
+			}
+			
 			graphics.drawRect( boundedRectangle.x, boundedRectangle.y, boundedRectangle.width, boundedRectangle.height );
 			fill.end( graphics );
 		}

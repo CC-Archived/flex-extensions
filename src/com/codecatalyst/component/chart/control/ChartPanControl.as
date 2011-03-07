@@ -22,6 +22,8 @@
 
 package com.codecatalyst.component.chart.control
 {
+	import com.codecatalyst.util.StyleUtil;
+	
 	import flash.events.MouseEvent;
 	import flash.geom.Point;
 	
@@ -72,7 +74,7 @@ package com.codecatalyst.component.chart.control
 		
 		protected static function initializeStyles():Boolean
 		{
-			var declaration:CSSStyleDeclaration = StyleManager.getStyleDeclaration( "ChartPanControl" ) || new CSSStyleDeclaration();
+			var declaration:CSSStyleDeclaration = StyleUtil.getStyleDeclaration( "ChartPanControl" ) || new CSSStyleDeclaration();
 			
 			declaration.defaultFactory = 
 				function ():void
@@ -83,7 +85,7 @@ package com.codecatalyst.component.chart.control
 					this.rollOverCursorOffset   = DEFAULT_PAN_CURSOR_OFFSET;
 				};
 			
-			StyleManager.setStyleDeclaration( "ChartPanControl", declaration, false );
+			StyleUtil.setStyleDeclaration( "ChartPanControl", declaration, false );
 			
 			return true;
 		}

@@ -27,12 +27,13 @@ package com.codecatalyst.component.date
 	import asset.skin.slider.ThumbSkin;
 	
 	import com.codecatalyst.data.DateRange;
+	import com.codecatalyst.factory.ClassFactory;
 	import com.codecatalyst.util.ArrayUtil;
 	import com.codecatalyst.util.BitmapDataUtil;
-	import com.codecatalyst.factory.ClassFactory;
 	import com.codecatalyst.util.FactoryPool;
 	import com.codecatalyst.util.RectangleUtil;
 	import com.codecatalyst.util.SkinUtil;
+	import com.codecatalyst.util.StyleUtil;
 	
 	import flash.display.BitmapData;
 	import flash.display.DisplayObject;
@@ -197,7 +198,7 @@ package com.codecatalyst.component.date
 		
 		protected static function initializeStyles():Boolean
 		{
-			var declaration:CSSStyleDeclaration = StyleManager.getStyleDeclaration( "DateRangeSlider" ) || new CSSStyleDeclaration();
+			var declaration:CSSStyleDeclaration = StyleUtil.getStyleDeclaration( "DateRangeSlider" ) || new CSSStyleDeclaration();
 			
 			declaration.defaultFactory = 
 				function ():void
@@ -219,7 +220,7 @@ package com.codecatalyst.component.date
 					this.resizeMouseUpCursorOffset          = DEFAULT_RESIZE_CURSOR_OFFSET;
 				};
 					
-			StyleManager.setStyleDeclaration( "DateRangeSlider", declaration, false );
+			StyleUtil.setStyleDeclaration( "DateRangeSlider", declaration, false );
 			
 			return true;
 		}
