@@ -168,8 +168,8 @@ package com.codecatalyst.factory.styleable
 		 */
 		protected function renderer_dataChangeHandler( event:FlexEvent ):void
 		{
-			PropertyUtil.applyProperties( event.target, runtimeProperties, true, true );
-			StyleUtil.applyStyles(event.target as IStyleClient, runtimeStyles, true);
+			PropertyUtil.applyProperties( event.target, runtimeProperties, true, true, "data" );
+			StyleUtil.applyStyles(event.target as IStyleClient, runtimeStyles, true, "data" );
 		}
 	}
 }
