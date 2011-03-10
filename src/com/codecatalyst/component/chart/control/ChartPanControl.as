@@ -74,7 +74,7 @@ package com.codecatalyst.component.chart.control
 		
 		protected static function initializeStyles():Boolean
 		{
-			var declaration:CSSStyleDeclaration = StyleUtil.getStyleDeclaration( "ChartPanControl" ) || new CSSStyleDeclaration();
+			var declaration:CSSStyleDeclaration = StyleUtil.getStyleDeclaration( "ChartPanControl" );
 			
 			declaration.defaultFactory = 
 				function ():void

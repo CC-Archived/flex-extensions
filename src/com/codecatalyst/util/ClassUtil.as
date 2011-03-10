@@ -31,18 +31,18 @@ package com.codecatalyst.util
 		// Public methods
 		// ========================================
 		
-		public static function getClassFor(source:Object):Class {
-			try {
-				var className: String = (source is String) ? source as String 				:
-					                    (source is Object) ? getQualifiedClassName(source) 	: null;
-				
-				return Class( (source as Class) ? source : getDefinitionByName(className) );
-				
-			} catch (e:Error) 	{
-				throw new Error("Class '"+ className + "' definition not available.");
-			}
+		/**
+		 * Get the corresponding Class for the specified String or Object instance.
+		 */
+		public static function getClassFor( source:* ):Class
+		{
+			if ( source as Class != null )
+				return source as Class;
 			
-			return null;
+			if ( source is String )
+				return getDefinitionByName( source as String ) as Class;
+			
+			return getDefinitionByName( getQualifiedClassName( source ) ) as Class;
 		}
 		
 		/**

@@ -34,8 +34,18 @@ package com.codecatalyst.util
 	
 	public class StyleUtil
 	{
+		// ========================================
+		// Public methods
+		// ========================================
 		
-		public static function getStyleDeclaration(style:String, module:IFlexModuleFactory=null) : CSSStyleDeclaration {
+		/**
+		 * Gets the CSSStyleDeclaration object that stores the rules for the specified CSS selector.
+		 * 
+		 * @see mx.styles.IStyleManager#getStyleDeclaration()
+		 * @see mx.styles.IStyleManager2#getStyleDeclaration()
+		 */
+		public static function getStyleDeclaration( style:String, module:IFlexModuleFactory = null ):CSSStyleDeclaration
+		{
 			var result : CSSStyleDeclaration = null;
 			
 			CONFIG::FLEX3 {
@@ -48,8 +58,14 @@ package com.codecatalyst.util
 			return result || new CSSStyleDeclaration(); 
 		}
 		
-		
-		public static function setStyleDeclaration(style:String, declaration:CSSStyleDeclaration, update:Boolean=false, module:IFlexModuleFactory=null):void {
+		/**
+		 * Sets the CSSStyleDeclaration object that stores the rules for the specified CSS selector.
+		 * 
+		 * @see mx.styles.IStyleManager#setStyleDeclaration()
+		 * @see mx.styles.IStyleManager2#setStyleDeclaration()
+		 */
+		public static function setStyleDeclaration( style:String, declaration:CSSStyleDeclaration, update:Boolean = false, module:IFlexModuleFactory = null ):void
+		{
 			CONFIG::FLEX3 {
 				StyleManager.setStyleDeclaration( style, declaration, update ); 
 			}
@@ -58,56 +74,35 @@ package com.codecatalyst.util
 			}
 		}
 		
-		
-		// ========================================
-		// Public methods
-		// ========================================
-		
 		/**
 		 * Applies the specified styles to the specified style client.
 		 */
-		public static function applyStyles( target:IStyleClient, settings:Object, runtimeEvaluate:Boolean=false):IStyleClient
+		/**
+		 * Apply the specified style key / value pairs to the specified object instance.
+		 * 
+		 * @param instance          Target object instance.
+		 * @param properties        Style key / value pairs.
+		 * @param evaluate          Indicates whether to evaluate the values against the instance.
+		 */
+		public static function applyStyles( styleClient:IStyleClient, styles:Object, evaluate:Boolean = false, callbackField:String = null ):void
 		{
-			settings ||= { };
+			if ( styles == null ) return;
 			
-			if (target != null) 
+			if ( styleClient != null ) 
 			{
-				for ( var style:String in settings )
+				for ( var key:String in styles )
 				{
-					var value : * = evaluateValueOf( target, settings[ style ], runtimeEvaluate );
+					var value:* = styles[ key ];
 					
-					target.setStyle( style, value );
+					if ( evaluate )
+					{
+						value = RuntimeEvaluationUtil.evaluate( styleClient, value, callbackField );
+					}
+					
+					styleClient.setStyle( key, value );
 				}
 			}
-			
-			return target;
 		}
-		
-		
-		/**
-		 * Evaluate the specified style; which may be based on a custom callback and the  IDataRenderer instance's data.
-		 * 
-		 * NOTE: If the key is a Function, then the instance should be an IDataRenderer so the callback
-		 * 		 will evaluate based on the instance data values.
-		 */
-		public static function evaluateValueOf( instance:*, key:*, evaluate:Boolean=false ):*
-		{
-			if ( evaluate && (key is Function) )
-			{
-				// Functions such as labelFunctions are not evaluated. Functions for IDataRenderers [that use
-				// the instance data to determine the result] also should be supported and are 'evaluated' here
-				
-				var callback:Function = key as Function;
-				var data    : Object  = instance.hasOwnProperty("data") ? instance['data'] : null;
-				
-				return data ? callback( data ) : null;
-			}
-			else
-			{
-				return key;
-			}
-		}		
-
 		
 		/**
 		 * Parses a style value into a Point.

@@ -22,76 +22,81 @@
 
 package com.codecatalyst.factory.styleable
 {
-	import com.codecatalyst.data.Property;
-	import com.codecatalyst.util.EventDispatcherUtil;
 	import com.codecatalyst.util.PropertyUtil;
 	import com.codecatalyst.util.StyleUtil;
 	
 	import flash.events.IEventDispatcher;
 	
-	import mx.core.IDataRenderer;
 	import mx.events.FlexEvent;
 	import mx.styles.IStyleClient;
 	
-	
 	/**
-	 * This Factory supports creation of instances ARE IStyleClient instances that will be used as itemRenderers in DataGrids and Lists.
-	 * Both initialization and runtime properties and styles may be specified. Runtime settings may be evaluated and assigned based on "data" 
-	 * values for each instance.
+	 * StyleableRendererFactory is used to generate IDataRenderer instances for use with Lists, Grids and Populators where the developer needs
+	 * to customize settings on each renderer instance based on current values its assigned "data" object.
 	 * 
-	 * @see com.codecatalyst.factory.DataRendererFactory 
+	 * StyleableRendererFactory introduces support for runtime data-driven properties and styles, which update in response to to runtime changes of the backing 'data' object.
 	 * 
-	 * @example
+	 * StyleableRendererFactory is similar to DataRendererFactory, but adds support for styles and runtime styles.
+	 * StyleableRendererFactory extends StyleableFactory, adding support for runtime styles.
 	 * 
+	 * @see com.codecatalyst.factory.DataRendererFactory
+	 * @see com.codecatalyst.factory.StyleableFactory
 	 * 
-	 * <mx:DataGrid width="100%" height="100%" >
-	 *   <mx:DataGridColumn 
-	 *		width="100"
-	 *		headerText="Result"
-	 *		sortable="false">
-	 * 
-	 *		<mx:itemRenderer>
-	 * 		  
-	 * 			<!-- Notice, here we do not use the  Component wrapper "trick" -->
-	 * 
-	 *		  <fe:StyleableRendererFactory
-	 * 				generator="{ USFlagSprite }"
-	 * 				properties="{ { 
-	 * 								horizontalCenter	: 0, 					// This is a style
-	 * 								y 					: this.height/2
-	 * 							} }"
-	 * 				eventListeners="{ { mouseDown : function (e:MouseEvent):void {
-	 * 													var render : USFlagSprite = event.target as USFlagSprit;
-	 * 													    render.alpha = 0.2;
-	 * 												}, 
-	 * 									mouseOver : function (e:MouseEvent):void {
-	 * 													// some other custom code here...
-	 * 													// Notice the "this" is scoped to the DataGrid...
-	 * 												} 
-	 * 								   } }"
-	 * 				runtimeProperties="{ { visible : function (data:Object):Boolean {
-	 * 													return (data && data.citizenship == "USA");
-	 * 												 },
-	 * 									   toolTip : function (data:Object):String {
-	 * 													return data ? "Resident of " + data.state : "";
-	 * 												 }
- 	 * 								   } }" 
-	 * 				runtimeStyles="{ {  
-	 * 									
-	 * 								} }"
-	 * 				xmlns:fe="http://www.codecatalyst.com/2011/flex-extensions" />
-	 *		</mx:itemRenderer>
-	 * 
-	 *	 </mx:DataGridColumn>
-	 * </mx:DataGrid>
+	 * NOTE: Flex has a significant bug that causes it to ignore custom styles for containers renderers in Halo lists (ex. DataGrid, List, etc.).
+	 * Developers are advised to use BoxItemRenderer or CanvasItemRenderer to ensure custom styles are not cleared by the list component.
 	 *  
+	 * @see com.codecatalyst.component.renderer.BoxItemRenderer
+	 * @see com.codecatalyst.component.renderer.CanvasItemRenderer
+ 	 * 
+	 * @example
+	 * <mx:DataGrid width="100%" height="100%" >
+	 *     <mx:DataGridColumn 
+	 *         width="100"
+	 *         headerText="Result"
+	 *         sortable="false">
+	 * 
+	 *         <mx:itemRenderer>
+	 * 
+	 *             <!-- NOTE: Here we use the factory as an alternative to <mx:Component>. -->
+	 * 
+	 *             <fe:StyleableRendererFactory
+	 *                 generator="{ USFlagSprite }"
+	 *                 properties="{ { 
+	 *                                   horizontalCenter: 0, 		// This is a style
+	 *                                   y: this.height/2
+	 * 		    					} }"
+	 *                 eventListeners="{ { 
+	 *                                       mouseDown: function (e:MouseEvent):void {
+	 *                                                      var render:USFlagSprite = event.target as USFlagSprite;
+	 *                                                      render.alpha = 0.2;
+	 *                                       }, 
+	 *                                       mouseOver: function (e:MouseEvent):void {
+	 *                                                      // NOTE: "this" is scoped to the DataGrid, negating the need to reference outerDocument
+	 *                                                      // handler logic goes here...
+	 * 						    						} 
+	 *                                 } }"
+	 *                 runtimeProperties="{ { 
+	 *                                      label: 'data.label',
+	 *                                          visible: function (data:Object):Boolean {
+	 *                                                       return (data && data.citizenship == "USA");
+	 *                                                   },
+	 *                                          toolTip: function (data:Object):String {
+	 *                                                       return data ? "Resident of " + data.state : "";
+	 *                                                   }
+ 	 *                                    } }" 
+	 *                 runtimeStyles="{ {  
+	 * 		    						    backgroundColor: "data.color"	
+	 *                                } }"
+	 *                 xmlns:fe="http://www.codecatalyst.com/2011/flex-extensions" />
+	 * 
+	 *         </mx:itemRenderer>
+	 * 
+	 *     </mx:DataGridColumn>
+	 * </mx:DataGrid>
 	 *  
 	 * @author Thomas Burleson
 	 * @author John Yanarella
-	 * 
-	 * 
 	 */
-	
 	public class StyleableRendererFactory extends StyleableFactory
 	{
 		// ========================================
@@ -99,16 +104,21 @@ package com.codecatalyst.factory.styleable
 		// ========================================
 		
 		/**
-		 * Hashmap of style key / value pairs evaluated and applied to resulting instances during each data change/assignment.
-		 */
-		public var runtimeStyles:Object = null;
-		
-		/**
-		 * Hashmap of property key / value pairs evaluated and applied to resulting instances during each data change/assignment.
+		 * Runtime properties to evaluate and assign to generated instances in response to each <code>data</code> change.
+		 * 
+		 * Hashmap of property key / value pairs.
+		 * 
+		 * NOTE: Property chains are supported via 'dot notation' and resolved for each new instance.
 		 */
 		public var runtimeProperties:Object = null;
 		
-
+		/**
+		 * Runtime styles to evaluate and apply to generated instances in response to each <code>data</code> change.
+		 * 
+		 * Hashmap of style key / value pairs.
+		 */
+		public var runtimeStyles:Object = null;
+		
 		// ========================================
 		// Constructor
 		// ========================================
@@ -116,44 +126,42 @@ package com.codecatalyst.factory.styleable
 		/**
 		 * Constructor.
 		 */
-		public function StyleableRendererFactory(  generator		 :Object = null, 
-												   parameters		 :Array  = null, 
-												   properties		 :Object = null, 
-												   eventListeners	 :Object = null, 
-												   styles			 :Object = null,  
-												   runtimeProperties :Object = null, 
-												   runtimeStyles	 :Object = null )
+		public function StyleableRendererFactory( generator:Object = null, parameters:Array  = null, properties:Object = null, eventListeners:Object = null, styles:Object = null, runtimeProperties:Object = null, runtimeStyles:Object = null )
 		{
 			super( generator, parameters, properties, eventListeners, styles );
 
-			this.runtimeProperties 	= runtimeProperties;
-			this.runtimeStyles 		= runtimeStyles;
+			this.runtimeProperties = runtimeProperties;
+			this.runtimeStyles     = runtimeStyles;
 		}
 		
 		// ========================================
-		// Protected methods
+		// Public methods
 		// ========================================
 		
 		/**
 		 * @inheritDoc
 		 */
-		public override function newInstance():*
+		override public function newInstance():*
 		{
-			// Create instance with applied construction properties and styles and eventlisteners
+			// Create instance (and apply properties and event listeners)
 			
 			var instance:Object = super.newInstance();
 			
 			// Add event listeners (if applicable).
 			
-			if ( instance is IEventDispatcher ) {
-
+			if ( instance is IEventDispatcher )
+			{
 				// Add FlexEvent.DATA_CHANGE handler to apply runtime properties 
 			
-				(instance as IEventDispatcher).addEventListener( FlexEvent.DATA_CHANGE, renderer_dataChangeHandler, false, 0, true );
+				( instance as IEventDispatcher ).addEventListener( FlexEvent.DATA_CHANGE, renderer_dataChangeHandler, false, 0, true );
 			}
 			
 			return instance;
 		}
+
+		// ========================================
+		// Protected methods
+		// ========================================		
 		
 		/**
 		 * Handle FlexEvent.DATA_CHANGE.
@@ -163,6 +171,5 @@ package com.codecatalyst.factory.styleable
 			PropertyUtil.applyProperties( event.target, runtimeProperties, true, true );
 			StyleUtil.applyStyles(event.target as IStyleClient, runtimeStyles, true);
 		}
-		
 	}
 }

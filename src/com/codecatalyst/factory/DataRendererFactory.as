@@ -22,69 +22,65 @@
 
 package com.codecatalyst.factory
 {
-	import com.codecatalyst.data.Property;
-	import com.codecatalyst.util.EventDispatcherUtil;
 	import com.codecatalyst.util.PropertyUtil;
 	
 	import flash.events.IEventDispatcher;
 	
-	import mx.core.IDataRenderer;
 	import mx.events.FlexEvent;
 	
-	
 	/**
-	 * This RendererFactory is used as a generator within Lists, Grids, and Populators where the developer needs to customize settings 
-	 * on each renderer instance based on current values of that instance's assigned "data" object. This means that renderer instances   
-	 * can now easily respond to runtime changes [of the 'data' object values]. 
+	 * DataRendererFactory is used to generate IDataRenderer instances for use with Lists, Grids and Populators where the developer needs
+	 * to customize settings on each renderer instance based on current values its assigned "data" object.
 	 * 
-	 * The DataRendererFactory supports creation of any class instances but will NOT perform any construction or runtime configuration 
-	 * of the "styles" for the instances. In such cases the StyleableRendererFactory should be used.
+	 * DataRendererFactory introduces the support for runtime data-driven properties, which update in response to to runtime changes of the backing 'data' object.
+	 * 
+	 * StyleableRendererFactory extends DataRendererFactory, adding support for styles and runtime styles.
 	 * 
 	 * @see StyleableRendererFactory 
 	 * 
 	 * @example
-	 * 
 	 * <mx:DataGrid width="100%" height="100%" >
-	 *   <mx:DataGridColumn 
-	 *		width="100"
-	 *		headerText="Result"
-	 *		sortable="false">
+	 *     <mx:DataGridColumn 
+	 *         width="100"
+	 *         headerText="Result"
+	 *         sortable="false">
 	 * 
-	 *		<mx:itemRenderer>
+	 *         <mx:itemRenderer>
 	 * 
-	 * 		  <!-- Notice, here we do not use the  Component wrapper "trick" -->
+	 *             <!-- NOTE: Here we use the factory as an alternative to <mx:Component>. -->
 	 * 
-	 *		  <fe:DataRendererFactory
-	 * 				generator="{ USFlagSprite }"
-	 * 				properties="{ { x : this.width/2, 
-	 * 								y : this.height/2 
-	 * 							} }"
-	 * 				eventListeners="{ { mouseDown : function (e:MouseEvent):void {
-	 * 													var render : USFlagSprite = event.target as USFlagSprit;
-	 * 													    render.alpha = 0.2;
-	 * 												}, 
-	 * 									mouseOver : function (e:MouseEvent):void {
-	 * 													// some other custom code here...
-	 * 													// Notice the "this" is scoped to the DataGrid...
-	 * 												} 
-	 * 								   } }"
-	 * 				runtimeProperties="{ { visible : function (data:Object):Boolean {
-	 * 													return (data.citizenship == 'USA');
-	 * 												 } 
- 	 * 								   } }" 
-	 * 				xmlns:fe="http://www.codecatalyst.com/2011/flex-extensions" />
-	 *		</mx:itemRenderer>
+	 *             <fe:DataRendererFactory
+	 *                 generator="{ USFlagSprite }"
+	 *                 properties="{ { 
+	 *                                   x: this.width/2, 
+	 *                                   y: this.height/2 
+	 *                             } }"
+	 *                 eventListeners="{ { 
+	 *                                       mouseDown: function ( event:MouseEvent ):void {
+	 *                                                      var render : USFlagSprite = event.target as USFlagSprite;
+	 *                                                      render.alpha = 0.2;
+	 *                                                  }, 
+	 *                                       mouseOver: function ( event:MouseEvent ):void {
+	 *                                                      // NOTE: "this" is scoped to the DataGrid, negating the need to reference outerDocument
+	 *                                                      // handler logic goes here...
+	 *                                                  } 
+	 *                                 } }"
+	 *                 runtimeProperties="{ {
+	 *                                          label: 'data.label',
+	 *                                          visible: function ( data:Object ):Boolean {
+	 *                                                       return ( data.citizenship == 'USA' );
+	 *                                          } 
+ 	 *                                    } }" 
+	 *                 xmlns:fe="http://www.codecatalyst.com/2011/flex-extensions" />
 	 * 
-	 *	 </mx:DataGridColumn>
+	 *         </mx:itemRenderer>
+	 * 
+	 *     </mx:DataGridColumn>
 	 * </mx:DataGrid>
-	 *  
 	 * 
 	 * @author Thomas Burleson
 	 * @author John Yanarella
-	 * 
-	 * 
 	 */
-	
 	public class DataRendererFactory extends ClassFactory
 	{
 		// ========================================
@@ -92,7 +88,11 @@ package com.codecatalyst.factory
 		// ========================================
 		
 		/**
-		 * Hashmap of property key / value pairs evaluated and applied to resulting instances during each data change/assignment.
+		 * Runtime properties to evaluate and assign to generated instances in response to each <code>data</code> change.
+		 * 
+		 * Hashmap of property key / value pairs.
+		 * 
+		 * NOTE: Property chains are supported via 'dot notation' and resolved for each new instance.
 		 */
 		public var runtimeProperties:Object = null;
 		
@@ -103,11 +103,7 @@ package com.codecatalyst.factory
 		/**
 		 * Constructor.
 		 */
-		public function DataRendererFactory( generator			:Object = null, 
-											 parameters			:Array  = null, 
-											 properties			:Object = null, 
-											 eventListeners		:Object = null, 
-											 runtimeProperties	:Object = null )
+		public function DataRendererFactory( generator:Object = null, parameters:Array  = null, properties:Object = null, eventListeners:Object = null, runtimeProperties:Object = null )
 		{
 			super( generator, parameters, properties, eventListeners );
 			
@@ -121,14 +117,16 @@ package com.codecatalyst.factory
 		/**
 		 * @inheritDoc
 		 */
-		public override function newInstance():*
+		override public function newInstance():*
 		{
-			// Create instance with applied construction properties and eventListeners
+			// Create instance (and apply properties and event listeners)
 			
 			var instance:Object = super.newInstance();
 			
-			if ( instance is IEventDispatcher ) {
-				
+			// Add event listeners (if applicable).
+			
+			if ( instance is IEventDispatcher )
+			{
 				// Add FlexEvent.DATA_CHANGE handler to apply runtime properties 
 				
 				( instance as IEventDispatcher ).addEventListener( FlexEvent.DATA_CHANGE, renderer_dataChangeHandler, false, 0, true );
@@ -146,8 +144,7 @@ package com.codecatalyst.factory
 		 */
 		protected function renderer_dataChangeHandler( event:FlexEvent ):void
 		{
-			PropertyUtil.applyProperties( event.target, runtimeProperties, false, true );
+			PropertyUtil.applyProperties( event.target, runtimeProperties, false, true, "data" );
 		}
-
 	}
 }

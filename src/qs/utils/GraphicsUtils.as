@@ -65,9 +65,14 @@ package qs.utils
 				
 				if (styleInited == false)
 				{
-					if (bDrawing) {
-						CONFIG::FLEX3 {	stroke.apply( target );				}
-						CONFIG::FLEX4 {	stroke.apply( target, null, null );	}
+					if (bDrawing)
+					{
+						CONFIG::FLEX3 {	
+							stroke.apply( target );
+						}
+						CONFIG::FLEX4 {	
+							stroke.apply( target, null, null );
+						}
 					}
 					else
 						target.lineStyle(0, 0, 0);
@@ -112,7 +117,7 @@ package qs.utils
 
 class DashStruct
 {
-	public function DashStruct() {   }
+	public function DashStruct() {}
 	
 	public function init():void
 	{

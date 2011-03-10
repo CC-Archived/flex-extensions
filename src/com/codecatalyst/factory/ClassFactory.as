@@ -31,36 +31,33 @@ package com.codecatalyst.factory
 	import mx.core.IFactory;
 
 	/**
-	 * ClassFactory has significant improvements upon the mx.core.ClassFactory:
+	 * ClassFactory improves significantly upon the mx.core.ClassFactory:
 	 * 
 	 * 	1) The generator specified can be a Class, String, IFactory, or Object instance.
 	 * 	2) Constructor parameters are supported.
-	 * 	3) Initialization properties [key/value pairs] are auto-assigned at each instantiation.
-	 *  4) If the instance is an IEventDispatcher, 1 or more eventHandlers may be auto-attached for specified event types
+	 * 	3) Initialization properties (specified as key/value pairs) are assigned to each instance created by the factory.
+	 *  4) Event listener(s) can be added for specified event types (if the instance created is an IEventDispatcher).
 	 *
-	 * This is the base factory used for instantiations of components where assigning
-	 * styles is not needed. Nor are these instances used as special renderers that require 
-	 * runtime property changes as the IDataRenderer data dynamically changes. 
+	 * This is the base factory used for instantiations of basic Classes. 
 	 * 
-	 * NOTE: This factory can still be used in Grids and Lists, but the runtime changes will not be detected.
+	 * StyleableFactory and StyleableRendererFactory extend ClassFactory, adding support for IStyleClient style initialization.
+	 * DataRendererFactory and StyleableRendererFactory extend ClassFactory, adding support for IDataProvider data-driven runtime properties and styles.
 	 * 
-	 * @see UIComponentFactory
-	 * @see DataRendererFactory
+	 * @see com.codecatalyst.factory.DataRendererFactory
+	 * @see com.codecatalyst.factory.StyleableFactory
+	 * @see com.codecatalyst.factory.StyleableRendererFactory
 	 * 
 	 * @example
 	 * <fe:ClassFactory
-	 * 			id="factory
-	 * 			generator="{ flash.display.Bitmap }"
-	 * 			parameters="{ [null, true]  }"
-	 * 			properties="{ { smoothing:true, filters:[ new DropShadowFilter() ]  } }" 
-	 * 			xmlns:fe="http://www.codecatalyst.com/2011/flex-extensions" />
+	 *     id="factory
+	 *     generator="{ flash.display.Bitmap }"
+	 *     parameters="{ [ null, true ] }"
+	 *     properties="{ { smoothing: true, filters: [ new DropShadowFilter() ] } }" 
+	 *     xmlns:fe="http://www.codecatalyst.com/2011/flex-extensions" />
 	 *  
 	 * @author Thomas Burleson
 	 * @author John Yanarella
-	 * 
-	 * 
 	 */
-	
 	public class ClassFactory implements IFactory
 	{
 		// ========================================
@@ -68,43 +65,67 @@ package com.codecatalyst.factory
 		// ========================================
 		
 		/**
-		 * Parameters supplied to the constructor when generating instances of the generator Class.
+		 * Identifier for this ClassFactory instance; useful when instantiated as an MXML tag. 
 		 */
-		public var parameters		:Array = null;
-		
-
-		/**
-		 * Hashmap of key/values used to initialize a factory instance during 
-		 * construction. 
-		 * NOTE: this map may include "style" keys which will be assigned as styles if possible
-		 */
-		public var properties		:Object = null;
-
-		
+		public var id:String = "";
 		
 		/**
-		 * Event listeners to apply when generating instances of the generator Class.
-		 */
-		public var eventListeners	:Object = null;
-		
-		
-		/**
-		 *  Public setter to dynamically prepare a class instance generator
-		 *  from a variety of source types.
+		 * Constructor parameters to apply to generated instances.
 		 * 
-		 *  @param source   Object which could be a IFactory, Class, or String  
+		 * NOTE: Not supported when <code>generator</code> is an IFactory.
 		 */
-		public function set generator (source:Object) : void {
-			// Save for later
-			_generator = source || Object; 			
-		} 
-
-
+		public var parameters:Array = null;
+		
 		/**
-		 * Identifier for the instance of the Factory; useful when the ClassFactory is instantiated
-		 * as an mxml tag instance. 
+		 * Property values to assign to generated instances.
+		 * 
+		 * Hashmap of property values, keyed by property name.
+		 * 
+		 * NOTE: Property chains are supported via 'dot notation' and resolved for each new instance.
+		 * NOTE: Property values are only assigned when the class is generated.
 		 */
-		public var id : String = "";
+		public var properties:Object = null;
+		
+		/**
+		 * Event listener to add to generated instances.
+		 * 
+		 * Hashmap of Event listener functions, keyed by Event type.
+		 */
+		public var eventListeners:Object = null;
+		
+		/**
+		 * IFactory, Class or String used to generate instances.
+		 */
+		public function get generator():*
+		{
+			return _generator;
+		}
+		
+		public function set generator( value:* ):void
+		{
+			_generator = value;
+			
+			if ( ! ( value is IFactory ) && ! ( value is Class ) )
+				generatorClass = ClassUtil.getClassFor( value );
+		}
+		
+		// ========================================
+		// Protected properties
+		// ========================================
+		
+		/**
+		 * Backing variable for <code>generator</code> property.
+		 * 
+		 * @see #generator
+		 */
+		protected var _generator:* = null;
+		
+		/**
+		 * Cached generator Class - used to avoid redundant Class definition lookups.
+		 * 
+		 * @see #generator
+		 */
+		protected var generatorClass:Class = null;
 		
 		// ========================================
 		// Constructor
@@ -113,14 +134,11 @@ package com.codecatalyst.factory
 		/**
 		 * Constructor.
 		 */
-		public function ClassFactory( generator			:Object = null, 
-									  parameters		:Array  = null, 
-									  properties		:Object = null, 
-									  eventListeners	:Object = null )
+		public function ClassFactory( generator:Object = null, parameters:Array  = null, properties:Object = null, eventListeners:Object = null )
 		{
-			this.generator  	= generator;	
-			this.parameters 	= parameters;
-			this.properties 	= properties;
+			this.generator      = generator;	
+			this.parameters     = parameters;
+			this.properties     = properties;
 			this.eventListeners	= eventListeners;
 		}
 		
@@ -133,79 +151,40 @@ package com.codecatalyst.factory
 		 */
 		public function newInstance():*
 		{
-			var instance:Object =	generatorFactory  					? 
-									generatorFactory.newInstance()		: 
-									ClassUtil.createInstance( generatorClazz , parameters );
+			var instance:Object = ( generator is IFactory ) ? generator.newInstance() : ClassUtil.createInstance( generatorClass, parameters );
 			
+			// Iterate and assign each property key / value pair.
 			
-			// Iterate each property pair and assign; not propertychains are supported and
-			// resolved for each new instance
+			applyProperties( instance );
 			
-			applyProperties(instance);
+			// Add event listeners (if any handlers are configured AND the instance is an IEventDispatcher)
 			
-			// Add event listeners [if any handlers are configured AND the instance is an IEventDispatcher]
-			
-			EventDispatcherUtil.addEventListeners( (instance as IEventDispatcher) , eventListeners, false, 0, true );
+			EventDispatcherUtil.addEventListeners( ( instance as IEventDispatcher ), eventListeners, false, 0, true );
 			
 			return instance;
 		}
 		
+		// ========================================
+		// Protected methods
+		// ========================================
 		
 		/**
-		 * Apply the static property values to the new instance; called 'static' since only applied at construction
-		 *  
-		 * @param instance 	New object instance from the IFactory::newInstance() request
-		 * @return Object 	instance initialized with "property" values;
+		 * Apply <code>properties</code> to the new instance.
 		 * 
+		 * @param instance Target object instance
+		 * 
+		 * @see #properties
 		 */
-		protected function applyProperties(instance:Object):* {
+		protected function applyProperties( instance:Object ):void
+		{
 			try 
 			{
-				// Iterate each property pair and assign 
-				// 
-				
-				PropertyUtil.applyProperties(instance, properties);
+				PropertyUtil.applyProperties( instance, properties );
 			} 
 			catch ( error:ReferenceError ) 
 			{
-				trace(error.message);	
-			}
-			
-			
-			return instance;			
+				trace( error.message );	
+			}		
 		}
-		
-		
-		protected function get generatorFactory():IFactory {
-			return _generator as IFactory;
-		}
-		
-		/**
-		 * Method to determine Class from string or object instance type.
-		 * For optimization will cache the Class reference for multiple uses
-		 * in newInstance();
-		 * 
-		 * @return Class 
-		 */
-		protected function get generatorClazz():Class {
-			var results : Class = _generator as Class;
-			
-			if (!results && !(_generator is IFactory)) {
-				
-				// If the original generator is a String or Object instance
-				// we overwrite with its Class reference.
-				
-				_generator = ClassUtil.getClassFor( _generator ); 
-			}
-			
-			return results;
-		}
-		
-		/**
-		 * A Class that will be used as a template to create instances upon demand. If the generator type is a 
-		 * String or object instance then Class is dynamically determined.  
-		 */
-		protected var _generator : * = null;
-
 	}
 }

@@ -22,46 +22,53 @@
 
 package com.codecatalyst.util
 {
-	import flash.display.Graphics;
-	
-	import mx.graphics.IStroke;
-	
-	import qs.utils.GraphicsUtils;
+	import com.codecatalyst.data.Property;
 
-	public class GraphicsUtil
+	public class RuntimeEvaluationUtil
 	{
 		// ========================================
 		// Public methods
 		// ========================================
 		
 		/**
-		 * Draw lines connecting the specified iterable set (Array, IList, etc.) of coordinates (Point, etc.) with the specified stroke and dash pattern (optional).
+		 * Evaluates the specified value against the specified object instance.
+		 * 
+		 * If the specified value is a String, it is evaluated as a potential property path in 'dot notation' and the corresponding instance value is returned.
+		 * If the specified value is a Function, it is called with the object instance (or evaluated callback field) as a parameter and its result is returned.
+		 * Otherwise the value is returned unaltered.
+		 * 
+		 * @param instance  Target object instance.
+		 * @param value     String - potentially specifying a property path in 'dot notation', Function callback or standalone value.
+		 * @param callbackField Optional field to evaluate and pass to the callback function.
+		 * 
+		 * @return The evaluated value.
 		 */
-		public static function drawPolyLine( graphics:Graphics, coordinates:*, stroke:IStroke, pattern:Array = null ):void
+		public static function evaluate( instance:*, value:*, callbackField:String = null ):*
 		{
-			if ( pattern != null )
+			if ( value is String )
 			{
-				GraphicsUtils.drawDashedPolyLine( graphics, stroke, pattern, coordinates );
+				var property:Property = new Property( value as String );
+				
+				return property.exists( instance ) ? property.getValue( instance ) : value;
+			}
+			else if ( value is Function )
+			{
+				var callback:Function = value as Function;
+				
+				if ( callbackField )
+				{
+					var callbackProperty:Property = new Property( callbackField );
+					
+					return callback( callbackProperty.getValue( instance ) );
+				}
+				else
+				{
+					return callback( instance );
+				}
 			}
 			else
 			{
-				if ( coordinates.length == 0 )
-					return;
-
-				CONFIG::FLEX3 {
-					stroke.apply( graphics );
-				}
-				CONFIG::FLEX4 {
-					stroke.apply( graphics, null, null );
-				}
-				
-				var coordinate:Object = coordinates[ 0 ];
-				graphics.moveTo( coordinate.x, coordinate.y );
-				for ( var coordinateIndex:int = 1; coordinateIndex < coordinates.length; coordinateIndex++ )
-				{
-					coordinate = coordinates[ coordinateIndex ];
-					graphics.lineTo( coordinate.x, coordinate.y );
-				}	
+				return value;
 			}
 		}
 	}

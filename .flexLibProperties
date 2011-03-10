@@ -63,10 +63,12 @@
     <classEntry path="com.codecatalyst.util.ImageUtil"/>
     <classEntry path="com.codecatalyst.util.IterableUtil"/>
     <classEntry path="com.codecatalyst.util.LogicUtil"/>
+    <classEntry path="com.codecatalyst.util.MetadataUtil"/>
     <classEntry path="com.codecatalyst.util.NumberUtil"/>
     <classEntry path="com.codecatalyst.util.PropertyUtil"/>
     <classEntry path="com.codecatalyst.util.RandomUtil"/>
     <classEntry path="com.codecatalyst.util.RectangleUtil"/>
+    <classEntry path="com.codecatalyst.util.RuntimeEvaluationUtil"/>
     <classEntry path="com.codecatalyst.util.SampleSetUtil"/>
     <classEntry path="com.codecatalyst.util.SkinUtil"/>
     <classEntry path="com.codecatalyst.util.StatisticUtil"/>

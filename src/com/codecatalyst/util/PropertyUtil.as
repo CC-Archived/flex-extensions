@@ -33,80 +33,44 @@ package com.codecatalyst.util
 		// ========================================
 
 		/**
-		 * Evaluate and apply the specified properties to the specified object instance.
+		 * Apply the specified property key / value pairs to the specified object instance.
+		 * 
+		 * @param instance          Target object instance.
+		 * @param properties        Property key / value pairs.
+		 * @param fallbackToStyles  Indicates whether to fallback to setting styles when the specified property key does not exist.
+		 * @param evaluate          Indicates whether to evaluate the values against the instance.
 		 */
-		public static function applyProperties( instance:Object, properties:Object, applyAsStyles:Boolean = false, enableRuntimeEvaluate:Boolean=false ):void
+		public static function applyProperties( instance:Object, properties:Object, fallbackToStyles:Boolean = false, evaluate:Boolean = false, callbackField:String = null ):void
 		{
-			if (properties == null) properties = {};
+			if ( properties == null ) return;
 			
-			applyAsStyles = applyAsStyles && (instance is IStyleClient);
+			fallbackToStyles = fallbackToStyles && ( instance is IStyleClient );
 
 			for ( var key:String in properties )
 			{
-				var value         : *        = evaluateValueOf( instance, properties[ key ], enableRuntimeEvaluate );
-				var targetProperty: Property = new Property( key );
+				var value:* = properties[ key ];
+
+				if ( evaluate )
+				{
+					value = RuntimeEvaluationUtil.evaluate( instance, value, callbackField );
+				}
 				
+				var targetProperty:Property = new Property( key );
 				if ( targetProperty.exists( instance ) )
 				{
 					targetProperty.setValue( instance, value );
 				}
 				else 
 				{
-					// If not styleable, then interrupt on the FIRST error
-					
-					if ( applyAsStyles )  IStyleClient(instance).setStyle(key,value);					
-					else				  throw new ReferenceError( "Specified property '"+key+"' does not exist." );					
+					if ( fallbackToStyles )
+					{
+						( instance as IStyleClient ).setStyle( key, value );					
+					}
+					else 
+					{
+						throw new ReferenceError( "Specified property '" + key + "' does not exist." );
+					}
 				}
-			}
-		}
-		
-		
-		/**
-		 * Evaluate the specified value - which may be a (nested 'dot notation') property path, callback or just a standalone value.
-		 * 
-		 * NOTE: If the key is a Function, then the instance should be an IDataRenderer so the callback
-		 * 		 will evaluate based on the instance data values.
-		 */
-		public static function evaluateValueOf( instance:*, key:*, evaluate:Boolean=false ):*
-		{
-			if ( key is String )
-			{
-				var property : Property = new Property( key as String );
-				
-				return property.exists(instance) ? property.getValue( instance ) : key;
-			}
-			else if ( evaluate && (key is Function) )
-			{
-				// Functions such as labelFunctions are not evaluated. Functions for IDataRenderers [that use
-				// the instance data to determine the result] also should be supported and are 'evaluated' here
-				
-				var callback:Function = key as Function;
-				var data    : Object  = instance.hasOwnProperty("data") ? instance['data'] : null;
-				
-				return data ? callback( data ) : null;
-			}
-			else
-			{
-				return key;
-			}
-		}		
-		
-		// ========================================
-		// Public methods
-		// ========================================
-		
-		public static function setObjectPropertyValue(object:Object, propertyPath:Object, value:*):void 
-		{
-			try
-			{
-				var target  : Object = traversePropertyPath( object, String(propertyPath), true );
-				var segment : Object = propertyPath.split(".").pop();
-				
-				target[segment] = value;
-			}
-			catch ( error:ReferenceError )
-			{
-				// return null;
 			}
 		}
 		
@@ -147,24 +111,17 @@ package com.codecatalyst.util
 		}
 		
 		// ========================================
-		// Public methods
+		// Protected methods
 		// ========================================
 		
 		/**
 		 * Traverse a 'dot notation' style property path for the specified object instance and return the corresponding value.
 		 */
-		protected static function traversePropertyPath( object:Object, propertyPath:String, excludeLastSegment:Boolean = false ):*	
+		protected static function traversePropertyPath( object:Object, propertyPath:String ):*	
 		{
 			// Split the 'dot notation' path into segments
 			
 			var path:Array = propertyPath.split( "." );
-			
-				// Should we exclude the last property segment
-			    // Note: this effectively gives us the 'owning' instance of the last segment
-			
-			    if (excludeLastSegment == true) {
-					path = path.length > 1 ? path.splice(0, path.length-2) : [ ];
-				}
 			
 			// Traverse the path segments to the matching property value
 			

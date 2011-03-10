@@ -22,6 +22,8 @@
 
 package com.codecatalyst.util.invalidation
 {
+	import com.codecatalyst.util.MetadataUtil;
+	
 	import flash.events.IEventDispatcher;
 	import flash.utils.Dictionary;
 	
@@ -33,7 +35,6 @@ package com.codecatalyst.util.invalidation
 	 * Implements support for [Invalidate("displaylist,properties,size")] metadata on [Bindable] 
 	 * public properties as an alternative to the common pattern of writing custom get / set method pairs 
 	 * w/ backing variable and changed flags.
-	 * 
 	 */
 	public class InvalidationTracker
 	{
@@ -197,41 +198,27 @@ package com.codecatalyst.util.invalidation
 		 */
 		protected function processInvalidateAnnotations():void
 		{
-			var description	:XML 	 = DescribeTypeCache.describeType( source ).typeDescription;
-			var list		:XMLList = description..metadata.(@name == 'Invalidate');
+			var description:XML = DescribeTypeCache.describeType( source ).typeDescription;
 			
-				/**
-				 *  Get the phase values for the metadata. The key may be either "phase" or blank (e.g. '')
-				 */
-				function getTagValue(metadata:XML):String {
-					var list 	: XMLList = metadata.arg.(@key == "phase" || @key == "");
-					var result 	: String  = (list && list.length()) ? String(list[0].@value) : "";
-					
-					// If not specified then invalidate ALL phases
-					// WARNING: obviously such a fallback works but is not an optimum setting.
-					
-					return (result == "") ? "properties,size,displaylist" : result;  
-				}
-			
+			var list:XMLList = description..metadata.(@name == 'Invalidate');
 			for each ( var item:XML in list )
 			{
 				// Parse the type description.
 				
-				var property:XML                    = item.parent();
-				var invalidateMetadata:XML          = property.metadata.(@name == 'Invalidate')[ 0 ];
+				var property:XML = item.parent();
+				var invalidateMetadata:XML = property.metadata.(@name == "Invalidate")[0];
+				var invalidateMetadataOptions:String = MetadataUtil.getMetadataAttribute( invalidateMetadata, "phase", true ); 
 				
 				// Determine the property name and invalidation flags.
 				
-				var propertyName     :String        = property.@name;
-				var phases			 :String 		= getTagValue(invalidateMetadata); 
-				var invalidationFlags:uint          = InvalidationFlags.NONE;
+				var propertyName:String = property.@name;
+				var invalidationFlags:uint = InvalidationFlags.NONE;
 				
-				phases
+				invalidateMetadataOptions
 					.split(",")
 					.map( function ( item:String, index:int, array:Array ):uint { 
 						switch( StringUtil.trim( item ) )
 						{
-							
 							case "displaylist":  return InvalidationFlags.DISPLAY_LIST;
 							case "size":         return InvalidationFlags.SIZE;
 							case "properties":   return InvalidationFlags.PROPERTIES;
@@ -241,6 +228,11 @@ package com.codecatalyst.util.invalidation
 					.forEach( function ( invalidationFlag:uint, index:int, array:Array ):void { 
 						invalidationFlags = invalidationFlags | invalidationFlag;
 					});
+				
+				// NOTE: If no phases are explicitly specified, default to all phases.
+					
+				if ( invalidateMetadataOptions.length == 0 )
+					invalidationFlags = InvalidationFlags.DISPLAY_LIST | InvalidationFlags.SIZE | InvalidationFlags.PROPERTIES;
 					
 				// Track the specified property name with the specified invalidation flags.
 				

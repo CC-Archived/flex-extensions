@@ -112,8 +112,8 @@ package com.codecatalyst.component.behavior.ui
 		 */
 		public var allowMultipleSelection:Boolean = true;
 		
-		[Invalidate("properties")]
 		[Bindable("selectedItemsChanged")]
+		[Invalidate("properties")]
 		/**
 		 * Selected items.
 		 */

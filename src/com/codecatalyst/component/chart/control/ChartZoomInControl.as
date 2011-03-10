@@ -84,7 +84,7 @@ package com.codecatalyst.component.chart.control
 		
 		protected static function initializeStyles():Boolean
 		{
-			var declaration:CSSStyleDeclaration = StyleUtil.getStyleDeclaration( "ChartZoomInControl" ) || new CSSStyleDeclaration();
+			var declaration:CSSStyleDeclaration = StyleUtil.getStyleDeclaration( "ChartZoomInControl" );
 			
 			declaration.defaultFactory = 
 				function ():void

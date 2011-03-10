@@ -22,46 +22,30 @@
 
 package com.codecatalyst.util
 {
-	import flash.display.Graphics;
-	
-	import mx.graphics.IStroke;
-	
-	import qs.utils.GraphicsUtils;
-
-	public class GraphicsUtil
+	public class MetadataUtil
 	{
 		// ========================================
 		// Public methods
 		// ========================================
 		
 		/**
-		 * Draw lines connecting the specified iterable set (Array, IList, etc.) of coordinates (Point, etc.) with the specified stroke and dash pattern (optional).
+		 *  Get the specified attribute value for the specified metadata XML.
 		 */
-		public static function drawPolyLine( graphics:Graphics, coordinates:*, stroke:IStroke, pattern:Array = null ):void
+		public static function getMetadataAttribute( metadata:XML, attributeName:String, allowDefault:Boolean = false ):String
 		{
-			if ( pattern != null )
+			var value:String = metadata.arg.(@key == attributeName);
+			
+			if ( value.length > 0 )
 			{
-				GraphicsUtils.drawDashedPolyLine( graphics, stroke, pattern, coordinates );
+				return value;
+			}
+			else if ( allowDefault )
+			{
+				return getMetadataAttribute( metadata, "" );
 			}
 			else
 			{
-				if ( coordinates.length == 0 )
-					return;
-
-				CONFIG::FLEX3 {
-					stroke.apply( graphics );
-				}
-				CONFIG::FLEX4 {
-					stroke.apply( graphics, null, null );
-				}
-				
-				var coordinate:Object = coordinates[ 0 ];
-				graphics.moveTo( coordinate.x, coordinate.y );
-				for ( var coordinateIndex:int = 1; coordinateIndex < coordinates.length; coordinateIndex++ )
-				{
-					coordinate = coordinates[ coordinateIndex ];
-					graphics.lineTo( coordinate.x, coordinate.y );
-				}	
+				return "";
 			}
 		}
 	}

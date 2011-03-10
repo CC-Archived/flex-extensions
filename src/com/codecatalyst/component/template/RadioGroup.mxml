@@ -36,7 +36,7 @@
 			// THE SOFTWARE.	
 			////////////////////////////////////////////////////////////////////////////////
 			
-			import com.codecatalyst.factory.styleable.StyleableRendererFactory;
+			import com.codecatalyst.factory.DataRendererFactory;
 			
 			import mx.controls.RadioButton;
 			
@@ -50,7 +50,7 @@
 			/**
 			 * Item renderer.
 			 */
-			public var itemRenderer:IFactory = new StyleableRendererFactory( RadioButton, null, null, null, null, { label: "data.label" } );
+			public var itemRenderer:IFactory = new DataRendererFactory( RadioButton, null, null, null, { label: "data.label" } );
 			
 			[Bindable]
 			/**
