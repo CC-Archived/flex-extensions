@@ -22,6 +22,7 @@
 
 package com.codecatalyst.util
 {
+	import com.codecatalyst.data.DateRange;
 	
 	public class DateUtil
 	{
@@ -86,6 +87,28 @@ package com.codecatalyst.util
 		public static function max( date1:Date, date2:Date ):Date
 		{
 			return ( date1.getTime() >= date2.getTime() ) ? date1 : date2;
+		}
+		
+		/**
+		 * Calculate the DateRange (min and max) for the specified Date field for an iterable set of items (Array, ArrayCollection, Proxy, etc.).
+		 */
+		public static function range( items:*, dateFieldName:String = null ):DateRange
+		{
+			var minDate:Date = null;
+			var maxDate:Date = null;
+			
+			for each ( var item:Object in items )
+			{
+				var date:Date = getDate( item, dateFieldName );
+				
+				if ( date != null )
+				{
+					minDate = ( minDate != null ) ? min( minDate, date ) : date;
+					maxDate = ( maxDate != null ) ? max( maxDate, date ) : date;
+				}
+			}
+			
+			return new DateRange( minDate.time, maxDate.time );
 		}
 		
 		/**
@@ -211,6 +234,27 @@ package com.codecatalyst.util
 			var nextWeek:Date = new Date( date.getTime() + WEEK );
 			
 			return ( nextWeek.month != date.month );
+		}
+		
+		// ========================================
+		// Protected methods
+		// ========================================
+		
+		/**
+		 * Get a Date for the specified item and value field name.
+		 */
+		protected static function getDate( item:Object, dateFieldName:String ):Date
+		{
+			if ( dateFieldName != null )
+			{
+				return PropertyUtil.getObjectPropertyValue( item, dateFieldName ) as Date;
+			}
+			else
+			{
+				return item as Date;
+			}
+			
+			return null;
 		}
 	}
 }

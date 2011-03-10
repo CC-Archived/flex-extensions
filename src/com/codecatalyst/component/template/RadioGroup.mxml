@@ -5,6 +5,8 @@
 	
 	<mx:Metadata>
 		
+		[DefaultProperty("itemRenderer")]
+		
 		/**
 		* Dispatched when the user changes the selected item.
 		*/

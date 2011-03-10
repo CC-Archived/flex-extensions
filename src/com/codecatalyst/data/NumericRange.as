@@ -51,7 +51,7 @@ package com.codecatalyst.data
 
 		[Bindable("minimumChanged")]
 		/**
-		 * The minimum value for a given numeric range.
+		 * The minimum value for this numeric range.
 		 */
 		public function get minimum():Number
 		{
@@ -60,11 +60,21 @@ package com.codecatalyst.data
 
 		[Bindable("maximumChanged")]
 		/**
-		 * The maximum value for a given numeric range.
+		 * The maximum value for this numeric range.
 		 */
 		public function get maximum():Number
 		{
 			return _maximum;
+		}
+		
+		[Bindable("minimumChanged")]
+		[Bindable("maximumChanged")]
+		/**
+		 * The range between the minimum value and maximum value for this numeric range.
+		 */
+		public function get range():Number
+		{
+			return maximum - minimum;
 		}
 
 		// ========================================
@@ -80,6 +90,41 @@ package com.codecatalyst.data
 			
 			_minimum = minimum;
 			_maximum = maximum;
+		}
+		
+		// ========================================
+		// Public methods
+		// ========================================
+		
+		/**
+		 * Returns a Boolean indicating whether the specified value falls within this NumericRange.
+		 */
+		public function contains( value:Number ):Boolean
+		{
+			return ( ( value >= minimum ) && ( value <= maximum ) );
+		}
+		
+		[ArrayElementType("com.codecatalyst.data.NumericRange")]
+		/**
+		 * Partitions this NumericRange equally into the specified count of NumericRange(s).
+		 */
+		public function partition( count:int = -1 ):Array
+		{
+			var numericRanges:Array = new Array();
+			
+			if ( count < 0 )
+				count = Math.sqrt( range );
+			
+			var partitionSize:Number = range / count;
+			
+			for ( var partitionIndex:int = 0; partitionIndex < count; partitionIndex++ )
+			{
+				var numericRange:NumericRange = new NumericRange( ( partitionIndex * partitionSize ) + minimum, ( ( partitionIndex + 1 ) * partitionSize ) + minimum );
+				
+				numericRanges.push( numericRange );
+			}
+			
+			return numericRanges;
 		}
 	}
 }

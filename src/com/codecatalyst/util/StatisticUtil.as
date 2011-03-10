@@ -22,7 +22,10 @@
 
 package com.codecatalyst.util
 {
+	import com.codecatalyst.data.FrequencyBin;
 	import com.codecatalyst.data.NumericRange;
+	
+	import flash.utils.Dictionary;
 	
 	public class StatisticUtil
 	{
@@ -30,21 +33,25 @@ package com.codecatalyst.util
 		// Public methods
 		// ========================================
 		
+		[ArrayElementType("com.codecatalyst.data.FrequencyBin")]
 		/**
-		 * Calculate the sum for the specified value field for an iterable set of items (Array, ArrayCollection, Proxy, etc.).
+		 * Given a set of items (and optional value field) and NumericRange(s), returns a frequency distribution as an Array of Bins.
 		 */
-		public static function sum( items:*, valueFieldName:String = null ):Number
+		public static function frequency( items:*, valueFieldName:String = null, valueRanges:Array = null ):Array
 		{
-			var sum:Number = 0;
+			if ( valueRanges == null )
+				valueRanges = range( items, valueFieldName ).partition();
 			
-			for each ( var item:Object in items )
+			var valueFrequencyByValueRange:Dictionary = calculateValueFrequencyByValueRanges( items, valueFieldName, valueRanges );
+			
+			var bins:Array = new Array();
+			
+			for each ( var valueRange:NumericRange in valueRanges )
 			{
-				var value:Number = getValue( item, valueFieldName );
-				
-				sum += value;
+				bins.push( new FrequencyBin( valueRange, valueFrequencyByValueRange[ valueRange ] ) );
 			}
 			
-			return sum;
+			return bins;
 		}
 		
 		/**
@@ -53,34 +60,6 @@ package com.codecatalyst.util
 		public static function mean( items:*, valueFieldName:String = null ):Number
 		{
 			return ( sum( items, valueFieldName ) / items.length );
-		}
-		
-		/**
-		 * Calculates the variance for the specified value field for an iterable set of items (Array, ArrayCollection, Proxy, etc.).
-		 */
-		public static function variance( items:*, valueFieldName:String = null ):Number
-		{
-			var meanValue:Number = mean( items, valueFieldName );
-			
-			var sumOfSquaredDifferences:Number = 0;
-			for each ( var item:Object in items )
-			{
-				var value:Number = getValue( item, valueFieldName );
-				
-				var difference:Number = value - meanValue;
-				
-				sumOfSquaredDifferences += ( difference * difference );
-			}
-			
-			return sumOfSquaredDifferences / items.length;
-		}
-		
-		/**
-		 * Calculates the standard deviation for the specified value field for an iterable set of items (Array, ArrayCollection, Proxy, etc.).
-		 */
-		public static function standardDeviation( items:*, valueFieldName:String = null ):Number
-		{
-			return Math.sqrt( variance( items, valueFieldName ) );
 		}
 		
 		/**
@@ -105,9 +84,78 @@ package com.codecatalyst.util
 			return new NumericRange( minValue, maxValue );
 		}
 		
+		/**
+		 * Calculates the standard deviation for the specified value field for an iterable set of items (Array, ArrayCollection, Proxy, etc.).
+		 */
+		public static function standardDeviation( items:*, valueFieldName:String = null ):Number
+		{
+			return Math.sqrt( variance( items, valueFieldName ) );
+		}
+		
+		/**
+		 * Calculate the sum for the specified value field for an iterable set of items (Array, ArrayCollection, Proxy, etc.).
+		 */
+		public static function sum( items:*, valueFieldName:String = null ):Number
+		{
+			var sum:Number = 0;
+			
+			for each ( var item:Object in items )
+			{
+				var value:Number = getValue( item, valueFieldName );
+				
+				sum += value;
+			}
+			
+			return sum;
+		}
+		
+		/**
+		 * Calculates the variance for the specified value field for an iterable set of items (Array, ArrayCollection, Proxy, etc.).
+		 */
+		public static function variance( items:*, valueFieldName:String = null ):Number
+		{
+			var meanValue:Number = mean( items, valueFieldName );
+			
+			var sumOfSquaredDifferences:Number = 0;
+			for each ( var item:Object in items )
+			{
+				var value:Number = getValue( item, valueFieldName );
+				
+				var difference:Number = value - meanValue;
+				
+				sumOfSquaredDifferences += ( difference * difference );
+			}
+			
+			return sumOfSquaredDifferences / items.length;
+		}
+		
 		// ========================================
 		// Protected methods
 		// ========================================	
+				
+		/**
+		 * Calculates the value frequency distribution for the specified value field in the specified items among the specified value ranges.
+		 */
+		protected static function calculateValueFrequencyByValueRanges( items:*, valueFieldName:String, valueRanges:Array ):Dictionary
+		{
+			var valueFrequencyByValueRange:Dictionary = new Dictionary();
+			
+			for each ( var item:Object in items )
+			{
+				var value:Number = getValue( item, valueFieldName );
+				
+				for each ( var valueRange:NumericRange in valueRanges )
+				{
+					if ( valueRange.contains( value ) )
+					{
+						valueFrequencyByValueRange[ valueRange ] ||= 0;
+						valueFrequencyByValueRange[ valueRange ] += 1;
+					}
+				}
+			}
+			
+			return valueFrequencyByValueRange;
+		}
 		
 		/**
 		 * Get a Number value for the specified item and value field name.

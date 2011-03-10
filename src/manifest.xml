@@ -3,6 +3,10 @@
 	
 	<!-- Component -->
 	
+	<component id="Button" class="com.codecatalyst.component.Button" />
+	<component id="TabBar" class="com.codecatalyst.component.TabBar" />
+	<component id="OverlappingTabBar" class="com.codecatalyst.component.OverlappingTabBar" />
+	
 		<!-- Behavior -->
 		
 			<!-- UI -->
