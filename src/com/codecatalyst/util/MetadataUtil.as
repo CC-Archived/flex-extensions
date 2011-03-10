@@ -33,7 +33,7 @@ package com.codecatalyst.util
 		 */
 		public static function getMetadataAttribute( metadata:XML, attributeName:String, allowDefault:Boolean = false ):String
 		{
-			var value:String = metadata.arg.(@key == attributeName);
+			var value:String = metadata.arg.(@key == attributeName).@value;
 			
 			if ( value.length > 0 )
 			{
@@ -41,7 +41,7 @@ package com.codecatalyst.util
 			}
 			else if ( allowDefault )
 			{
-				return getMetadataAttribute( metadata, "" );
+				return getMetadataAttribute( metadata, '' );
 			}
 			else
 			{
