@@ -42,6 +42,13 @@ package com.codecatalyst.data
 		 */
 		protected var _frequency:Number;
 		
+		/**
+		 * Backing variable for <code>percentage</code> property.
+		 * 
+		 * @see #percentage
+		 */
+		protected var _percentage:Number;
+		
 		// ========================================
 		// Public properties
 		// ========================================
@@ -64,6 +71,14 @@ package com.codecatalyst.data
 			return _frequency;
 		}
 		
+		/**
+		 * Sample frequency percentage.
+		 */
+		public function get percentage():Number
+		{
+			return _percentage;
+		}
+		
 		// ========================================
 		// Constructor
 		// ========================================
@@ -71,12 +86,13 @@ package com.codecatalyst.data
 		/**
 		 * Constructor.
 		 */
-		public function FrequencyBin( range:NumericRange, frequency:Number )
+		public function FrequencyBin( range:NumericRange, frequency:Number, percentage:Number )
 		{
 			super();
 			
 			_range = range;
 			_frequency = frequency;
+			_percentage = percentage;
 		}
 	}
 }

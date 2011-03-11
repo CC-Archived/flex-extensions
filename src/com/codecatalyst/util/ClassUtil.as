@@ -36,6 +36,9 @@ package com.codecatalyst.util
 		 */
 		public static function getClassFor( source:* ):Class
 		{
+			if ( source == null )
+				return null;
+			
 			if ( source as Class != null )
 				return source as Class;
 			

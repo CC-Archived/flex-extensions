@@ -48,7 +48,9 @@ package com.codecatalyst.util
 			
 			for each ( var valueRange:NumericRange in valueRanges )
 			{
-				bins.push( new FrequencyBin( valueRange, valueFrequencyByValueRange[ valueRange ] ) );
+				var valueFrequency:Number = valueFrequencyByValueRange[ valueRange ];
+				
+				bins.push( new FrequencyBin( valueRange, valueFrequency, valueFrequency / items.length ) );
 			}
 			
 			return bins;

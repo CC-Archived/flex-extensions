@@ -86,6 +86,7 @@
     <classEntry path="com.codecatalyst.util.invalidation.mxml.InvalidationTracker"/>
     <classEntry path="qs.charts.DashedLineRenderer"/>
     <classEntry path="qs.utils.GraphicsUtils"/>
+    <classEntry path="com.codecatalyst.util.FormatUtil"/>
   </includeClasses>
   <includeResources>
     <resourceEntry destPath="asset/image/cursor/resize-row.png" sourcePath="asset/image/cursor/resize-row.png"/>

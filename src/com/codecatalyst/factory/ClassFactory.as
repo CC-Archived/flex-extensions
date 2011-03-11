@@ -103,10 +103,10 @@ package com.codecatalyst.factory
 		
 		public function set generator( value:* ):void
 		{
-			_generator = value;
+			_generator = value || Object;
 			
-			if ( ! ( value is IFactory ) && ! ( value is Class ) )
-				generatorClass = ClassUtil.getClassFor( value );
+			if ( ! ( _generator is IFactory ) )
+				generatorClass = ( _generator is Class ) ? _generator : ClassUtil.getClassFor( _generator );
 		}
 		
 		// ========================================
