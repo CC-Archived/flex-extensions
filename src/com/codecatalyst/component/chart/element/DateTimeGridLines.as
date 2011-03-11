@@ -201,7 +201,7 @@ package com.codecatalyst.component.chart.element
 									GraphicsUtil.drawPolyLine( 
 										graphics, 
 										calculateGridLinePointsForRectangle( 
-											calculateGridLineRectangleForDate( date, gridLineSet.interval ) 
+											calculateGridLineRectangleForDate( date, gridLineSet.interval )
 										), 
 										stroke, 
 										pattern
@@ -223,7 +223,7 @@ package com.codecatalyst.component.chart.element
 			
 			for each ( var gridLineSet:DateTimeGridLineSet in sortedSets )
 			{
-				if ( gridLineSet.maximumTimeSpan >= duration )
+				if ( isNaN( gridLineSet.maximumTimeSpan ) || ( gridLineSet.maximumTimeSpan >= duration ) )
 					return gridLineSet;
 			}
 			

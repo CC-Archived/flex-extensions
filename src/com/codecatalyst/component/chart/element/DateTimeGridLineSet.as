@@ -113,7 +113,7 @@ package com.codecatalyst.component.chart.element
 		{
 			if ( _strokeFilterFunction != value )
 			{
-				strokeFilterFunction = value;
+				_strokeFilterFunction = value;
 				
 				dispatchEvent( new Event( "strokeFilterFunctionChanged" ) );
 			}
