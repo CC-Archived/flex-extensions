@@ -63,7 +63,7 @@ package com.codecatalyst.component.chart.control
 		
 		protected static function initializeStyles():Boolean
 		{
-			var declaration:CSSStyleDeclaration = StyleUtil.getStyleDeclaration( "ChartZoomOutControl" );
+			var declaration:CSSStyleDeclaration = StyleUtil.getStyleDeclaration( "ChartZoomOutControl" ) || new CSSStyleDeclaration();
 			
 			declaration.defaultFactory = 
 				function ():void

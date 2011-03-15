@@ -206,7 +206,7 @@
 					var labelStyleName:String = getStyle( "labelStyleName" ) as String;
 					if ( labelStyleName != null )
 					{
-						var labelStyleDeclaration:CSSStyleDeclaration = StyleUtil.getStyleDeclaration( "." + labelStyleName );
+						var labelStyleDeclaration:CSSStyleDeclaration = StyleUtil.getStyleDeclaration( "." + labelStyleName ) || new CSSStyleDeclaration();
 						
 						if ( labelStyleDeclaration != null )
 							labelStyle = labelStyleDeclaration;
@@ -220,7 +220,7 @@
 					var dateFieldStyleName:String = getStyle( "dateFieldStyleName" ) as String;
 					if ( dateFieldStyleName != null )
 					{
-						var dateFieldStyleDeclaration:CSSStyleDeclaration = StyleUtil.getStyleDeclaration( "." + dateFieldStyleName );
+						var dateFieldStyleDeclaration:CSSStyleDeclaration = StyleUtil.getStyleDeclaration( "." + dateFieldStyleName ) || new CSSStyleDeclaration();
 						
 						if ( dateFieldStyleDeclaration != null )
 							dateFieldStyle = dateFieldStyleDeclaration;

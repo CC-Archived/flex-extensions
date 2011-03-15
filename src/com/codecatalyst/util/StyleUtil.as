@@ -55,7 +55,7 @@ package com.codecatalyst.util
 				result = StyleManager.getStyleManager(module).getStyleDeclaration( style );
 			}
 			
-			return result || new CSSStyleDeclaration(); 
+			return result; 
 		}
 		
 		/**
