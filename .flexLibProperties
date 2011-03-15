@@ -41,8 +41,8 @@
     <classEntry path="com.codecatalyst.component.template.Group"/>
     <classEntry path="com.codecatalyst.component.template.MasterDetail"/>
     <classEntry path="com.codecatalyst.component.template.RadioGroup"/>
-    <classEntry path="com.codecatalyst.data.FrequencyBin"/>
     <classEntry path="com.codecatalyst.data.DateRange"/>
+    <classEntry path="com.codecatalyst.data.FrequencyBin"/>
     <classEntry path="com.codecatalyst.data.NumericRange"/>
     <classEntry path="com.codecatalyst.data.Property"/>
     <classEntry path="com.codecatalyst.data.SampleSet"/>
@@ -63,6 +63,7 @@
     <classEntry path="com.codecatalyst.util.DisplayObjectContainerUtil"/>
     <classEntry path="com.codecatalyst.util.EventDispatcherUtil"/>
     <classEntry path="com.codecatalyst.util.FactoryPool"/>
+    <classEntry path="com.codecatalyst.util.FormatUtil"/>
     <classEntry path="com.codecatalyst.util.GraphicsUtil"/>
     <classEntry path="com.codecatalyst.util.IObjectPool"/>
     <classEntry path="com.codecatalyst.util.ImageUtil"/>
@@ -84,9 +85,9 @@
     <classEntry path="com.codecatalyst.util.invalidation.InvalidationTrackedProperty"/>
     <classEntry path="com.codecatalyst.util.invalidation.InvalidationTracker"/>
     <classEntry path="com.codecatalyst.util.invalidation.mxml.InvalidationTracker"/>
+    <classEntry path="qs.charts.DashedAreaRenderer"/>
     <classEntry path="qs.charts.DashedLineRenderer"/>
     <classEntry path="qs.utils.GraphicsUtils"/>
-    <classEntry path="com.codecatalyst.util.FormatUtil"/>
   </includeClasses>
   <includeResources>
     <resourceEntry destPath="asset/image/cursor/resize-row.png" sourcePath="asset/image/cursor/resize-row.png"/>
@@ -98,6 +99,6 @@
     <resourceEntry destPath="asset/image/cursor/grab.png" sourcePath="asset/image/cursor/grab.png"/>
   </includeResources>
   <namespaceManifests>
-    <namespaceManifestEntry manifest="manifest.xml" namespace="http://www.codecatalyst.com/2011/flex-extensions"/>
+    <namespaceManifestEntry manifest="manifest.xml" namespace="http://fe.codecatalyst.com/2011/flex-extensions"/>
   </namespaceManifests>
 </flexLibProperties>

@@ -71,7 +71,7 @@ package com.codecatalyst.factory
 	 *                                                       return ( data.citizenship == 'USA' );
 	 *                                          } 
  	 *                                    } }" 
-	 *                 xmlns:fe="http://www.codecatalyst.com/2011/flex-extensions" />
+	 *                 xmlns:fe="http://fe.codecatalyst.com/2011/flex-extensions" />
 	 * 
 	 *         </mx:itemRenderer>
 	 * 

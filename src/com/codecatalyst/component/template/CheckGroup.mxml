@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:Box 
 	xmlns:mx="http://www.adobe.com/2006/mxml"
-	xmlns="http://www.codecatalyst.com/2011/flex-extensions">
+	xmlns="http://fe.codecatalyst.com/2011/flex-extensions">
 	
 	<mx:Metadata>
 		

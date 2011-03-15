@@ -23,6 +23,7 @@
 package com.codecatalyst.data
 {
 	import com.codecatalyst.util.ArrayUtil;
+	import com.codecatalyst.util.DateUtil;
 
 	public class TemporalData
 	{
@@ -36,6 +37,13 @@ package com.codecatalyst.data
 		 * @see #data
 		 */
 		protected var _data:Array = null;
+		
+		/**
+		 * Backing variable for <code>dateFieldName</code> property.
+		 * 
+		 * @see #dateFieldName
+		 */
+		protected var _dateFieldName:String = null;
 		
 		/**
 		 * Backing variable for <code>dateRange</code> property.
@@ -57,6 +65,17 @@ package com.codecatalyst.data
 			return data;
 		}
 		
+		[Bindable("dateFieldNameChanged")]
+		/**
+		 * Date field name.
+		 * 
+		 * @default "date"
+		 */
+		public function get dateFieldName():String
+		{
+			return _dateFieldName;
+		}
+		
 		[Bindable("dateRangeChanged")]
 		/**
 		 * Date range for data.
@@ -73,12 +92,48 @@ package com.codecatalyst.data
 		/**
 		 * Constructor.
 		 */
-		public function TemporalData( data:Array, dateRange:DateRange )
+		public function TemporalData( data:Array, dateFieldName:String = "date" )
 		{
 			super();
 			
-			_data      = ArrayUtil.clone( data );
-			_dateRange = dateRange.clone();
+			_data          = ArrayUtil.clone( data );
+			_dateFieldName = dateFieldName;
+			_dateRange     = DateUtil.range( data, dateFieldName );
+		}
+		
+		// ========================================
+		// Public methods
+		// ========================================
+		
+		/**
+		 * Create a new TemporalData containing the subset of data available for the specified date range.
+		 */
+		public function createSubset( targetDateRange:DateRange ):TemporalData
+		{
+			if ( dateRange.intersects( targetDateRange ) )
+			{
+				var dateProperty:Property = new Property( dateFieldName );
+				
+				var date:Date = new Date();
+				
+				var subset:Array = 
+					data.filter( function ( item:Object, index:int, array:Array ):Boolean {
+						var value:* = dateProperty.getValue( item );
+						
+						if ( value is Date )
+							date.time = value.time;
+						else if ( value is Number )
+							date.time = value;
+						else
+							date.time = Date.parse( value );
+						
+						return targetDateRange.contains( date.time );
+					});
+				
+				return new TemporalData( subset, dateFieldName );
+			}
+			
+			return null;
 		}
 	}
 }

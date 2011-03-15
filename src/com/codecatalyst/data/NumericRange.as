@@ -25,7 +25,7 @@ package com.codecatalyst.data
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
 	
-	public class NumericRange
+	public class NumericRange extends EventDispatcher
 	{
 		// ========================================
 		// Protected properties
@@ -57,7 +57,17 @@ package com.codecatalyst.data
 		{
 			return _minimum;
 		}
-
+		
+		public function set minimum( value:Number ):void
+		{
+			if ( _minimum != value )
+			{
+				_minimum = value;
+				
+				dispatchEvent( new Event( "minimumChanged" ) );
+			}
+		}
+		
 		[Bindable("maximumChanged")]
 		/**
 		 * The maximum value for this numeric range.
@@ -65,6 +75,16 @@ package com.codecatalyst.data
 		public function get maximum():Number
 		{
 			return _maximum;
+		}
+		
+		public function set maximum( value:Number ):void
+		{
+			if ( _maximum != value )
+			{
+				_maximum = value;
+				
+				dispatchEvent( new Event( "maximumChanged" ) );
+			}
 		}
 		
 		[Bindable("minimumChanged")]

@@ -69,7 +69,7 @@ package com.codecatalyst.factory.styleable
 	 *                                           // handler logic goes here...
 	 *                                       } 
 	 *                     } }"
-	 *     xmlns:fe="http://www.codecatalyst.com/2011/flex-extensions" />
+	 *     xmlns:fe="http://fe.codecatalyst.com/2011/flex-extensions" />
 	 *  
 	 * @author Thomas Burleson
 	 * @author John Yanarella

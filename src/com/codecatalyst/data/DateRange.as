@@ -147,6 +147,25 @@ package com.codecatalyst.data
 		// ========================================
 		
 		/**
+		 * Creates a clone of this DateRange.
+		 */
+		public function clone():DateRange
+		{
+			return new DateRange( startTime, endTime );
+		}
+		
+		/**
+		 * Returns a Boolean indicating whether specified time occurs between the current start time and end time.
+		 */
+		public function contains( time:Number ):Boolean
+		{
+			if ( ! isNaN( time ) )
+				return ( ( time >= startTime ) && ( time <= endTime ) );
+			
+			return false;
+		}
+		
+		/**
 		 * Given a DateRange, creates a corresponding DateRange bounded by the current start time and end time.
 		 */
 		public function createBoundedDateRange( dateRange:DateRange ):DateRange
@@ -168,25 +187,6 @@ package com.codecatalyst.data
 				return ( ( dateRange.startTime <= endTime ) && ( dateRange.endTime >= startTime ) );
 			
 			return false;
-		}
-		
-		/**
-		 * Returns a Boolean indicating whether the specified DateRange contains with the current start time and end time.
-		 */
-		public function contains( dateRange:DateRange ):Boolean
-		{
-			if ( dateRange != null )
-				return ( ( dateRange.startTime >= startTime ) && ( dateRange.endTime <= endTime ) );
-			
-			return false;
-		}
-		
-		/**
-		 * Creates a clone of this DateRange.
-		 */
-		public function clone():DateRange
-		{
-			return new DateRange( startTime, endTime );
 		}
 		
 		// ========================================

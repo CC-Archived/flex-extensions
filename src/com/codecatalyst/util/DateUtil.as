@@ -40,6 +40,7 @@ package com.codecatalyst.util
 		public static const DAY:Number 			= HOUR * 24;
 		public static const WEEK:Number 		= DAY * 7;
 		public static const MONTH:Number 		= DAY * 30; 				// NOTE: Imprecise.
+		public static const QUARTER:Number		= MONTH * 3; 				// NOTE: Imprecise.
 		public static const YEAR:Number   		= DAY * 365; 				// NOTE: Imprecise.
 		
 		/**
@@ -129,6 +130,15 @@ package com.codecatalyst.util
 					result.milliseconds = 0;
 					break;
 				
+				case QUARTER:
+					result.month = calculateStartingMonthForQuarter( calculateQuarterForMonth( result.month ) );
+					result.date = 1;
+					result.hours = 0;
+					result.minutes = 0;
+					result.seconds = 0;
+					result.milliseconds = 0;
+					break;
+				
 				case MONTH:
 					result.date = 1;
 					result.hours = 0;
@@ -181,6 +191,10 @@ package com.codecatalyst.util
 					result.fullYear += 1;
 					break;
 				
+				case QUARTER:
+					result.month = calculateStartingMonthForQuarter( calculateQuarterForMonth( result.month ) + 1 );
+					break;
+				
 				case MONTH:
 					result.month += 1;
 					break;
@@ -206,6 +220,22 @@ package com.codecatalyst.util
 			}
 			
 			return result;
+		}
+		
+		/**
+		 * Calculates the corresponding quarter for the specified month.
+		 */
+		public static function calculateQuarterForMonth( month:int ):int
+		{
+			return Math.ceil( ( month + 1 ) / 3 );
+		}
+		
+		/**
+		 * Calculates the corresponding starting month for the specified quarter.
+		 */
+		public static function calculateStartingMonthForQuarter( quarter:int ):int
+		{
+			return ( quarter - 1 ) * 3;
 		}
 		
 		/**

@@ -53,7 +53,7 @@ package com.codecatalyst.factory
 	 *     generator="{ flash.display.Bitmap }"
 	 *     parameters="{ [ null, true ] }"
 	 *     properties="{ { smoothing: true, filters: [ new DropShadowFilter() ] } }" 
-	 *     xmlns:fe="http://www.codecatalyst.com/2011/flex-extensions" />
+	 *     xmlns:fe="http://fe.codecatalyst.com/2011/flex-extensions" />
 	 *  
 	 * @author Thomas Burleson
 	 * @author John Yanarella

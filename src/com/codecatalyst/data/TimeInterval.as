@@ -23,6 +23,7 @@
 package com.codecatalyst.data
 {
 	import com.codecatalyst.util.DateUtil;
+	import com.codecatalyst.util.NumberUtil;
 	
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
@@ -117,6 +118,9 @@ package com.codecatalyst.data
 					
 				case DateUtil.MONTH:
 					return DateUtil.YEAR;
+				
+				case DateUtil.QUARTER:
+					return DateUtil.YEAR;
 					
 				case DateUtil.YEAR:
 					return DateUtil.YEAR;
@@ -144,6 +148,22 @@ package com.codecatalyst.data
 		// ========================================
 		// Public methods
 		// ========================================
+		
+		/**
+		 * Creates a clone of this TimeInterval.
+		 */
+		public function clone():TimeInterval
+		{
+			return new TimeInterval( unit, count );
+		}
+		
+		/**
+		 * Comparison function.
+		 */
+		public function compare( value:TimeInterval ):int
+		{
+			return NumberUtil.compare( unit * count, value.unit * value.count );
+		}
 		
 		/**
 		 * Iterate through the specified DateRange by incrementing by this TimeInterval and executing the specified Function for each Date increment.
@@ -182,6 +202,10 @@ package com.codecatalyst.data
 					incrementedDate.month += count;
 					return incrementedDate;
 					
+				case DateUtil.QUARTER:
+					incrementedDate.month += ( 3  * count );
+					return incrementedDate;
+					
 				case DateUtil.YEAR:
 					incrementedDate.fullYear += count;
 					return incrementedDate;
@@ -211,6 +235,10 @@ package com.codecatalyst.data
 					
 				case DateUtil.MONTH:
 					decrementedDate.month -= count;
+					return decrementedDate;
+					
+				case DateUtil.QUARTER:
+					decrementedDate.month -= ( 3 * count );
 					return decrementedDate;
 					
 				case DateUtil.YEAR:

@@ -23,9 +23,8 @@
 package com.codecatalyst.data
 {
 	import com.codecatalyst.util.ArrayUtil;
+	import com.codecatalyst.util.DateUtil;
 	
-	import flash.sampler.Sample;
-
 	public class SampleSet
 	{
 		// ========================================
@@ -44,7 +43,14 @@ package com.codecatalyst.data
 		 * 
 		 * @see #samplingInterval
 		 */
-		protected var _samplingInterval:Number = NaN;
+		protected var _samplingInterval:TimeInterval = null;
+		
+		/**
+		 * Backing variable for <code>sampleDateFieldName</code> property.
+		 * 
+		 * @see #sampleDateFieldName
+		 */
+		protected var _sampleDateFieldName:String = null;
 		
 		/**
 		 * Backing variable for <code>sampleDateRange</code> property.
@@ -69,9 +75,19 @@ package com.codecatalyst.data
 		/**
 		 * Time interval between samples in this sample set, in milliseconds.
 		 */
-		public function get samplingInterval():Number
+		public function get samplingInterval():TimeInterval
 		{
 			return _samplingInterval;
+		}
+		
+		/**
+		 * Sample date field name.
+		 * 
+		 * @default "date"
+		 */
+		public function get sampleDateFieldName():String
+		{
+			return _sampleDateFieldName;
 		}
 		
 		/**
@@ -89,13 +105,14 @@ package com.codecatalyst.data
 		/**
 		 * Constructor.
 		 */
-		public function SampleSet( samples:Array, samplingInterval:Number, startTime:Number )
+		public function SampleSet( samples:Array, samplingInterval:TimeInterval, sampleDateFieldName:String = "date" )
 		{
 			super();
 			
-			_samples          = ArrayUtil.clone( samples );
-			_samplingInterval = samplingInterval;
-			_sampleDateRange  = new DateRange( startTime, startTime + ( samples.length - 1 * samplingInterval ) );
+			_samples             = ArrayUtil.clone( samples );
+			_samplingInterval    = samplingInterval.clone();
+			_sampleDateFieldName = sampleDateFieldName;
+			_sampleDateRange     = DateUtil.range( samples, sampleDateFieldName );
 		}
 		
 		// ========================================
@@ -105,49 +122,32 @@ package com.codecatalyst.data
 		/**
 		 * Create a new SampleSet containing the subset of samples available for the specified date range.
 		 */
-		public function createSubset( dateRange:DateRange ):SampleSet
+		public function createSubset( targetDateRange:DateRange ):SampleSet
 		{
-			if ( sampleDateRange.intersects( dateRange ) )
+			if ( sampleDateRange.intersects( targetDateRange ) )
 			{
-				var boundedDateRange:DateRange = createBoundedAndAlignedDateRange( dateRange );
+				var dateProperty:Property = new Property( sampleDateFieldName );
 				
-				var startIndex:int = calculateBoundedIndexForTime( boundedDateRange.startTime );
-				var endIndex:int   = calculateBoundedIndexForTime( boundedDateRange.endTime );
+				var date:Date = new Date();
 				
-				if ( endIndex - startIndex >= 0 )
-					return new SampleSet( samples.slice( startIndex, endIndex + 1 ), samplingInterval, boundedDateRange.startTime );
-				else
-					return null;
+				var subsetSamples:Array = 
+					samples.filter( function ( sample:Object, index:int, array:Array ):Boolean {
+						var value:* = dateProperty.getValue( sample );
+						
+						if ( value is Date )
+							date.time = value.time;
+						else if ( value is Number )
+							date.time = value;
+						else
+							date.time = Date.parse( value );
+							
+						return targetDateRange.contains( date.time );
+					});
+				
+				return new SampleSet( subsetSamples, samplingInterval, sampleDateFieldName );
 			}
 			
 			return null;
-		}
-		
-		// ========================================
-		// Protected methods
-		// ========================================
-		
-		/**
-		 * Creates a new DateRange based on the specified DateRange and bound and aligned to this SampleSet's DateRange and sampling interval.
-		 */
-		protected function createBoundedAndAlignedDateRange( dateRange:DateRange ):DateRange
-		{
-			var boundedTargetDateRange:DateRange = sampleDateRange.createBoundedDateRange( dateRange );
-			
-			boundedTargetDateRange.startTime = Math.ceil(  boundedTargetDateRange.startTime / samplingInterval ) * samplingInterval;
-			boundedTargetDateRange.endTime   = Math.floor( boundedTargetDateRange.endTime   / samplingInterval ) * samplingInterval;
-
-			return boundedTargetDateRange;
-		}
-
-		/**
-		 * Caculuates a bounded sample Array index for the specified time.
-		 */		
-		protected function calculateBoundedIndexForTime( time:Number ):int
-		{
-			var calculatedIndex:int = Math.floor( ( time - sampleDateRange.startTime ) / samplingInterval );
-			
-			return Math.min( Math.max( calculatedIndex, 0 ), samples.length - 1 );
 		}
 	}
 }

@@ -40,6 +40,7 @@ package com.codecatalyst.util
 			// Collate the sorted sample sets.
 			
 			var collatedSamples:Array = new Array();
+			var collatedSampleDateFieldName:String = getDateFieldName( sampleSets );
 			var collatedSampleDateRange:DateRange = unionSampleSetDateRanges( sampleSets );
 			
 			var remainingDateRange:DateRange = collatedSampleDateRange.clone();
@@ -58,7 +59,7 @@ package com.codecatalyst.util
 				// Calculate the relevant date range, based on the remaining date range and current and next sample set date ranges.
 				
 				var relevantEndTime:Number = currentSampleSet.sampleDateRange.endTime;
-				if ( ( nextSampleSet != null ) && ( nextSampleSet.samplingInterval <= currentSampleSet.samplingInterval ) )
+				if ( ( nextSampleSet != null ) && ( nextSampleSet.samplingInterval.compare( currentSampleSet.samplingInterval ) <= 0 ) )
 					relevantEndTime = Math.min( relevantEndTime, nextSampleSet.sampleDateRange.startTime - 1 );
 				
 				var relevantSampleDateRange:DateRange = new DateRange( remainingDateRange.startTime, relevantEndTime );
@@ -74,12 +75,34 @@ package com.codecatalyst.util
 			
 			// Create and return a new TemporalData instance populated with the collated sample data.
 			
-			return new TemporalData( collatedSamples, collatedSampleDateRange );
+			return new TemporalData( collatedSamples, collatedSampleDateFieldName );
 		}
 		
 		// ========================================
 		// Protected methods
 		// ========================================
+		
+		/**
+		 * Get the date field name for the specified SampleSet(s).
+		 */
+		protected static function getDateFieldName( sampleSets:Array ):String
+		{
+			var dateFieldName:String = "date";
+			
+			sampleSets.forEach( function ( sampleSet:SampleSet, index:int, array:Array ):void {
+				if ( index == 0 )
+				{
+					dateFieldName = sampleSet.sampleDateFieldName;
+				}
+				else 
+				{
+					if ( sampleSet.sampleDateFieldName != dateFieldName )
+						throw new Error( "Collation requires the sampleDateFieldName property to match for all specified SampleSets." );
+				}
+			});
+			
+			return dateFieldName;
+		}
 		
 		/**
 		 * Union the sample DateRange(s) for the specified SampleSet(s).
@@ -130,7 +153,7 @@ package com.codecatalyst.util
 					var startTimeComparison:int = NumberUtil.compare( a.sampleDateRange.startTime, b.sampleDateRange.startTime );
 					
 					if ( startTimeComparison == 0 )
-						return NumberUtil.compare( a.samplingInterval, b.samplingInterval );
+						return a.samplingInterval.compare( b.samplingInterval );
 					
 					return startTimeComparison;
 				}
@@ -154,7 +177,7 @@ package com.codecatalyst.util
 							function ( sampleSet:SampleSet, index:int, array:Array ):Boolean
 							{
 								if ( sampleSet != currentSampleSet )
-									return ( sampleSet.sampleDateRange.intersects( currentSampleSet.sampleDateRange ) && ( sampleSet.samplingInterval < currentSampleSet.samplingInterval ) );
+									return ( sampleSet.sampleDateRange.intersects( currentSampleSet.sampleDateRange ) && ( sampleSet.samplingInterval.compare( currentSampleSet.samplingInterval ) < 0 ) );
 								
 								return false;
 							}
@@ -168,7 +191,7 @@ package com.codecatalyst.util
 							var startTimeComparison:int = NumberUtil.compare( a.sampleDateRange.startTime, b.sampleDateRange.startTime );
 							
 							if ( startTimeComparison == 0 )
-								return NumberUtil.compare( a.samplingInterval, b.samplingInterval );
+								return a.samplingInterval.compare( b.samplingInterval );
 							
 							return startTimeComparison;
 						}
@@ -206,7 +229,7 @@ package com.codecatalyst.util
 							);
 							
 							if ( startTimeComparison == 0 )
-								return NumberUtil.compare( a.samplingInterval, b.samplingInterval );
+								return a.samplingInterval.compare( b.samplingInterval );
 							
 							return startTimeComparison;
 						}

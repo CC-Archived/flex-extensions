@@ -52,6 +52,12 @@
 		<component id="MasterDetail" class="com.codecatalyst.component.template.MasterDetail" />
 		<component id="RadioGroup" class="com.codecatalyst.component.template.RadioGroup" />
 	
+	<!--  Data -->
+	
+	<component id="DateRange" class="com.codecatalyst.data.DateRange" />
+	<component id="NumericRange" class="com.codecatalyst.data.NumericRange" />
+	<component id="TimeInterval" class="com.codecatalyst.data.TimeInterval" />
+	
 	<!-- Factory -->
 	
 	<component id="ClassFactory" class="com.codecatalyst.factory.ClassFactory" />
