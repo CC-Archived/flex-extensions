@@ -109,7 +109,10 @@ package com.codecatalyst.util
 				}
 			}
 			
-			return new DateRange( minDate.time, maxDate.time );
+			return new DateRange( 
+				( minDate != null ) ? minDate.time : null, 
+				( maxDate != null ) ? maxDate.time : null 
+			);
 		}
 		
 		/**

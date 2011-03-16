@@ -147,7 +147,7 @@ package com.codecatalyst.data
 				return new SampleSet( subsetSamples, samplingInterval, sampleDateFieldName );
 			}
 			
-			return null;
+			return new SampleSet( [], samplingInterval, sampleDateFieldName );
 		}
 	}
 }
