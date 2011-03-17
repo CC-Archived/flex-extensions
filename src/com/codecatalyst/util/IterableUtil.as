@@ -74,7 +74,20 @@ package com.codecatalyst.util
 		}
 		
 		/**
-		 * Returns the first item in the iterable set of items (Array, ArrayCollection, Proxy, etc.).
+		 * Returns the item at the specified index in the iterable set of items (Array, ArrayCollection, Proxy, etc.), or null if unavailable.
+		 */
+		public static function getItemByIndex( items:*, index:int ):*
+		{
+			if ( ( items != null ) && ( index < items.length ) )
+			{
+				return items[ index ];
+			}
+			
+			return null;
+		}
+		
+		/**
+		 * Returns the first item in the iterable set of items (Array, ArrayCollection, Proxy, etc.), or null if unavailable.
 		 */
 		public static function getFirstItem( items:* ):*
 		{
@@ -87,7 +100,7 @@ package com.codecatalyst.util
 		}
 		
 		/**
-		 * Returns the last item in the iterable set of items (Array, ArrayCollection, Proxy, etc.).
+		 * Returns the last item in the iterable set of items (Array, ArrayCollection, Proxy, etc.), or null if unavailable.
 		 */
 		public static function getLastItem( items:* ):*
 		{

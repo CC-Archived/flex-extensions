@@ -298,7 +298,7 @@ package com.codecatalyst.util
 		 */
 		protected static function getDate( item:Object, dateFieldName:String ):Date
 		{
-			if ( dateFieldName != null )
+			if ( ( dateFieldName != null )  && ( item != null ) )
 			{
 				return PropertyUtil.getObjectPropertyValue( item, dateFieldName ) as Date;
 			}
