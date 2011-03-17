@@ -47,6 +47,7 @@ package com.codecatalyst.component.date
 	import mx.core.UIComponent;
 	import mx.core.mx_internal;
 	import mx.events.FlexEvent;
+	import mx.graphics.IFill;
 	import mx.graphics.ImageSnapshot;
 	import mx.styles.CSSStyleDeclaration;
 	import mx.styles.StyleManager;
@@ -62,6 +63,11 @@ package com.codecatalyst.component.date
 	 * Thumb skin.
 	 */
 	[Style(name="thumbSkin", type="Class", inherit="no", states="up, over, down, disabled, selectedUp, selectedOver, selectedDown, selectedDisabled")]
+	
+	/**
+	 * Thumb background fill.
+	 */
+	[Style(name="thumbBackgroundFill", type="mx.graphics.IFill", inherit="no")]
 	
 	/**
 	 * Handle skin.
@@ -709,7 +715,9 @@ package com.codecatalyst.component.date
 				
 				if ( RectangleUtil.isValid( thumbRectangle ) )
 				{
-					drawBitmapData( foreground.graphics, contentBitmapData, thumbRectangle );
+					var thumbBackgroundFill:IFill = getStyle( "thumbBackgroundFill" );
+					
+					drawBitmapData( foreground.graphics, contentBitmapData, thumbRectangle, thumbBackgroundFill );
 					
 					thumb.setActualSize( thumbRectangle.width, thumbRectangle.height );
 					thumb.move( thumbRectangle.x, thumbRectangle.y );
@@ -818,12 +826,27 @@ package com.codecatalyst.component.date
 		/**
 		 * Draws the specified BitmapData at the specified Rectangle (clipped by that Rectangle) on the specified Graphics context.
 		 */
-		protected function drawBitmapData( graphics:Graphics, bitmapData:BitmapData, rectangle:Rectangle ):void
+		protected function drawBitmapData( graphics:Graphics, bitmapData:BitmapData, rectangle:Rectangle, backgroundFill:IFill = null ):void
 		{
 			try
 			{
 				if ( bitmapData != null )
 				{
+					// Draw the background fill
+					
+					if ( backgroundFill != null )
+					{
+						graphics.lineStyle( 1, 0, 0, true );
+						CONFIG::FLEX3 {
+							backgroundFill.begin( graphics, rectangle );
+						}
+						CONFIG::FLEX4 {
+							backgroundFill.begin( graphics, rectangle, null );
+						}
+						graphics.drawRect( rectangle.x, rectangle.y, rectangle.width, rectangle.height );
+						backgroundFill.end( graphics );
+					}
+					
 					// Draw the bitmap
 					
 					graphics.lineStyle( 1, 0, 0, true );
