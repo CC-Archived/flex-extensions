@@ -62,7 +62,7 @@ package com.codecatalyst.data
 		 */
 		public function get data():Array
 		{
-			return data;
+			return _data;
 		}
 		
 		[Bindable("dateFieldNameChanged")]
@@ -92,13 +92,21 @@ package com.codecatalyst.data
 		/**
 		 * Constructor.
 		 */
-		public function TemporalData( data:Array, dateFieldName:String = "date" )
+		public function TemporalData( data:Array, dateFieldName:String = "date", isSorted:Boolean = false )
 		{
 			super();
 			
-			_data          = ArrayUtil.clone( data );
+			_data = ArrayUtil.clone( data );
 			_dateFieldName = dateFieldName;
-			_dateRange     = DateUtil.range( data, dateFieldName );
+			
+			if ( !isSorted )
+			{
+				_data.sort( function ( a:*, b:* ):* {
+					return DateUtil.compare( a, b, dateFieldName );
+				});
+			}
+			
+			_dateRange = DateUtil.range( data, dateFieldName, true );
 		}
 		
 		// ========================================
@@ -109,6 +117,18 @@ package com.codecatalyst.data
 		 * Create a new TemporalData containing the subset of data available for the specified date range.
 		 */
 		public function createSubset( targetDateRange:DateRange ):TemporalData
+		{
+			return new TemporalData( createDataSubset( targetDateRange ), dateFieldName, true );
+		}
+		
+		// ========================================
+		// Protected methods
+		// ========================================
+		
+		/**
+		 * Create an Array containing the subset of data available for the specified date range.
+		 */
+		protected function createDataSubset( targetDateRange:DateRange ):Array
 		{
 			if ( dateRange.intersects( targetDateRange ) )
 			{
@@ -130,10 +150,10 @@ package com.codecatalyst.data
 						return targetDateRange.contains( date.time );
 					});
 				
-				return new TemporalData( subset, dateFieldName );
+				return subset;
 			}
 			
-			return null;
+			return [];			
 		}
 	}
 }

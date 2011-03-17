@@ -61,51 +61,71 @@ package com.codecatalyst.util
 		/**
 		 * Comparator function for two Dates.
 		 */
-		public static function compare( a:Date, b:Date ):int
+		public static function compare( a:*, b:*, dateFieldName:String = null ):int
 		{
-			return NumberUtil.compare( a.time, b.time );
+			var dateA:Date = getDate( a, dateFieldName );
+			var dateB:Date = getDate( b, dateFieldName );
+			
+			return NumberUtil.compare( dateA.time, dateB.time );
 		}
 		
 		/**
 		 * Calculates the duration in milliseconds between two dates.
 		 */
-		public static function duration( startDate:Date, endDate:Date ):Number
+		public static function duration( start:*, end:*, dateFieldName:String = null ):Number
 		{
+			var startDate:Date = getDate( start, dateFieldName );
+			var endDate:Date = getDate( end, dateFieldName );
+			
 			return ( endDate.getTime() - startDate.getTime() );
 		}
 		
 		/**
 		 * Returns the minimum (i.e. earlier) date of the two specified dates.
 		 */
-		public static function min( date1:Date, date2:Date ):Date
+		public static function min( a:*, b:*, dateFieldName:String = null ):Date
 		{
-			return ( date1.getTime() <= date2.getTime() ) ? date1 : date2;
+			var dateA:Date = getDate( a, dateFieldName );
+			var dateB:Date = getDate( b, dateFieldName );
+			
+			return ( dateA.getTime() <= dateB.getTime() ) ? dateA : dateB;
 		}
 		
 		/**
 		 * Returns the maximum (i.e. later) date of the two specified dates.
 		 */
-		public static function max( date1:Date, date2:Date ):Date
+		public static function max( a:*, b:*, dateFieldName:String = null ):Date
 		{
-			return ( date1.getTime() >= date2.getTime() ) ? date1 : date2;
+			var dateA:Date = getDate( a, dateFieldName );
+			var dateB:Date = getDate( b, dateFieldName );
+			
+			return ( dateA.getTime() >= dateB.getTime() ) ? dateA : dateB;
 		}
 		
 		/**
 		 * Calculate the DateRange (min and max) for the specified Date field for an iterable set of items (Array, ArrayCollection, Proxy, etc.).
 		 */
-		public static function range( items:*, dateFieldName:String = null ):DateRange
+		public static function range( items:*, dateFieldName:String = null, isSorted:Boolean = false ):DateRange
 		{
 			var minDate:Date = null;
 			var maxDate:Date = null;
-			
-			for each ( var item:Object in items )
+
+			if ( isSorted )
 			{
-				var date:Date = getDate( item, dateFieldName );
-				
-				if ( date != null )
+				minDate = getDate( IterableUtil.getFirstItem( items ), dateFieldName );
+				maxDate = getDate( IterableUtil.getLastItem( items ), dateFieldName );
+			}
+			else
+			{
+				for each ( var item:Object in items )
 				{
-					minDate = ( minDate != null ) ? min( minDate, date ) : date;
-					maxDate = ( maxDate != null ) ? max( maxDate, date ) : date;
+					var date:Date = getDate( item, dateFieldName );
+					
+					if ( date != null )
+					{
+						minDate = ( minDate != null ) ? min( minDate, date ) : date;
+						maxDate = ( maxDate != null ) ? max( maxDate, date ) : date;
+					}
 				}
 			}
 			
@@ -262,7 +282,7 @@ package com.codecatalyst.util
 		/**
 		 * Returns a Boolean indicating whether the specified Date is the last occurance of the day within the current month.
 		 */
-		public static function lastOccuranceOfDayInMonth( date:Date ):Boolean
+		public static function isLastOccuranceOfDayInMonth( date:Date ):Boolean
 		{
 			var nextWeek:Date = new Date( date.getTime() + WEEK );
 			

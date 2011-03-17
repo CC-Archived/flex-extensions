@@ -73,6 +73,32 @@ package com.codecatalyst.util
 			return -1;
 		}
 		
+		/**
+		 * Returns the first item in the iterable set of items (Array, ArrayCollection, Proxy, etc.).
+		 */
+		public static function getFirstItem( items:* ):*
+		{
+			if ( ( items != null ) && ( items.length > 0 ) )
+			{
+				return items[ 0 ];
+			}
+			
+			return null;
+		}
+		
+		/**
+		 * Returns the last item in the iterable set of items (Array, ArrayCollection, Proxy, etc.).
+		 */
+		public static function getLastItem( items:* ):*
+		{
+			if ( ( items != null ) && ( items.length > 0 ) )
+			{
+				return items[ items.length - 1 ];
+			}
+			
+			return null;
+		}
+		
 		// ========================================
 		// Protected methods
 		// ========================================

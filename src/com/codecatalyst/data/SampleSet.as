@@ -25,18 +25,11 @@ package com.codecatalyst.data
 	import com.codecatalyst.util.ArrayUtil;
 	import com.codecatalyst.util.DateUtil;
 	
-	public class SampleSet
+	public class SampleSet extends TemporalData
 	{
 		// ========================================
 		// Protected properties
 		// ========================================
-		
-		/**
-		 * Backing variable for <code>samples</code> property.
-		 * 
-		 * @see #samples
-		 */
-		protected var _samples:Array = null;
 		
 		/**
 		 * Backing variable for <code>samplingInterval</code> property.
@@ -45,32 +38,9 @@ package com.codecatalyst.data
 		 */
 		protected var _samplingInterval:TimeInterval = null;
 		
-		/**
-		 * Backing variable for <code>sampleDateFieldName</code> property.
-		 * 
-		 * @see #sampleDateFieldName
-		 */
-		protected var _sampleDateFieldName:String = null;
-		
-		/**
-		 * Backing variable for <code>sampleDateRange</code> property.
-		 * 
-		 * @see #sampleDateRange
-		 */
-		protected var _sampleDateRange:DateRange = null;
-		
 		// ========================================
 		// Public properties
 		// ========================================
-		
-		[ArrayElementType("Object")]
-		/**
-		 * Samples.
-		 */
-		public function get samples():Array
-		{
-			return _samples;
-		}
 		
 		/**
 		 * Time interval between samples in this sample set, in milliseconds.
@@ -80,24 +50,6 @@ package com.codecatalyst.data
 			return _samplingInterval;
 		}
 		
-		/**
-		 * Sample date field name.
-		 * 
-		 * @default "date"
-		 */
-		public function get sampleDateFieldName():String
-		{
-			return _sampleDateFieldName;
-		}
-		
-		/**
-		 * Date range of the samples in this sample set.
-		 */
-		public function get sampleDateRange():DateRange
-		{
-			return _sampleDateRange;
-		}
-		
 		// ========================================
 		// Constructor
 		// ========================================
@@ -105,14 +57,11 @@ package com.codecatalyst.data
 		/**
 		 * Constructor.
 		 */
-		public function SampleSet( samples:Array, samplingInterval:TimeInterval, sampleDateFieldName:String = "date" )
+		public function SampleSet( samples:Array, samplingInterval:TimeInterval, dateFieldName:String = "date", isSorted:Boolean = false )
 		{
-			super();
+			super( samples, dateFieldName, isSorted );
 			
-			_samples             = ArrayUtil.clone( samples );
-			_samplingInterval    = samplingInterval.clone();
-			_sampleDateFieldName = sampleDateFieldName;
-			_sampleDateRange     = DateUtil.range( samples, sampleDateFieldName );
+			_samplingInterval = samplingInterval.clone();
 		}
 		
 		// ========================================
@@ -122,32 +71,9 @@ package com.codecatalyst.data
 		/**
 		 * Create a new SampleSet containing the subset of samples available for the specified date range.
 		 */
-		public function createSubset( targetDateRange:DateRange ):SampleSet
+		override public function createSubset( targetDateRange:DateRange ):TemporalData
 		{
-			if ( sampleDateRange.intersects( targetDateRange ) )
-			{
-				var dateProperty:Property = new Property( sampleDateFieldName );
-				
-				var date:Date = new Date();
-				
-				var subsetSamples:Array = 
-					samples.filter( function ( sample:Object, index:int, array:Array ):Boolean {
-						var value:* = dateProperty.getValue( sample );
-						
-						if ( value is Date )
-							date.time = value.time;
-						else if ( value is Number )
-							date.time = value;
-						else
-							date.time = Date.parse( value );
-							
-						return targetDateRange.contains( date.time );
-					});
-				
-				return new SampleSet( subsetSamples, samplingInterval, sampleDateFieldName );
-			}
-			
-			return new SampleSet( [], samplingInterval, sampleDateFieldName );
+			return new SampleSet( createDataSubset( targetDateRange ), samplingInterval, dateFieldName, true );
 		}
 	}
 }

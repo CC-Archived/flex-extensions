@@ -58,24 +58,24 @@ package com.codecatalyst.util
 				
 				// Calculate the relevant date range, based on the remaining date range and current and next sample set date ranges.
 				
-				var relevantEndTime:Number = currentSampleSet.sampleDateRange.endTime;
+				var relevantEndTime:Number = currentSampleSet.dateRange.endTime;
 				if ( ( nextSampleSet != null ) && ( nextSampleSet.samplingInterval.compare( currentSampleSet.samplingInterval ) <= 0 ) )
-					relevantEndTime = Math.min( relevantEndTime, nextSampleSet.sampleDateRange.startTime - 1 );
+					relevantEndTime = Math.min( relevantEndTime, nextSampleSet.dateRange.startTime - 1 );
 				
-				var relevantSampleDateRange:DateRange = new DateRange( remainingDateRange.startTime, relevantEndTime );
+				var relevantDateRange:DateRange = new DateRange( remainingDateRange.startTime, relevantEndTime );
 				
 				// Concatenate the subset of samples from the current sample set for relevant date range.
 				
-				collatedSamples = collatedSamples.concat( currentSampleSet.createSubset( relevantSampleDateRange ).samples );
+				collatedSamples = collatedSamples.concat( currentSampleSet.createSubset( relevantDateRange ).data );
 				
 				// Update remaining date range.
 				
-				remainingDateRange.startTime = relevantSampleDateRange.endTime + 1;
+				remainingDateRange.startTime = relevantDateRange.endTime + 1;
 			}		
 			
 			// Create and return a new TemporalData instance populated with the collated sample data.
 			
-			return new TemporalData( collatedSamples, collatedSampleDateFieldName );
+			return new TemporalData( collatedSamples, collatedSampleDateFieldName, true );
 		}
 		
 		// ========================================
@@ -92,11 +92,11 @@ package com.codecatalyst.util
 			sampleSets.forEach( function ( sampleSet:SampleSet, index:int, array:Array ):void {
 				if ( index == 0 )
 				{
-					dateFieldName = sampleSet.sampleDateFieldName;
+					dateFieldName = sampleSet.dateFieldName;
 				}
 				else 
 				{
-					if ( sampleSet.sampleDateFieldName != dateFieldName )
+					if ( sampleSet.dateFieldName != dateFieldName )
 						throw new Error( "Collation requires the sampleDateFieldName property to match for all specified SampleSets." );
 				}
 			});
@@ -115,12 +115,12 @@ package com.codecatalyst.util
 			{
 				if ( result == null )
 				{
-					result = sampleSet.sampleDateRange.clone();
+					result = sampleSet.dateRange.clone();
 				}
 				else
 				{
-					result.startTime = Math.min( result.startTime, sampleSet.sampleDateRange.startTime );
-					result.endTime   = Math.max( result.endTime,   sampleSet.sampleDateRange.endTime );
+					result.startTime = Math.min( result.startTime, sampleSet.dateRange.startTime );
+					result.endTime   = Math.max( result.endTime,   sampleSet.dateRange.endTime );
 				}	
 			}
 			
@@ -139,7 +139,7 @@ package com.codecatalyst.util
 					function ( sampleSet:SampleSet, index:int, array:Array ):Boolean
 					{
 						if ( sampleSet != currentSampleSet )
-							return sampleSet.sampleDateRange.intersects( dateRange );
+							return sampleSet.dateRange.intersects( dateRange );
 						
 						return false;
 					}
@@ -150,7 +150,7 @@ package com.codecatalyst.util
 			constrainedSampleSets.sort(
 				function ( a:SampleSet, b:SampleSet ):int
 				{
-					var startTimeComparison:int = NumberUtil.compare( a.sampleDateRange.startTime, b.sampleDateRange.startTime );
+					var startTimeComparison:int = NumberUtil.compare( a.dateRange.startTime, b.dateRange.startTime );
 					
 					if ( startTimeComparison == 0 )
 						return a.samplingInterval.compare( b.samplingInterval );
@@ -177,7 +177,7 @@ package com.codecatalyst.util
 							function ( sampleSet:SampleSet, index:int, array:Array ):Boolean
 							{
 								if ( sampleSet != currentSampleSet )
-									return ( sampleSet.sampleDateRange.intersects( currentSampleSet.sampleDateRange ) && ( sampleSet.samplingInterval.compare( currentSampleSet.samplingInterval ) < 0 ) );
+									return ( sampleSet.dateRange.intersects( currentSampleSet.dateRange ) && ( sampleSet.samplingInterval.compare( currentSampleSet.samplingInterval ) < 0 ) );
 								
 								return false;
 							}
@@ -188,7 +188,7 @@ package com.codecatalyst.util
 					intersectingLowerSamplingIntervalConstrainedSampleSets.sort(
 						function ( a:SampleSet, b:SampleSet ):int
 						{
-							var startTimeComparison:int = NumberUtil.compare( a.sampleDateRange.startTime, b.sampleDateRange.startTime );
+							var startTimeComparison:int = NumberUtil.compare( a.dateRange.startTime, b.dateRange.startTime );
 							
 							if ( startTimeComparison == 0 )
 								return a.samplingInterval.compare( b.samplingInterval );
@@ -211,7 +211,7 @@ package com.codecatalyst.util
 							function ( sampleSet:SampleSet, index:int, array:Array ):Boolean
 							{
 								if ( sampleSet != currentSampleSet )
-									return ( sampleSet.sampleDateRange.endTime > currentSampleSet.sampleDateRange.endTime );
+									return ( sampleSet.dateRange.endTime > currentSampleSet.dateRange.endTime );
 								
 								return false;
 							}
@@ -224,8 +224,8 @@ package com.codecatalyst.util
 						{
 							var startTimeComparison:int = 
 							NumberUtil.compare( 
-								Math.max( a.sampleDateRange.startTime, currentSampleSet.sampleDateRange.endTime ),
-								Math.max( b.sampleDateRange.startTime, currentSampleSet.sampleDateRange.endTime )
+								Math.max( a.dateRange.startTime, currentSampleSet.dateRange.endTime ),
+								Math.max( b.dateRange.startTime, currentSampleSet.dateRange.endTime )
 							);
 							
 							if ( startTimeComparison == 0 )
