@@ -172,7 +172,7 @@ package com.codecatalyst.component.chart.control
 					fill.begin( graphics, rectangle, null );
 				}
 				
-				graphics.drawRect( rectangle.x, rectangle.y, rectangle.width, rectangle.height );
+				graphics.drawRect( rectangle.x, rectangle.y, rectangle.width - 1, rectangle.height - 1 );
 				fill.end( graphics );
 			}
 		}
