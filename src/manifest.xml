@@ -18,6 +18,8 @@
 		
 			<!-- Control -->
 	
+			<component id="ChartHoverControl" class="com.codecatalyst.component.chart.control.ChartHoverControl" />
+			<component id="ChartHoverCrosshairControl" class="com.codecatalyst.component.chart.control.ChartHoverCrosshairControl" />
 			<component id="ChartPanControl" class="com.codecatalyst.component.chart.control.ChartPanControl" />
 			<component id="ChartZoomInControl" class="com.codecatalyst.component.chart.control.ChartZoomInControl" />
 			<component id="ChartZoomOutControl" class="com.codecatalyst.component.chart.control.ChartZoomOutControl" />
@@ -45,7 +47,7 @@
 		<component id="BoxItemRenderer" class="com.codecatalyst.component.renderer.BoxItemRenderer" />
 		<component id="CanvasItemRenderer" class="com.codecatalyst.component.renderer.CanvasItemRenderer" />
 		
-		<!-- Templates -->
+		<!-- Template -->
 		
 		<component id="CheckGroup" class="com.codecatalyst.component.template.CheckGroup" />
 		<component id="Group" class="com.codecatalyst.component.template.Group" />
