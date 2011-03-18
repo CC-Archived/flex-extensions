@@ -21,7 +21,7 @@
 		/**
 		 * Dispatched when the user changes the selected date range.
 		 */
-		[Event(name="change",type="flash.events.Event")]
+		[Event(name="change", type="flash.events.Event")]
 		
 	</mx:Metadata>
 	
