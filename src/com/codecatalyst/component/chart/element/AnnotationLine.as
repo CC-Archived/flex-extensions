@@ -202,12 +202,20 @@ package com.codecatalyst.component.chart.element
 			if ( ( chart == null ) || ( chart.chartState == ChartState.PREPARING_TO_HIDE_DATA ) || ( chart.chartState == ChartState.HIDING_DATA ) )
 				return;
 			
-			var stroke:IStroke = getStyle( "stroke" ) as IStroke || new Stroke( 0xffffff, 1.0 );
+			var stroke:IStroke = getStyle( "stroke" ) as IStroke || new Stroke( 0x000000, 1.0 );
 			var pattern:Array  = getStyle( "pattern" ) as Array;
 			
 			graphics.clear();
 			
-			GraphicsUtil.drawPolyLine( graphics, calculateLinePoints(), stroke, pattern );
+			drawLine( calculateLinePoints(), stroke, pattern );
+		}
+		
+		/**
+		 * Draw a line for the specified points.
+		 */
+		protected function drawLine( points:Array, stroke:IStroke, pattern:Array ):void
+		{
+			GraphicsUtil.drawPolyLine( graphics, points, stroke, pattern );
 		}
 		
 		/**
