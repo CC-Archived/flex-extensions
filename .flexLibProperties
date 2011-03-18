@@ -15,6 +15,8 @@
     <classEntry path="com.codecatalyst.component.behavior.ui.Populator"/>
     <classEntry path="com.codecatalyst.component.behavior.ui.Selectable"/>
     <classEntry path="com.codecatalyst.component.chart.control.AbstractChartControl"/>
+    <classEntry path="com.codecatalyst.component.chart.control.ChartHoverControl"/>
+    <classEntry path="com.codecatalyst.component.chart.control.ChartHoverCrosshairControl"/>
     <classEntry path="com.codecatalyst.component.chart.control.ChartPanControl"/>
     <classEntry path="com.codecatalyst.component.chart.control.ChartPanEvent"/>
     <classEntry path="com.codecatalyst.component.chart.control.ChartZoomEvent"/>
