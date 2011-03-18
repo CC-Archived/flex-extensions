@@ -24,6 +24,7 @@ package com.codecatalyst.data
 {
 	import com.codecatalyst.util.ArrayUtil;
 	import com.codecatalyst.util.DateUtil;
+	import com.codecatalyst.util.IterableUtil;
 	
 	public class SampleSet extends TemporalData
 	{
@@ -74,6 +75,22 @@ package com.codecatalyst.data
 		override public function createSubset( targetDateRange:DateRange ):TemporalData
 		{
 			return new SampleSet( createDataSubset( targetDateRange ), samplingInterval, dateFieldName, true );
+		}
+		
+		/**
+		 * Get the sample that occurs on the specified Date, or null if unavailable.
+		 */
+		public function getSampleDyDate( date:Date ):Object
+		{
+			return IterableUtil.getItemByIndex( getDataItemsByDate( date ), 0 );
+		}
+		
+		/**
+		 * Get the sample that occurs nearest to the specified Date.
+		 */
+		public function getNearestSampleByDate( date:Date ):Object
+		{
+			return IterableUtil.getItemByIndex( getNearestDataItemsByDate( date ), 0 );
 		}
 	}
 }
