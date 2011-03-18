@@ -10,7 +10,7 @@
 		/**
 		* Dispatched when the user changes the selected item.
 		*/
-		[Event(name="change",type="flash.events.Event")]
+		[Event(name="change", type="flash.events.Event")]
 		
 	</mx:Metadata>
 	
@@ -42,6 +42,10 @@
 			
 			import mx.controls.RadioButton;
 			
+			// ========================================
+			// Public properties
+			// ========================================
+			
 			[Bindable]
 			/**
 			 * Data provider.
@@ -60,6 +64,22 @@
 			 */
 			public var selectedItem:Object = null;
 			
+			[Bindable]
+			/**
+			 * Item 'selected' property path.
+			 */
+			public var selectedField:String = "selected";
+			
+			[Bindable]
+			/**
+			 * Item selection change event.
+			 */
+			public var changeEventType:String = Event.CHANGE;
+			
+			// ========================================
+			// Protected methods
+			// ========================================
+			
 			/**
 			 * Handle Selectable Event.CHANGE.
 			 */
@@ -77,7 +97,9 @@
 		id="selectable"
 		target="{ this }" 
 		allowMultipleSelection="false"
-		selectedItem="{ selectedItem }"
+		selectedItem="{ selectedItem }" 
+		selectedField="{ selectedField }"
+		changeEventType="{ changeEventType }" 
 		change="selectable_changeHandler( event )" />
 	
 	<Populator

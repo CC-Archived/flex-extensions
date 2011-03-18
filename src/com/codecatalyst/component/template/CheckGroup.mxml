@@ -10,7 +10,7 @@
 		/**
 		* Dispatched when the user changes the selected item(s).
 		*/
-		[Event(name="change",type="flash.events.Event")]
+		[Event(name="change", type="flash.events.Event")]
 		
 	</mx:Metadata>
 	
@@ -42,6 +42,10 @@
 			
 			import mx.controls.CheckBox;
 			
+			// ========================================
+			// Public properties
+			// ========================================
+			
 			[Bindable]
 			/**
 			 * Data provider.
@@ -59,6 +63,22 @@
 			 * Selected item(s).
 			 */
 			public var selectedItems:Array = null;
+			
+			[Bindable]
+			/**
+			 * Item 'selected' property path.
+			 */
+			public var selectedField:String = "selected";
+			
+			[Bindable]
+			/**
+			 * Item selection change event.
+			 */
+			public var changeEventType:String = Event.CHANGE;
+			
+			// ========================================
+			// Protected methods
+			// ========================================
 			
 			/**
 			 * Handle Selectable Event.CHANGE.
@@ -78,6 +98,8 @@
 		target="{ this }"
 		allowMultipleSelection="true"
 		selectedItems="{ selectedItems }"
+		selectedField="{ selectedField }"
+		changeEventType="{ changeEventType }" 
 		change="selectable_changeHandler( event )" />
 	
 	<Populator
