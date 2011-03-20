@@ -439,6 +439,15 @@ package com.codecatalyst.component.date
 		{
 			// Ensure Button styles are not applied instead (they have precedence).
 			
+			button.setStyle( "upIcon",               null );
+			button.setStyle( "overIcon",             null );
+			button.setStyle( "downIcon",             null );
+			button.setStyle( "disabledIcon",         null );
+			button.setStyle( "selectedUpIcon",       null );
+			button.setStyle( "selectedOverIcon",     null );
+			button.setStyle( "selectedDownIcon",     null );
+			button.setStyle( "selectedDisabledIcon", null );
+			
 			button.setStyle( "upSkin",               null );
 			button.setStyle( "overSkin",             null );
 			button.setStyle( "downSkin",             null );
