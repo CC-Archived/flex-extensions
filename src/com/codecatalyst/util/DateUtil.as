@@ -24,6 +24,8 @@ package com.codecatalyst.util
 {
 	import com.codecatalyst.data.DateRange;
 	
+	import mx.formatters.DateFormatter;
+	
 	public class DateUtil
 	{
 		// ========================================
@@ -53,6 +55,44 @@ package com.codecatalyst.util
 		public static const THURSDAY:Number 	= 4;
 		public static const FRIDAY:Number 		= 5;
 		public static const SATURDAY:Number 	= 6;
+		
+		[ArrayElementType("String")]
+		/**
+		 * Month names (localized).
+		 */
+		public static function get MONTH_NAMES():Array
+		{
+			if ( _MONTH_NAMES == null )
+			{
+				_MONTH_NAMES = new Array();
+				
+				var dateFormatter:DateFormatter = new DateFormatter();
+				dateFormatter.formatString = "MMMM";
+				
+				var date:Date = new Date( 2011, 0, 1 );
+				for ( var month:int = 0; month < 12; month++ )
+				{
+					date.month = month;
+					
+					_MONTH_NAMES.push( dateFormatter.format( date ) );
+				}
+			}
+			
+			return _MONTH_NAMES;
+		}
+		
+		// ========================================
+		// Protected constants
+		// ========================================
+		
+		/**
+		 * @private
+		 * 
+		 * Backing variable for <code>MONTH_NAMES</code>.
+		 * 
+		 * @see #MONTH_NAMES
+		 */
+		protected static var _MONTH_NAMES:Array = null;
 		
 		// ========================================
 		// Public methods
