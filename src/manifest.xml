@@ -16,6 +16,9 @@
 
 		<!-- Chart -->
 		
+		<component id="DynamicChart" class="com.codecatalyst.component.chart.DynamicChart" />
+		<component id="DynamicAxisRenderer" class="com.codecatalyst.component.chart.DynamicAxisRenderer" />
+		
 			<!-- Control -->
 	
 			<component id="ChartHoverControl" class="com.codecatalyst.component.chart.control.ChartHoverControl" />
