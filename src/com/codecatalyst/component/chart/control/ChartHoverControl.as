@@ -5,6 +5,7 @@ package com.codecatalyst.component.chart.control
 	import flash.events.IEventDispatcher;
 	import flash.events.MouseEvent;
 	import flash.geom.Point;
+	import flash.geom.Rectangle;
 	
 	import mx.charts.chartClasses.CartesianDataCanvas;
 	import mx.charts.chartClasses.ChartState;
@@ -153,6 +154,12 @@ package com.codecatalyst.component.chart.control
 			// Update the hover point.
 			
 			var point:Point = new Point( this.mouseX, this.mouseY );
+			
+			// Verify point is within chart content bounds.
+			
+			var boundaryRectangle:Rectangle = new Rectangle( 0, 0, width, height );
+			if ( ! boundaryRectangle.containsPoint( point ) )
+				point = null;
 			
 			hover( point );
 		}
