@@ -166,6 +166,14 @@ package com.codecatalyst.data
 		}
 		
 		/**
+		 * Given a Date time, creates a Date time bounded by the current start time and end time.
+		 */
+		public function createBoundedDateTime( time:Number ):Number
+		{
+			return calculateBoundedTime( time );
+		}
+		
+		/**
 		 * Given a DateRange, creates a corresponding DateRange bounded by the current start time and end time.
 		 */
 		public function createBoundedDateRange( dateRange:DateRange ):DateRange

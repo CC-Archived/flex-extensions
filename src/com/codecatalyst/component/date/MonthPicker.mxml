@@ -1,0 +1,408 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox 
+	xmlns:mx="http://www.adobe.com/2006/mxml" 
+	xmlns:hamcrest="http://hamcrest.org/2009/mxml">
+	
+	<mx:Metadata>
+		
+		/**
+		* Month and Year Label style.
+		*/
+		[Style(name="labelStyleName", type="String", inherit="no")]
+		
+		/**
+		* ComboBox style.
+		*/
+		[Style(name="comboBoxStyleName", type="String", inherit="no")]
+		
+		/**
+		* Dispatched when the user changes the selected date range.
+		*/
+		[Event(name="change", type="flash.events.Event")]
+		
+	</mx:Metadata>
+	
+	<mx:Script>
+		<![CDATA[
+			////////////////////////////////////////////////////////////////////////////////
+			// Copyright (c) 2011 CodeCatalyst, LLC - http://www.codecatalyst.com/
+			// 
+			// Permission is hereby granted, free of charge, to any person obtaining a copy
+			// of this software and associated documentation files (the "Software"), to deal
+			// in the Software without restriction, including without limitation the rights
+			// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+			// copies of the Software, and to permit persons to whom the Software is
+			// furnished to do so, subject to the following conditions:
+			//
+			// The above copyright notice and this permission notice shall be included in
+			// all copies or substantial portions of the Software.
+			//
+			// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+			// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+			// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+			// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+			// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+			// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+			// THE SOFTWARE.	
+			////////////////////////////////////////////////////////////////////////////////
+			
+			import com.codecatalyst.data.DateRange;
+			import com.codecatalyst.data.Option;
+			import com.codecatalyst.util.DateUtil;
+			import com.codecatalyst.util.IterableUtil;
+			import com.codecatalyst.util.StyleUtil;
+			import com.codecatalyst.util.invalidation.InvalidationTracker;
+			
+			import mx.validators.Validator;
+			
+			// ========================================
+			// Public properties
+			// ========================================
+			
+			[Bindable]
+			[Invalidate("properties")]
+			/**
+			 * Selectable Date Range.
+			 */
+			public var selectableDateRange:DateRange = null;
+			
+			[Bindable]
+			[Invalidate("properties")]
+			/**
+			 * Selected Date.
+			 */
+			public var selectedDate:Date = null;
+			
+			[Bindable]
+			/**
+			 * Month label text (optional).
+			 */
+			public var monthLabelText:String = null;
+			
+			[Bindable]
+			/**
+			 * Year label text (optional).
+			 */
+			public var yearLabelText:String = null;
+			
+			// ========================================
+			// Protected properties
+			// ========================================
+			
+			/**
+			 * Property invalidation tracker.
+			 */
+			protected var propertyTracker:InvalidationTracker = new InvalidationTracker( this as IEventDispatcher );
+			
+			[Bindable]
+			[ArrayElementType("com.codecatalyst.data.Option")]
+			/**
+			 * Month options.
+			 */
+			protected var monthOptions:Array = null;
+			
+			[Bindable]
+			[ArrayElementType("com.codecatalyst.data.Option")]
+			/**
+			 * Year options for <code>selectableDateRange</code>.
+			 */
+			protected var yearOptions:Array = null;
+			
+			[Bindable]
+			/**
+			 * Selected month.
+			 */
+			protected var selectedMonthOption:Option = null;
+			
+			[Bindable]
+			/**
+			 * Selected year.
+			 */
+			protected var selectedYearOption:Option = null;
+			
+			[Bindable]
+			/**
+			 * Label style declaration.
+			 */
+			protected var labelStyle:CSSStyleDeclaration = null;
+			
+			[Bindable]
+			/**
+			 * ComboBox style declaration.
+			 */
+			protected var comboBoxStyle:CSSStyleDeclaration = null;
+			
+			// ========================================
+			// Public methods
+			// ========================================
+			
+			/**
+			 * @inheritDoc
+			 */
+			override public function styleChanged( styleProp:String ):void
+			{
+				super.styleChanged( styleProp );
+				
+				var allStyles:Boolean = ( ( styleProp == null ) || ( styleProp == "styleName" ) );
+				
+				// Label styles.
+				
+				if ( ( allStyles == true ) || ( styleProp == "labelStyleName" ) )
+				{
+					var labelStyleName:String = getStyle( "labelStyleName" ) as String;
+					if ( labelStyleName != null )
+					{
+						var labelStyleDeclaration:CSSStyleDeclaration = StyleUtil.getStyleDeclaration( "." + labelStyleName ) || new CSSStyleDeclaration();
+						
+						if ( labelStyleDeclaration != null )
+							labelStyle = labelStyleDeclaration;
+					}
+				}
+				
+				// ComboBox styles.
+				
+				if ( ( allStyles == true ) || ( styleProp == "comboBoxStyleName" ) )
+				{
+					var comboBoxStyleName:String = getStyle( "comboBoxStyleName" ) as String;
+					if ( comboBoxStyleName != null )
+					{
+						var comboBoxStyleDeclaration:CSSStyleDeclaration = StyleUtil.getStyleDeclaration( "." + comboBoxStyleName ) || new CSSStyleDeclaration();
+						
+						if ( comboBoxStyleDeclaration != null )
+							comboBoxStyle = comboBoxStyleDeclaration;
+					}
+				}
+			}
+			
+			// ========================================
+			// Protected methods
+			// ========================================
+			
+			/**
+			 * @inheritDoc
+			 */
+			override protected function commitProperties():void
+			{
+				super.commitProperties();
+				
+				if ( propertyTracker.invalidated( "selectableDateRange" ) )
+				{
+					monthOptions = createMonthOptions();
+					yearOptions  = createYearOptions();
+				}
+				if ( propertyTracker.invalidated( [ "selectableDateRange", "selectedDate" ] ) )
+				{
+					if ( selectedDate != null )
+					{
+						selectedMonthOption = IterableUtil.getItemById( monthOptions, selectedDate.month, "value" ) as Option;
+						selectedYearOption  = IterableUtil.getItemById( yearOptions, selectedDate.fullYear, "value" ) as Option;
+					}
+					else
+					{
+						selectedMonthOption = null;
+						selectedYearOption  = null;
+					}
+					
+					validate();
+				}
+			}
+			
+			[ArrayElementType("com.codecatalyst.data.Option")]
+			/**
+			 * Creates a set of Month options.
+			 */
+			protected function createMonthOptions():Array
+			{
+				if ( selectableDateRange != null )
+				{
+					return DateUtil.MONTH_NAMES.map( function ( monthName:String, index:int, array:Array ):Option {
+						return new Option( monthName, index );
+					});
+				}
+				
+				return null;
+			}
+			
+			[ArrayElementType("com.codecatalyst.data.Option")]
+			/**
+			 * Creates a set of Year options, based on <code>selectableDateRange</code>.
+			 */
+			protected function createYearOptions():Array
+			{
+				if ( ( selectableDateRange != null ) && ( selectableDateRange.startDate != null ) && ( selectableDateRange.endDate != null ) )
+				{
+					var options:Array = new Array();
+					
+					for ( var year:Number = selectableDateRange.startDate.fullYear; year <= selectableDateRange.endDate.fullYear; year++ )
+					{
+						options.push( new Option( year.toString(), year ) );
+					}
+					
+					return options;
+				}
+				
+				return null;
+			}
+			
+			/**
+			 * Validate.
+			 */
+			protected function validate():Boolean
+			{
+				if ( Validator.validateAll( validators ).length != 0 )
+					return false;
+				
+				return true;
+			}
+			
+			/**
+			 * Handle 'Month' ComboBox Event.CHANGE.
+			 */
+			protected function monthComboBox_changeHandler( event:Event ):void
+			{
+				if ( !validate() )
+					return;
+				
+				selectedMonthOption = event.target.selectedItem as Option;
+				
+				selectedDate = createBoundedDateFromOptions( selectedMonthOption, selectedYearOption );
+				
+				dispatchEvent( new Event( Event.CHANGE ) );
+			}
+			
+			/**
+			 * Handle 'Year' ComboBox Event.CHANGE.
+			 */
+			protected function yearComboBox_changeHandler( event:Event ):void
+			{
+				if ( !validate() )
+					return;
+				
+				selectedYearOption = event.target.selectedItem as Option;
+				
+				selectedDate = createBoundedDateFromOptions( selectedMonthOption, selectedYearOption );
+				
+				dispatchEvent( new Event( Event.CHANGE ) );
+			}
+			
+			/**
+			 * Create a Date from the specified month and year options, bounded by <code>selectableDateRange</code>.
+			 */
+			protected function createBoundedDateFromOptions( monthOption:Option, yearOption:Option ):Date
+			{
+				var date:Date = createDateFromOptions( monthOption, yearOption );
+				
+				if ( ( selectableDateRange != null ) && ( date != null ) )
+				{
+					return new Date( selectableDateRange.createBoundedDateTime( date.time ) );
+				}
+				
+				return null;
+			}
+			
+			/**
+			 * Create a Date from the specified month and year options.
+			 */
+			protected function createDateFromOptions( monthOption:Option, yearOption:Option ):Date
+			{
+				if ( ( monthOption != null ) && ( yearOption != null ) )
+				{
+					return new Date( yearOption.value, monthOption.value, 1, 0, 0, 0, 0 );
+				}
+				
+				return null;
+			}
+			
+			/**
+			 * Validate the specified month and year options.
+			 */
+			protected function validateOptions( monthOption:Option, yearOption:Option ):Boolean
+			{
+				if ( selectableDateRange != null )
+				{
+					var date:Date = createDateFromOptions( monthOption, yearOption );
+					
+					return selectableDateRange.contains( date.time );
+				}
+				
+				return false;
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<!-- Formatters. -->
+	
+	<mx:DateFormatter 
+		id="dateFormatter" 
+		formatString="MMMM YYYY" />
+	
+	<!-- Validators. -->
+	
+	<mx:Array id="validators">
+		
+		<hamcrest:MatcherValidator
+			source="{ monthComboBox }" property="selectedIndex"
+			errorMessage="Please select a month."
+			trigger="{ new EventDispatcher() }">
+			<hamcrest:GreaterThan value="-1" />
+		</hamcrest:MatcherValidator>
+		
+		<hamcrest:MatcherValidator
+			source="{ yearComboBox }" property="selectedIndex"
+			errorMessage="Please select a year."
+			trigger="{ new EventDispatcher() }">
+			<hamcrest:GreaterThan value="-1" />
+		</hamcrest:MatcherValidator>
+		
+		<hamcrest:MatcherValidator
+			source="{ monthComboBox }" property="selectedIndex"
+			errorMessage="Please select a date between{ '\n' }{ dateFormatter.format( selectableDateRange.startDate ) } and { dateFormatter.format( selectableDateRange.endDate ) }."
+			trigger="{ new EventDispatcher() }">
+			<hamcrest:Evaluate condition="{ validateOptions( monthComboBox.selectedItem as Option, yearComboBox.selectedItem as Option ) }" />
+		</hamcrest:MatcherValidator>
+		
+		<hamcrest:MatcherValidator
+			source="{ yearComboBox }" property="selectedIndex"
+			errorMessage="Please select a date between{ '\n' }{ dateFormatter.format( selectableDateRange.startDate ) } and { dateFormatter.format( selectableDateRange.endDate ) }."
+			trigger="{ new EventDispatcher() }">
+			<hamcrest:Evaluate condition="{ validateOptions( monthComboBox.selectedItem as Option, yearComboBox.selectedItem as Option ) }" />
+		</hamcrest:MatcherValidator>
+		
+	</mx:Array>
+	
+	<!-- UI -->
+	
+	<mx:Label 
+		id="monthLabel"
+		minWidth="115"
+		styleName="{ labelStyle }"
+		text="{ monthLabelText }"
+		visible="{ ( monthLabelText != null ) }"
+		includeInLayout="{ ( monthLabelText != null ) }" />
+	
+	<mx:ComboBox
+		id="monthComboBox"
+		styleName="{ comboBoxStyle }"
+		dataProvider="{ monthOptions }" 
+		selectedIndex="{ monthOptions.indexOf( selectedMonthOption ) }"
+		enabled="{ ( monthOptions != null ) }"
+		change="monthComboBox_changeHandler( event )" />
+	
+	<mx:Label 
+		id="yearLabel"
+		styleName="{ labelStyle }"
+		text="{ yearLabelText }"
+		visible="{ ( yearLabelText != null ) }"
+		includeInLayout="{ ( yearLabelText != null ) }" />
+	
+	<mx:ComboBox
+		id="yearComboBox"
+		minWidth="80"
+		styleName="{ comboBoxStyle }"
+		dataProvider="{ yearOptions }"
+		selectedIndex="{ yearOptions.indexOf( selectedYearOption ) }"
+		enabled="{ ( yearOptions != null ) }"
+		change="yearComboBox_changeHandler( event )" />
+	
+</mx:HBox>

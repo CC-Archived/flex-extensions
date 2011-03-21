@@ -44,6 +44,7 @@
 		
 		<component id="DateRangeInput" class="com.codecatalyst.component.date.DateRangeInput" />
 		<component id="DateRangeSlider" class="com.codecatalyst.component.date.DateRangeSlider" />
+		<component id="MonthPicker" class="com.codecatalyst.component.date.MonthPicker" />
 		
 		<!-- Renderer -->
 		
