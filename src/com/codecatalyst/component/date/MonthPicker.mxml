@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:HBox 
+<mx:Box 
+	direction="horizontal"
+	horizontalGap="8"
+	verticalAlign="middle" 
 	xmlns:mx="http://www.adobe.com/2006/mxml" 
 	xmlns:hamcrest="http://hamcrest.org/2009/mxml">
 	
@@ -405,4 +408,4 @@
 		enabled="{ ( yearOptions != null ) }"
 		change="yearComboBox_changeHandler( event )" />
 	
-</mx:HBox>
+</mx:Box>
