@@ -49,5 +49,47 @@ package com.codecatalyst.util
 			
 			return children;
 		}
+		
+		/**
+		 * Brings the specified DisplayObject forward in z-order within the specified DisplayObjectContainer.
+		 */
+		public static function bringForward( container:DisplayObjectContainer, displayObject:DisplayObject ):void
+		{
+			var childIndex:int = container.getChildIndex( displayObject );
+			var targetIndex:int = ( childIndex < container.numChildren - 1 ) ? childIndex++ : childIndex;
+			
+			container.setChildIndex( displayObject, targetIndex );
+		}
+		
+		/**
+		 * Brings the specified DisplayObject to the front in z-order within the specified DisplayObjectContainer.
+		 */
+		public static function bringToFront( container:DisplayObjectContainer, displayObject:DisplayObject ):void
+		{
+			var lastIndex:int = container.numChildren - 1;
+			
+			container.setChildIndex( displayObject, lastIndex );
+		}
+		
+		/**
+		 * Sends the specified DisplayObject backward in z-order within the specified DisplayObjectContainer.
+		 */
+		public static function sendBackward( container:DisplayObjectContainer, displayObject:DisplayObject ):void
+		{
+			var childIndex:int = container.getChildIndex( displayObject );
+			var targetIndex:int = ( childIndex > 0 ) ? childIndex-- : childIndex;
+			
+			container.setChildIndex( displayObject, targetIndex );
+		}
+		
+		/**
+		 * Sends the specified DisplayObject to the back in z-order within the specified DisplayObjectContainer.
+		 */
+		public static function sendToBack( container:DisplayObjectContainer, displayObject:DisplayObject ):void
+		{
+			var firstIndex:int = 0;
+			
+			container.setChildIndex( displayObject, firstIndex );
+		}
 	}
 }
