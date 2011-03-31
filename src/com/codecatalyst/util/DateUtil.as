@@ -286,6 +286,99 @@ package com.codecatalyst.util
 		}
 		
 		/**
+		 * Returns the 'floor' unit of time for the specified time interval.
+		 */
+		public static function floorUnit( interval:Number ):Number
+		{
+			if ( interval < SECOND )
+				return MILLISECOND;
+
+			else if ( interval < MINUTE )
+				return SECOND;			
+			
+			else if ( interval < HOUR )
+				return MINUTE;
+			
+			else if ( interval < DAY )
+				return HOUR;
+			
+			else if ( interval < MONTH )
+				return DAY;
+			
+			else if ( interval < QUARTER )
+				return MONTH;
+			
+			else if ( interval < YEAR )
+				return QUARTER;
+			
+			else
+				return YEAR;
+		}
+		
+		/**
+		 * Returns the 'ceiling' unit of time for the specified time interval.
+		 */
+		public static function ceilUnit( interval:Number ):Number
+		{
+			if ( interval > QUARTER )
+				return YEAR;
+			
+			else if ( interval > MONTH )
+				return QUARTER;
+			
+			else if ( interval > DAY )
+				return MONTH;
+			
+			else if ( interval > HOUR )
+				return DAY;
+			
+			else if ( interval > MINUTE )
+				return HOUR;
+			
+			else if ( interval > SECOND )
+				return MINUTE;
+			
+			else if ( interval > MILLISECOND )
+				return SECOND;
+			
+			else
+				return MILLISECOND;
+		}
+		
+		/**
+		 * Returns the relative unit of time for the specified unit of time.
+		 */
+		public static function relativeUnit( unit:Number ):Number
+		{
+			switch ( unit )
+			{
+				case DateUtil.SECOND:
+					return DateUtil.MINUTE;
+					
+				case DateUtil.MINUTE:
+					return DateUtil.HOUR;
+					
+				case DateUtil.HOUR:
+					return DateUtil.DAY;
+					
+				case DateUtil.DAY:
+					return DateUtil.MONTH;
+					
+				case DateUtil.MONTH:
+					return DateUtil.YEAR;
+					
+				case DateUtil.QUARTER:
+					return DateUtil.YEAR;
+					
+				case DateUtil.YEAR:
+					return DateUtil.YEAR;
+					
+				default:
+					throw new Error( "Unsupported time unit specified." );
+			}
+		}
+		
+		/**
 		 * Calculates the corresponding quarter for the specified month.
 		 */
 		public static function calculateQuarterForMonth( month:int ):int

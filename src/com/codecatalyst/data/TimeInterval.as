@@ -97,37 +97,10 @@ package com.codecatalyst.data
 		[Bindable("unitChanged")]
 		/**
 		 * Relative unit of time, expressed in milliseconds.
-		 * 
-		 * @see com.codecatalyst.util.DateUtil
 		 */
 		public function get relativeUnit():Number
 		{
-			switch ( unit )
-			{
-				case DateUtil.SECOND:
-					return DateUtil.MINUTE;
-					
-				case DateUtil.MINUTE:
-					return DateUtil.HOUR;
-					
-				case DateUtil.HOUR:
-					return DateUtil.DAY;
-					
-				case DateUtil.DAY:
-					return DateUtil.MONTH;
-					
-				case DateUtil.MONTH:
-					return DateUtil.YEAR;
-				
-				case DateUtil.QUARTER:
-					return DateUtil.YEAR;
-					
-				case DateUtil.YEAR:
-					return DateUtil.YEAR;
-					
-				default:
-					throw new Error( "Unsupported time unit specified." );
-			}
+			return DateUtil.relativeUnit( unit );
 		}
 		
 		// ========================================
