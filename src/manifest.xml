@@ -18,6 +18,7 @@
 		
 		<component id="DynamicChart" class="com.codecatalyst.component.chart.DynamicChart" />
 		<component id="DynamicAxisRenderer" class="com.codecatalyst.component.chart.DynamicAxisRenderer" />
+		<component id="TruncatedAxisLabelRenderer" class="com.codecatalyst.component.chart.TruncatedAxisLabelRenderer" />
 		
 			<!-- Control -->
 	
