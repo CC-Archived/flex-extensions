@@ -340,12 +340,29 @@ package com.codecatalyst.util
 		{
 			if ( ( dateFieldName != null )  && ( item != null ) )
 			{
-				return PropertyUtil.getObjectPropertyValue( item, dateFieldName ) as Date;
+				return getValueAsDate( PropertyUtil.getObjectPropertyValue( item, dateFieldName ) );
 			}
 			else
 			{
-				return item as Date;
+				return getValueAsDate( item );
 			}
+			
+			return null;
+		}
+		
+		/**
+		 * Returns the specified Date or Date time value as a Date.
+		 */
+		protected static function getValueAsDate( value:* ):Date
+		{
+			if ( value is Date )
+				return value;
+		
+			if ( value is Number )
+				return new Date( value as Number );
+			
+			if ( value is String )
+				return new Date( Date.parse( value as String ) );
 			
 			return null;
 		}
