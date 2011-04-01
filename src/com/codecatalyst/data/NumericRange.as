@@ -124,6 +124,27 @@ package com.codecatalyst.data
 			return ( ( value >= minimum ) && ( value <= maximum ) );
 		}
 		
+		/**
+		 * Calculate a bounded value, constrained by the current minimum and maximum values.
+		 */
+		public function createBoundedValue( value:Number ):Number
+		{
+			return Math.max( Math.min( value, maximum ), minimum );
+		}
+		
+		/**
+		 * Calculate a bounded value, constrained by the current minimum and maximum values.
+		 */
+		public function createBoundedNumericRange( numericRange:NumericRange ):NumericRange
+		{
+			var boundedNumericRange:NumericRange = new NumericRange();
+			
+			boundedNumericRange.minimum = createBoundedValue( numericRange.minimum );
+			boundedNumericRange.maximum = createBoundedValue( numericRange.maximum );
+			
+			return boundedNumericRange;
+		}
+		
 		[ArrayElementType("com.codecatalyst.data.NumericRange")]
 		/**
 		 * Partitions this NumericRange equally into the specified count of NumericRange(s).

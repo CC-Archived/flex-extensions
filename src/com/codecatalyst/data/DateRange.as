@@ -181,7 +181,7 @@ package com.codecatalyst.data
 			var boundedDateRange:DateRange = new DateRange();
 			
 			boundedDateRange.startTime = calculateBoundedTime( dateRange.startTime );
-			boundedDateRange.endTime = calculateBoundedTime( dateRange.endTime );
+			boundedDateRange.endTime   = calculateBoundedTime( dateRange.endTime );
 			
 			return boundedDateRange;
 		}
