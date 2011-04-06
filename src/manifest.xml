@@ -58,6 +58,11 @@
 		<component id="Group" class="com.codecatalyst.component.template.Group" />
 		<component id="MasterDetail" class="com.codecatalyst.component.template.MasterDetail" />
 		<component id="RadioGroup" class="com.codecatalyst.component.template.RadioGroup" />
+		
+		<!-- Text -->
+		
+		<component id="Label" class="com.codecatalyst.component.text.Label" />
+		<component id="Text" class="com.codecatalyst.component.text.Text" />
 	
 	<!--  Data -->
 	

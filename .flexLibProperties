@@ -48,6 +48,9 @@
     <classEntry path="com.codecatalyst.component.template.Group"/>
     <classEntry path="com.codecatalyst.component.template.MasterDetail"/>
     <classEntry path="com.codecatalyst.component.template.RadioGroup"/>
+    <classEntry path="com.codecatalyst.component.text.Label"/>
+    <classEntry path="com.codecatalyst.component.text.Text"/>
+    <classEntry path="com.codecatalyst.component.text.UITextField"/>
     <classEntry path="com.codecatalyst.data.DateRange"/>
     <classEntry path="com.codecatalyst.data.FrequencyBin"/>
     <classEntry path="com.codecatalyst.data.NumericRange"/>

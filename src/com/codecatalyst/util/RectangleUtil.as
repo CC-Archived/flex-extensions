@@ -36,7 +36,7 @@ package com.codecatalyst.util
 		 */
 		public static function isValid( rectangle:Rectangle ):Boolean
 		{
-			if ( isNaN( rectangle.width ) || isNaN( rectangle.height ) )
+			if ( ( rectangle == null ) || isNaN( rectangle.width ) || isNaN( rectangle.height ) )
 				return false;
 			
 			return true;

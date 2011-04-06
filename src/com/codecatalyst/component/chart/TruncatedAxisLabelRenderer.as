@@ -22,8 +22,9 @@
 
 package com.codecatalyst.component.chart
 {
+	import com.codecatalyst.component.text.Label;
+	
 	import mx.charts.AxisLabel;
-	import mx.controls.Label;
 	
 	public class TruncatedAxisLabelRenderer extends Label
 	{

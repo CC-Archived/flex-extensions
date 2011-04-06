@@ -178,9 +178,9 @@ package com.codecatalyst.util
 		/**
 		 * Returns the 'floor' for the specified date - i.e. rounded down relative to the specified time unit.
 		 */
-		public static function floor( date:Date, unit:Number ):Date
+		public static function floor( date:*, unit:Number, dateFieldName:String = null ):Date
 		{
-			var result:Date = new Date( date.time );
+			var result:Date = new Date( getDate( date, dateFieldName ).time );
 			
 			switch ( unit )
 			{
@@ -242,9 +242,9 @@ package com.codecatalyst.util
 		/**
 		 * Returns the 'ceiling' for the specified date - i.e. rounded up relative to the specified time unit.
 		 */
-		public static function ceil( date:Date, unit:Number ):Date
+		public static function ceil( date:*, unit:Number, dateFieldName:String = null ):Date
 		{
-			var result:Date = floor( date, unit );
+			var result:Date = floor( date, unit, dateFieldName );
 			
 			// NOTE: This logic assumes Date's implementation properly handles overflow values.
 			
