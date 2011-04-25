@@ -8,9 +8,9 @@ package com.codecatalyst.component.chart.control
 	import mx.graphics.Stroke;
 
 	/**
-	 * Direction.
+	 * Orientation.
 	 */
-	[Style(name="direction", type="String", enumeration="horizontal,vertical,both", inherit="no")]
+	[Style(name="orientation", type="String", enumeration="horizontal,vertical,both", inherit="no")]
 	
 	/**
 	 * Stroke.
@@ -45,11 +45,11 @@ package com.codecatalyst.component.chart.control
 		 */
 		override protected function drawHoverIndicatorForPoint( point:Point ):void
 		{
-			var direction:String = getStyle( "direction" ) as String || "both";
+			var orientation:String = getStyle( "orientation" ) as String || "both";
 			var stroke:IStroke = getStyle( "stroke" ) as IStroke || new Stroke( 0x000000, 1.0 );
 			var pattern:Array  = getStyle( "pattern" ) as Array;
 			
-			switch ( direction )
+			switch ( orientation )
 			{
 				case "horizontal":
 					drawLine( new Point( 0, point.y ), new Point( width, point.y ), stroke, pattern );
@@ -60,6 +60,7 @@ package com.codecatalyst.component.chart.control
 					break;
 
 				case "both":
+				default:
 					drawLine( new Point( point.x, 0 ), new Point( point.x, height ), stroke, pattern );
 					drawLine( new Point( 0, point.y ), new Point( width, point.y ), stroke, pattern );
 					break;

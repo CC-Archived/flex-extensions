@@ -25,6 +25,7 @@ package com.codecatalyst.component.chart
 	import mx.charts.AxisRenderer;
 	import mx.charts.LinearAxis;
 	import mx.charts.chartClasses.CartesianChart;
+	import mx.core.mx_internal;
 	
 	public class DynamicChart extends CartesianChart
 	{
@@ -41,26 +42,48 @@ package com.codecatalyst.component.chart
 		}
 		
 		// ========================================
-		// Protected methods
+		// Protected properties
 		// ========================================
 		
 		/**
-		 *  @inheritDoc
+		 * Returns the Flex version.
+		 */
+		protected function get mx_version():Number
+		{
+			var matches:Object = /^([\d]+.[\d]+).(.*)$/.exec( mx_internal::VERSION );
+			
+			return ( matches.length > 1 ) ? Number( matches[ 1 ] ) : 0;
+		}
+		
+		// ========================================
+		// Protected methods
+		// ========================================
+
+		/**
+		 * @inheritDoc
 		 */
 		override protected function commitProperties():void
 		{
-			// Workaround for bug in CartesianChart where the deprecated <code>horizontalAxisRenderer</code> and <code>verticalAxisRenderer</code>
-			// properties are internally populated by CartesianChart and are not cleared when <code>horizontalAxisRenderers</code> or <code>verticalAxisRenderers</code>
-			// are later dynamically populated.
+			// Only applies to Flex SDK versions < 4.5 - horizontalAxisRenderer, verticalAxisRenderer (and this bug) were removed in subsequent versions.
 			
-			if ( ( horizontalAxisRenderers.length == 0 ) && ( horizontalAxisRenderer == null ) )
+			if ( mx_version < 4.5 )
 			{
-				horizontalAxisRenderers = [ createTemporaryAxisRenderer() ];
-			}
-			
-			if ( ( verticalAxisRenderers.length == 0 ) && ( verticalAxisRenderer == null ) )
-			{
-				verticalAxisRenderers = [ createTemporaryAxisRenderer() ];
+				var horizontalAxisRenderer:AxisRenderer = this[ "horizontalAxisRenderer" ] as AxisRenderer;
+				var verticalAxisRenderer:AxisRenderer   = this[ "verticalAxisRenderer"   ] as AxisRenderer;
+				
+				// Workaround for bug in CartesianChart where the deprecated <code>horizontalAxisRenderer</code> and <code>verticalAxisRenderer</code>
+				// properties are internally populated by CartesianChart and are not cleared when <code>horizontalAxisRenderers</code> or <code>verticalAxisRenderers</code>
+				// are later dynamically populated.
+				
+				if ( ( horizontalAxisRenderers.length == 0 ) && ( horizontalAxisRenderer == null ) )
+				{
+					horizontalAxisRenderers = [ createTemporaryAxisRenderer() ];
+				}
+				
+				if ( ( verticalAxisRenderers.length == 0 ) && ( verticalAxisRenderer == null ) )
+				{
+					verticalAxisRenderers = [ createTemporaryAxisRenderer() ];
+				}
 			}
 			
 			super.commitProperties();
