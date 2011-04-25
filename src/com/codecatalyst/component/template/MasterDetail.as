@@ -245,7 +245,7 @@ package com.codecatalyst.component.template
 					resizeEffect.pause();
 				
 				resizeEffect.target   		= detail;
-				resizeEffect.duration 		= animate ? resizeDuration       : 0;
+				resizeEffect.duration 		= animate ? resizeDuration       : 30;
 				resizeEffect.easingFunction = animate ? resizeEasingFunction : null;
 				resizeEffect.widthTo  		= calculatedDetailWidth;
 				resizeEffect.heightTo 		= calculatedDetailHeight;
