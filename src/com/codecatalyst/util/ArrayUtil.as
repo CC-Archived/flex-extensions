@@ -122,7 +122,7 @@ package com.codecatalyst.util
 		/**
 		 * Returns a shallow clone of the specified target Array, excluding the specified items.
 		 */
-		public static function exclude( array:Array, items:Array ):Array
+		public static function exclude( array:Array, items:Array):Array
 		{
 			var result:Array = clone( array ) || new Array();
 			
@@ -130,8 +130,11 @@ package com.codecatalyst.util
 			{
 				var itemIndex:int = result.indexOf( item );
 				
-				if ( itemIndex != -1 )
-					result.splice( itemIndex, 1 );
+				while (itemIndex != -1) {
+					result.splice(itemIndex, 1);
+					
+					itemIndex = result.indexOf (item);
+				}
 			}
 			
 			return result;

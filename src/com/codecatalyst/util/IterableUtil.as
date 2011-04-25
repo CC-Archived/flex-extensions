@@ -28,6 +28,17 @@ package com.codecatalyst.util
 		// Public methods
 		// ========================================
 		
+		public static function getItemsByProperty(items:*, propertyPath:String):Array {
+			var results : Array = items ? [ ] : null;
+			
+			for each ( var item:Object in items )
+			{
+				results.push( PropertyUtil.getObjectPropertyValue( item, propertyPath ) );
+			}
+			
+			return results;
+		}
+		
 		/**
 		 * Get a item of an iterable set of items (Array, ArrayCollection, Proxy, etc.) by unique identifier.
 		 */

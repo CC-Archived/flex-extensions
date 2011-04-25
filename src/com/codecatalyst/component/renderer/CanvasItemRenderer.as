@@ -152,6 +152,8 @@ package com.codecatalyst.component.renderer
 			horizontalScrollPolicy = ScrollPolicy.OFF;
 			verticalScrollPolicy = ScrollPolicy.OFF;
 			
+			percentWidth = percentHeight = 100;
+			
 			addEventListener( MouseEvent.ROLL_OVER,  rollOverHandler,  false, 0, true );
 			addEventListener( MouseEvent.ROLL_OUT,   rollOutHandler,   false, 0, true );
 			addEventListener( MouseEvent.MOUSE_DOWN, mouseDownHandler, false, 0, true );

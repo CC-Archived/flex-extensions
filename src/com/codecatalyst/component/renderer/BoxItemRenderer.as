@@ -31,6 +31,8 @@ package com.codecatalyst.component.renderer
 	import mx.core.IStateClient;
 	import mx.core.ScrollPolicy;
 	import mx.core.mx_internal;
+	
+	import mx.containers.utilityClasses.*;
 			
 	use namespace mx_internal;
 
@@ -124,6 +126,7 @@ package com.codecatalyst.component.renderer
 		{
 			_listData = value;
 		}
+		
 		
 		/**
 		 * @inheritDoc

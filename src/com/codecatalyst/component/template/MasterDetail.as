@@ -30,6 +30,7 @@ package com.codecatalyst.component.template
 	import flash.events.Event;
 	import flash.events.IEventDispatcher;
 	
+	import mx.binding.BindingManager;
 	import mx.containers.BoxDirection;
 	import mx.containers.Canvas;
 	import mx.containers.DividedBox;
@@ -45,6 +46,8 @@ package com.codecatalyst.component.template
 	
 	use namespace mx_internal;
 	
+	[Event(name="resizeStart",type="flash.events.Event")]
+	[Event(name="resizeComplete",type="flash.events.Event")]
 	/**
 	 * Master / Detail view template.
 	 * 
@@ -53,104 +56,6 @@ package com.codecatalyst.component.template
 	 */
 	public class MasterDetail extends DividedBox
 	{
-		// ========================================
-		// Protected constants
-		// ========================================
-		
-		/**
-		 * Divider delta threshold.
-		 */
-		protected static const DIVIDER_DELTA_THRESHOLD:int = 3;
-		
-		// ========================================
-		// Static initializers
-		// ========================================
-		
-		/**
-		 * Static initializer for default CSS styles.
-		 */
-		protected static var stylesInitialized:Boolean = initializeStyles();
-		
-		protected static function initializeStyles():Boolean
-		{
-			var declaration:CSSStyleDeclaration = StyleUtil.getStyleDeclaration( "MasterDetail" ) || new CSSStyleDeclaration();
-			
-			declaration.defaultFactory = 
-				function ():void
-				{
-					this.horizontalScrollPolicy = ScrollPolicy.OFF;
-					this.verticalScrollPolicy   = ScrollPolicy.OFF;
-				};
-			
-			StyleUtil.setStyleDeclaration( "MasterDetail", declaration, false );
-			
-			return true;
-		}
-		
-		// ========================================
-		// Protected properties
-		// ========================================
-		
-		/**
-		 * Backing variable for <code>expandTo</code> property.
-		 * 
- 		 * @see #expandTo
-		 */
-		protected var _expandTo:Number = NaN;
-		
-		/**
-		 * Backing variable for <code>percentExpandTo</code> property.
-		 * 
-		 * @see #percentExpandTo
-		 */
-		protected var _percentExpandTo : Number = 0.5;
-		
-		/**
-		 * Calculated detail height.
-		 */
-		protected function get calculatedDetailHeight():Number
-		{
-			if ( layoutObject.direction == BoxDirection.VERTICAL )
-			{
-				if ( expanded )
-					return NumberUtil.sanitizeNumber( NumberUtil.sanitizeNumber( expandTo, percentExpandTo * height ), 0 );
-				else
-					return 0;
-			}
-			else // ( layoutObject.direction == BoxDirection.HORIZONTAL )
-			{
-				return Number.NaN;
-			}
-		}
-		
-		/**
-		 * Calculated detail width.
-		 */
-		protected function get calculatedDetailWidth():Number
-		{
-			if ( layoutObject.direction == BoxDirection.HORIZONTAL )
-			{
-				if ( expanded )
-					return NumberUtil.sanitizeNumber( NumberUtil.sanitizeNumber( expandTo, percentExpandTo * width ), 0 );
-				else
-					return 0;
-			}
-			else // ( layoutObject.direction == BoxDirection.VERTICAL )
-			{
-				return Number.NaN;
-			}		
-		}
-		
-		/**
-		 * Invalidation tracker.
-		 */
-		protected var propertyTracker:InvalidationTracker = new InvalidationTracker( this as IEventDispatcher );
-		
-		/**
-		 * Resize effect.
-		 */
-		protected var resizeEffect:Resize = null;
-		
 		// ========================================
 		// Public properties
 		// ========================================
@@ -314,7 +219,7 @@ package com.codecatalyst.component.template
 			
 			// Update the details view to reflect the invalidated expanded property value.
 			
-			if ( propertyTracker.invalidated( "expanded" ) )
+			if ( propertyTracker.invalidated( ["detail", "expanded"] ) )
 			{
 				updateDetailView();
 			}
@@ -329,32 +234,46 @@ package com.codecatalyst.component.template
 			
 			if ( expanded != detail.visible )
 			{
-				if ( expanded )
+				if ( expanded ) {		
+					BindingManager.setEnabled(detail,true);
+					
 					detail.visible = true;
+					if (detail.parent == null) addChild ( detail as DisplayObject );
+				}
 				
 				if ( resizeEffect.isPlaying ) 
 					resizeEffect.pause();
 				
 				resizeEffect.target   		= detail;
-				resizeEffect.duration 		= animate ? resizeDuration       : 0;
+				resizeEffect.duration 		= animate ? resizeDuration       : 30;
 				resizeEffect.easingFunction = animate ? resizeEasingFunction : null;
 				resizeEffect.widthTo  		= calculatedDetailWidth;
 				resizeEffect.heightTo 		= calculatedDetailHeight;
 				
 				resizeEffect.play();
+				
+				dispatchEvent(new Event('resizeStart'));
 			}
 		}
 		
 		/**
 		 * Handle EffectEvent.EFFECT_END.
+		 * Disable databindings and remove from displayList AFTER the resize finishes hiding.
 		 */
 		protected function resizeEffect_effectEndHandler( event:EffectEvent ):void
 		{
 			if ( ! expanded )
 			{
-				if ( detail != null )
+				if ( detail && detail.parent )
+				{
+					BindingManager.setEnabled(detail,false);
+
+					removeChild( detail as DisplayObject);
 					detail.visible = false;
+				}
 			}
+			
+			dispatchEvent(new Event('resizeComplete'));
 		}
 		
 		/**
@@ -378,5 +297,104 @@ package com.codecatalyst.component.template
 				expanded = ! expanded;
 			}
 		}
+
+		// ========================================
+		// Protected properties
+		// ========================================
+		
+		/**
+		 * Backing variable for <code>expandTo</code> property.
+		 * 
+		 * @see #expandTo
+		 */
+		protected var _expandTo:Number = NaN;
+		
+		/**
+		 * Backing variable for <code>percentExpandTo</code> property.
+		 * 
+		 * @see #percentExpandTo
+		 */
+		protected var _percentExpandTo : Number = 0.5;
+		
+		/**
+		 * Calculated detail height.
+		 */
+		protected function get calculatedDetailHeight():Number
+		{
+			if ( layoutObject.direction == BoxDirection.VERTICAL )
+			{
+				if ( expanded )
+					return NumberUtil.sanitizeNumber( NumberUtil.sanitizeNumber( expandTo, percentExpandTo * height ), 0 );
+				else
+					return 0;
+			}
+			else // ( layoutObject.direction == BoxDirection.HORIZONTAL )
+			{
+				return Number.NaN;
+			}
+		}
+		
+		/**
+		 * Calculated detail width.
+		 */
+		protected function get calculatedDetailWidth():Number
+		{
+			if ( layoutObject.direction == BoxDirection.HORIZONTAL )
+			{
+				if ( expanded )
+					return NumberUtil.sanitizeNumber( NumberUtil.sanitizeNumber( expandTo, percentExpandTo * width ), 0 );
+				else
+					return 0;
+			}
+			else // ( layoutObject.direction == BoxDirection.VERTICAL )
+			{
+				return Number.NaN;
+			}		
+		}
+		
+		/**
+		 * Invalidation tracker.
+		 */
+		protected var propertyTracker:InvalidationTracker = new InvalidationTracker( this as IEventDispatcher );
+		
+		/**
+		 * Resize effect.
+		 */
+		protected var resizeEffect:Resize = null;
+		
+		// ========================================
+		// Protected constants
+		// ========================================
+		
+		/**
+		 * Divider delta threshold.
+		 */
+		protected static const DIVIDER_DELTA_THRESHOLD:int = 3;
+		
+		// ========================================
+		// Static initializers
+		// ========================================
+		
+		/**
+		 * Static initializer for default CSS styles.
+		 */
+		protected static var stylesInitialized:Boolean = initializeStyles();
+		
+		protected static function initializeStyles():Boolean
+		{
+			var declaration:CSSStyleDeclaration = StyleUtil.getStyleDeclaration( "MasterDetail" ) || new CSSStyleDeclaration();
+			
+			declaration.defaultFactory = 
+				function ():void
+				{
+					this.horizontalScrollPolicy = ScrollPolicy.OFF;
+					this.verticalScrollPolicy   = ScrollPolicy.OFF;
+				};
+			
+			StyleUtil.setStyleDeclaration( "MasterDetail", declaration, false );
+			
+			return true;
+		}
+		
 	}
 }
