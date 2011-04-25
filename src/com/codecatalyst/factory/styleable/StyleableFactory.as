@@ -118,7 +118,9 @@ package com.codecatalyst.factory.styleable
 			
 			// Apply styles
 			
-			return StyleUtil.applyStyles( IStyleClient( instance ), styles );
+			StyleUtil.applyStyles( IStyleClient( instance ), styles );
+			
+			return instance;
 		}
 		
 		/**
