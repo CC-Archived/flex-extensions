@@ -1,6 +1,6 @@
 # flex-extensions #
 
-Provides a collection of useful Adobe Flex user interface components, charting controls and elements, behaviors,  data types and utility classes and methods.
+Provides a collection of useful Adobe Flex user interface components, charting controls and elements, behaviors, data types and utility classes and methods.
 
 ## Behaviors ##
 
@@ -12,7 +12,7 @@ Provides a collection of useful Adobe Flex user interface components, charting c
 
 * **Selectable**
 
-	Similar to the jQuery UI Selectable behavior, this behavior tag manages the selection state for the child components of a target Container.  It supports custom item renderer selection data fields, change events, and single or multiple select modes.
+	Similar to the jQuery UI Selectable behavior, this behavior tag manages the selection state for the child components of a target Container.  It supports custom item renderer selection data fields, change events, and single or multiple selection modes.
 
 ## User Interface Components ##
 
@@ -28,13 +28,13 @@ Provides a collection of useful Adobe Flex user interface components, charting c
 
 * **OverlappingTabBar**
 
-	Extends the customized TabBar component above to custom skinning requirements where the selected tab should be rendered at the top-most z-order.
+	Extends the TabBar component to support custom skinning requirements where the selected tab should be rendered at the top-most z-order.
 
 ### Chart ###
 
 * **DynamicChart, DynamicAxisRenderer**
 
-	Extends the standard Flex charting CartesianChart and AxisRenderer components and adds support for runtime changes to the set of associated AxisRenderers.  Implements workarounds for bugs in the Flex SDK that cause runtime axisRenderer changes to be ignored, and removed axis renderers to cause null pointer exceptions.  Use DynamicChart in place of any CartesianChart (AreaChart, ColumnChart, LineChart, etc.) and DynamicAxisRenderer in place of AxisRenderer.
+	Extends the standard Flex charting CartesianChart and AxisRenderer components and adds support for runtime changes to the set of associated AxisRenderers.  Implements workarounds for bugs in the Flex Data Visualization SDK that cause runtime axisRenderer changes to be ignored, and removed axis renderers to cause null pointer exceptions.  Use DynamicChart in place of any CartesianChart (AreaChart, ColumnChart, LineChart, etc.) and DynamicAxisRenderer in place of AxisRenderer.
 
 ### Chart Controls ###
 
@@ -44,13 +44,13 @@ Provides a collection of useful Adobe Flex user interface components, charting c
 
 * **ChartHoverControl, ChartHoverCrossHairControl**
 
-	This custom chart control can be used in the `<mx:annotationElements>` tag of any CartesianChart (AreaChart, ColumnChart, LineChart, etc.) to detect when the user hovers the mouse over the chart.  These components dispatch ChartHoverEvent events that provide the current hovered x and y coordinates in data coordinates.  ChartHoverControl can be extended to implement custom hover indicator drawing logic.  ChartHoverCrossHairControl extends ChartHoverControl and draws a crosshair at the hovered location.
+	This custom chart control can be used in the `<mx:annotationElements>` tag of any CartesianChart (AreaChart, ColumnChart, LineChart, etc.) to detect when the user hovers the mouse over the chart.  These components dispatch ChartHoverEvent events that provide the current hovered x and y coordinates in data coordinates.  ChartHoverControl can be extended to implement custom hover indicator drawing logic.  ChartHoverCrossHairControl extends ChartHoverControl and draws a crosshair or horizontal/vertical line at the hovered location.
 
 ### Chart Elements ###
 
 * **AnnotationLine**
 
-	This custom chart element can be used in the `<mx:annotationElements>` or `<mx:backgroundElements>` tag of any CartesianChart (AreaChart, ColumnChart, LineChart, etc.) to draw a line for the specified data coordinate(s).  This element supports CSS styles for a custom line strokes.
+	This custom chart element can be used in the `<mx:annotationElements>` or `<mx:backgroundElements>` tag of any CartesianChart (AreaChart, ColumnChart, LineChart, etc.) to draw a line for the specified data coordinate(s).  This element supports CSS styles for custom line strokes.
 
 * **Background**
 
@@ -67,12 +67,16 @@ Provides a collection of useful Adobe Flex user interface components, charting c
 * **LinearTrendLine**
 
 	This custom chart element can be used in the `<mx:annotationElements>` or `<mx:backgroundElements>` tag of any CartesianChart (AreaChart, ColumnChart, LineChart, etc.) to calculate and draw a trend line for the visible points in the specified series.  This element supports CSS styles for custom line strokes and dash patterns.
+
+* **TruncatedAxisLabelRenderer**
+
+	This custom chart label renderer enables the standard Flex Label 'truncateToFit' behavior, adding a truncation indicator (ex. '...') and truncating label text that exceeds the available chart gutter bounds.
 	
 ### Container ###
 
 * **BoxFrame**
 
-	Extends the standard Flex Box container and modifies its behavior so that it grows its own scrollbars when content exceeds its bounds (rather than affecting the parent container).
+	Extends the standard Flex Box container and modifies its behavior so that it grows its own scrollbars when content exceeds its bounds (rather than depending on or affecting the parent container).
 
 ### Date ###
 
@@ -82,9 +86,9 @@ Provides a collection of useful Adobe Flex user interface components, charting c
 
 * **DateRangeSlider**
 
-	A custom user interface component that allows a user to select any number of date ranges, within a limiting available date range, using slider thumbs over a content area to move and resize each selected date range.  An underlying content component may be specified, such as a chart, to appear below the thumbs.  This component supports an extensive set of CSS styles for custom skinning of the slider background, cursors, slider thumbs and grips.
+	A custom user interface component that allows a user to select any number of date ranges, within an available date range, using slider thumbs over a content area to move and resize each selected date range.  An underlying content component may be specified, such as a chart, to appear below the thumbs.  This component supports an extensive set of CSS styles for custom skinning of the slider background, cursors, slider thumbs and grips.
 
-	A DateRangeSlider, with a chart specified as its content, provides the functionality comparable to the date range sliders featured in Google and Yahoo Finance.
+	A DateRangeSlider, with a chart specified as its content, provides functionality comparable to the date range sliders featured in Google and Yahoo Finance.
 
 * **MonthPicker**
 
@@ -94,17 +98,17 @@ Provides a collection of useful Adobe Flex user interface components, charting c
 
 * **BoxItemRenderer, CanvasItemRenderer**
 
-	These custom components are special Container implementations for use in custom item renderers for List, DataGrid, Populator, etc. components.  They implement IListItemRenderer, IDropInListItemRenderer, and IDataRenderer, and manage selection and rollover state.  They expose useful properties for binding, such as isMouseOver, isMouseDown, isHighlighted and isSelected.  Additionally, they add style support for custom border skins with up, over, down, disabled (and corresponding selected) states.
+	These custom components are special Container implementations for use in custom item renderers for List, DataGrid, Populator, etc. components.  They implement IListItemRenderer, IDropInListItemRenderer, and IDataRenderer, and manage selection and rollover state.  They expose useful properties for binding, such as isMouseOver, isMouseDown, isHighlighted and isSelected.  Additionally, they add style support for custom border skins with 'up', 'over', 'down', 'disabled' states (and the corresponding 'selected' states).
 
 ### User Interface Templates ###
 
 * **Group**
 
-	This template is a Box Container that expects a data provider and item renderer factory, and dynamically populates itself with item renderer instances for items in the specified data provider.  It leverages the Populator behavior.
+	This template is a Box Container that expects a data provider and item renderer factory, and dynamically populates itself with item renderer instances for the items in the specified data provider.  It leverages the Populator behavior.
 
 * **CheckGroup, RadioGroup**
 
-	These templates are Box Containers that expect a data provider, item renderer and selected item(s) and dynamically populates itself with item renderer instances for items in the specified data provider and manages their selection state.  They support custom item renderer selection data fields and change event types.  They leverage the Populator and Selectable behaviors.  It dispatches Event.CHANGE events when the user changes the selected item.
+	These templates are Box Containers that expect a data provider, item renderer and selected item(s), dynamically populate themselves with item renderer instances for the items in the specified data provider and manage their selection state.  They support custom item renderer selection data fields and change event types.  They leverage the Populator and Selectable behaviors.  They dispatches Event.CHANGE events when the user changes the selected item.
 
 * **MasterDetails**
 
@@ -114,7 +118,7 @@ Provides a collection of useful Adobe Flex user interface components, charting c
 
 * **DateRange**
 
-	Describes a date range between a starting date and an ending date.  Provides useful utility methods for date range related operations, such as determining if the DateRange contains a Date, intersects another DateRange and creating Dates and DateRanges that are bounded by the DateRange.
+	Describes a date range between a starting time and an ending time.  Provides useful utility methods for date range related operations, such as determining if the DateRange contains a given Date or intersects another DateRange, and creating Dates and DateRanges that are bounded by the DateRange.
 
 * **FrequencyBin**
 
@@ -130,7 +134,7 @@ Provides a collection of useful Adobe Flex user interface components, charting c
 
 * **Property**
 
-	Describes a property by property path (potentially deeply nested and expressed as dot notation).  Provides methods for verifying the existence of the property and getting and setting the corresponding value for property.
+	Describes a property by property path (potentially deeply nested and expressed as dot notation).  Provides methods for verifying the existence of the property and getting and setting the corresponding value for property for a given object instance.
 
 * **TemporalData**, **SampleSet**
 
@@ -152,7 +156,7 @@ Provides a collection of useful Adobe Flex user interface components, charting c
 
 * **DataRendererFactory**
 
-	DataRendererFactory is used to generate IDataRenderer instances for use with Lists, Grids and Populators where the developer needs to customize settings on each renderer instance based on current values its assigned "data" object. 
+	DataRendererFactory is used to generate IDataRenderer instances for use with Lists, Grids and Populators where the developer needs to customize settings on each renderer instance based on the current value of the corresponding 'data' object. 
 	DataRendererFactory introduces the support for runtime data-driven properties, which update in response to to runtime changes of the backing 'data' object.
 
 * **StyleableFactory**
@@ -163,9 +167,19 @@ Provides a collection of useful Adobe Flex user interface components, charting c
 
 * **StyleableRendererFactory**
 
-	StyleableRendererFactory is used to generate IDataRenderer instances for use with Lists, Grids and Populators where the developer needs to customize settings on each renderer instance based on current values its assigned "data" object.
+	StyleableRendererFactory is used to generate IDataRenderer instances for use with Lists, Grids and Populators where the developer needs to customize settings on each renderer instance based on the current value of the corresponding 'data' object.
 	
-	StyleableRendererFactory introduces support for runtime data-driven properties and styles, which update in response to to runtime changes of the backing 'data' object.
+	StyleableRendererFactory introduces support for runtime data-driven properties and styles, which update in response to runtime changes of the backing 'data' object.
+
+## Text ##
+
+* **Label**
+
+	Extends the standard Flex Label component to add support for additional styles, such as `linkColor`, `linkDecoration`, `hoverLinkColor`, `hoverLinkDecoration`, `activeLinkColor` and `activeLinkDecoration`, which configure the text color and presence of underlines for normal, hover and active states of links specified in HTML text.
+
+* **Text**
+
+	Extends the standard Flex Text component to add support for additional styles, such as `linkColor`, `linkDecoration`, `hoverLinkColor`, `hoverLinkDecoration`, `activeLinkColor` and `activeLinkDecoration` which configuring the text color and presence of underlines for normal, hover and active states of links specified in HTML text.
 
 ## Utilities ##
 
@@ -183,15 +197,15 @@ Provides a collection of useful Adobe Flex user interface components, charting c
 
 * **CollectionViewUtil**
 
-	Utility methods related to CollectionViewUtil such as `create()` from Object.
+	Utility methods related to CollectionViewUtil such as `create()` to create an ICollectionView from an Object parameter.
 
 * **ComparatorUtil**
 
-	Utility methods related to deep Object comparison into differing Property instances.
+	Utility methods related to deep object instance comparison, returning a collection of Property instances describing the instance properties that differ.
 
 * **DateUtil**
 
-	Utility methods related to Dates, such `compare()`, `duration()`, `min()`, `max()`, `range()`, `floor()`, `ceil()`, etc. and constants for representing time units, days and (localized) months.
+	Utility methods related to Dates, such `compare()`, `duration()`, `min()`, `max()`, `range()`, `floor()`, `ceil()`, etc. and constants for representing time units, days and (localized) months.  Dates can be represented as Date instances, numeric date/time values or Strings.  Supports date field names and deeply nested properties via dot notation.
 
 * **DelayedCall**
 
@@ -200,6 +214,10 @@ Provides a collection of useful Adobe Flex user interface components, charting c
 * **DictionaryUtil**
 
 	Utility methods related to Dictionary, such as `toArray()`, `createFromObjectProperties()`, `createExistenceIndex()`, `createObjectIndexByKey()`, `createObjectIndexByProperty()`.
+
+* **DisplayObjectContainerUtil**
+
+	Utility methods related to interaction with DisplayObjectContainers (or Containers) including easily obtaining an Array of children and re-ordering children using bringForward(), bringToFront(), sendBackward() and sendToBack().
 
 * **EventDispatcherUtil**
 
@@ -219,7 +237,7 @@ Provides a collection of useful Adobe Flex user interface components, charting c
 
 * **InvalidationTracker**
 
-	Implements support for `[Invalidate("displaylist,properties,size")]` metadata on `[Bindable]` public properties as an alternative to the common pattern of writing custom get / set method pairs w/ backing variable and changed flags.
+	Implements support for `[Invalidate("displaylist,properties,size")]` metadata on `[Bindable]` public properties as an alternative to the common pattern of writing verbose boilerplate code to define custom get / set method pairs with a backing variable and changed flags.
 
 * **ImageUtil**
 
@@ -227,7 +245,7 @@ Provides a collection of useful Adobe Flex user interface components, charting c
 
 * **IterableUtil**
 
-	Utility methods related to iterable item sets (Array, ArrayCollection, Proxy, etc.), such as `getItemById()`, `getItemIndexById()`, `getItemByIndex()`, `getFirstItem()`, and `getLastItem()`.  Supports custom id field names and deep property traversal via dot notation.
+	Utility methods related to iterable item sets (Array, ArrayCollection, Proxy, etc.), such as `getItemById()`, `getItemIndexById()`, `getItemByIndex()`, `getItemsByProperty()`, `getFirstItem()`, and `getLastItem()`.  Supports custom id field names and deep property traversal via dot notation.
 
 * **LogicUtil**
 
@@ -259,7 +277,7 @@ Provides a collection of useful Adobe Flex user interface components, charting c
 
 * **SampleSetUtil**
 
-	Utility methods related to SampleSets, such as collating SampleSets of potentially differing sampling intervals into a combined TemporalData containing the data with the finest granularity.
+	Utility methods related to SampleSets, such as collating SampleSets of potentially differing sampling intervals into a combined TemporalData instance containing the sample data with the finest granularity.
 
 * **SkinUtil**
 
@@ -283,5 +301,6 @@ Provides a collection of useful Adobe Flex user interface components, charting c
 
 ## Resources ##
 
-[Source](http://github.com/CodeCatalyst/flex-extensions)
-[Issues](http://github.com/CodeCatalyst/flex-extensions/issues)
+* [Source](http://github.com/CodeCatalyst/flex-extensions)
+
+* [Issues](http://github.com/CodeCatalyst/flex-extensions/issues)
