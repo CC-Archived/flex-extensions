@@ -53,7 +53,19 @@ package com.codecatalyst.util.invalidation
 		protected var trackedProperties:Dictionary = new Dictionary();
 		
 		/**
-		 * Callback function (optional).
+		 * Notification function useful for tracking changes properties.
+		 * 
+		 * <p>This callback is especially useful if <code>[Invalidate]</code> is used on non-<code>IInvalidating</code>
+		 * classes. Such classes do NOT have a mx validation lifecycle. So this callback allows "immediate" 
+		 * notifications for any property changes to the instance to be dispatched.
+		 * 
+		 * <pre>
+		 *    function ( target:IEventDispatcher, property:String, previousVal:*, newVal:* ) : void
+		 * </pre>
+		 * 
+		 * (optional).
+		 * 
+		 * @default NULL 
 		 */
 		protected var callback:Function = null;
 				

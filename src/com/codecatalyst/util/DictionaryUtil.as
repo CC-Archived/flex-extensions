@@ -102,6 +102,20 @@ package com.codecatalyst.util
 		}
 		
 		/**
+		 * Given an iterable set (Array, ArrayCollection, Proxy, etc.) of Objects, returns an array of the object values for the key property name.
+		 */		
+		public static function createArrayByKey(  objects:*, propertyPath:String ) : Array {
+			var results : Array = [ ];
+			
+			for each ( var object:Object in objects )
+			{
+				results.push( PropertyUtil.getObjectPropertyValue( object, propertyPath ) );
+			}
+			
+			return results;
+		}
+		
+		/**
 		 * Given an iterable set (Array, ArrayCollection, Proxy, etc.) of Objects, returns a Dictionary of Objects indexed by the specified property name.
 		 * 
 		 * NOTE: 'dot notation' is supported.
