@@ -127,13 +127,13 @@ package com.codecatalyst.component
 		 */
 		public function initialized( document:Object, id:String ):void
 		{
-			_id = id;
-			
-			setDocument( document );
-			
+			_id 		 = id;
 			_initialized = true;
+			_document    = document;
 			
 			dispatchEvent( new FlexEvent( FlexEvent.INITIALIZE ) );
+			
+			setDocument( document );
 		}
 		
 		/**
@@ -191,11 +191,7 @@ package com.codecatalyst.component
 					var documentComponent:UIComponent = documentDispatcher as UIComponent;
 					
 					if ( documentComponent.initialized )
-					{
-						_isDocumentCreated = true;
-						
 						documentCreated();
-					}
 				}
 				
 				if ( !_isDocumentCreated )
@@ -212,6 +208,7 @@ package com.codecatalyst.component
 		 */
 		protected function documentCreated():void
 		{
+			_isDocumentCreated = true;
 			dispatchEvent( new FlexEvent( FlexEvent.CREATION_COMPLETE ) );
 		}
 		
