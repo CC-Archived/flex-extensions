@@ -45,7 +45,7 @@ package com.codecatalyst.factory.styleable
 	 * @see com.codecatalyst.component.renderer.CanvasItemRenderer
 	 * 
 	 * @example
-	 * <fe:UIComponentFactory
+	 * <fe:StyleableFactory
 	 *     id="factory
 	 *     generator="{ BoxItemRenderer }"
 	 *     styles="{ { 

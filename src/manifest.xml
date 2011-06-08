@@ -11,8 +11,9 @@
 		
 			<!-- UI -->
 	
-			<component id="Populator" class="com.codecatalyst.component.behavior.ui.Populator" />
-			<component id="Selectable" class="com.codecatalyst.component.behavior.ui.Selectable" />
+			<component id="Populator" 	class="com.codecatalyst.component.behavior.ui.Populator" />
+			<component id="Selectable" 	class="com.codecatalyst.component.behavior.ui.Selectable" />
+			<component id="Popup" 		class="com.codecatalyst.component.behavior.ui.Popup" />
 
 		<!-- Chart -->
 		
