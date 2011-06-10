@@ -261,7 +261,9 @@ package com.codecatalyst.component.behavior.ui
 				show();
 				
 			} finally {
-				if ( contentReady ) cursorAnchor = null;
+				
+				if ( contentReady ) 
+					cursorAnchor = null;
 			}
 			
 			return content;
@@ -283,7 +285,9 @@ package com.codecatalyst.component.behavior.ui
 		 *  
 		 */
 		public function release(clearCache:Boolean=false):void {
-			if (constraints != null) constraints.release();
+			
+			if (constraints != null) 
+				constraints.release();
 			
 			constraints  = null;
 			cursorAnchor = null;
@@ -448,7 +452,10 @@ package com.codecatalyst.component.behavior.ui
 		protected function stopEffects():void {
 			
 			function endPlay(effect:IEffect):void {
-				if ( effect && effect.isPlaying)  effect.end();		
+				
+				if ( effect && effect.isPlaying)  
+					effect.end();
+				
 			}
 			
 			endPlay( showEffect as IEffect);
@@ -485,7 +492,11 @@ package com.codecatalyst.component.behavior.ui
 			adjustPosition();
 			
 			PopUpManager.bringToFront(content);
-			if (content is UIComponent) UIComponent(content).isPopUp = true;
+			
+			// Make sure the PopUpmanager drag is enabled...
+			
+			if (content is UIComponent) 
+				UIComponent(content).isPopUp = true;	
 			
 			content.visible = contentReady;
 			content.stage.addEventListener(MouseEvent.MOUSE_DOWN,onMouseDown,true,0,true);
