@@ -40,6 +40,37 @@ package com.codecatalyst.component.renderer
 	 */
 	[Style( name="borderSkin", type="Class", inherit="no", states="up, over, down, disabled, selectedUp, selectedOver, selectedDown, selectedDisabled" )]
 	
+	/**
+	 * ItemRenderers present challenges when the renderer instance itself
+	 * wants to know if it is currently highlighted or selected. 
+	 * 
+	 * This class makes such questions trivial for developers.
+	 * e.g. See the isHighlighted and isSelected property usages below:
+	 * 
+	 * <code>
+	 *   
+	 *   &lt;mx:DataGridColumn &gt; 
+	 * 
+ 	 *   		&lt;mx:itemRenderer&gt;
+	 *   			&lt;mx:Component&gt;
+	 *   				&lt;fe:CanvasItemRenderer 
+	 *   				 		click="outerDocument.onShowExternalPage(event,1);"
+	 *   						useHandCursor="true" buttonMode="true" mouseChildren="false"
+	 *   						xmlns:fe="http://fe.codecatalyst.com/2011/flex-extensions" &gt;
+	 *   					
+	 *   					&lt;mx:Image source="@Embed(source='icons.swf', symbol='iconEditDark')" 
+	 *   							  verticalCenter="0" horizontalCenter="0"
+	 *   							  visible="{outerDocument.canEdit && (this.isHighlighted || this.isSelected)}" /&gt;
+	 *   					
+	 *   				&lt;/fe:CanvasItemRenderer&gt;
+	 *   			&lt;/mx:Component&gt;
+	 *   		&lt;/mx:itemRenderer&gt;
+     *   
+	 *   &lt;/mx:DataGridColumn&gt;
+     *   
+	 * </code>   
+	 *  
+	 */
 	public class CanvasItemRenderer extends Canvas implements IContainerItemRenderer
 	{
 		// ========================================

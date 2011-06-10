@@ -25,6 +25,8 @@ package com.codecatalyst.component.behavior
 	import com.codecatalyst.component.AbstractFacelessComponent;
 	
 	import mx.events.FlexEvent;
+	
+	[Event(name="updateComplete", type="mx.events.FlexEvent")]
 
 	public class AbstractBehavior extends AbstractFacelessComponent implements IBehavior
 	{

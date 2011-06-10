@@ -12,6 +12,7 @@ package com.codecatalyst.component.behavior.ui
 	
 	import mx.core.IFactory;
 	import mx.core.IFlexDisplayObject;
+	import mx.core.IInvalidating;
 	import mx.core.UIComponent;
 	import mx.effects.IEffect;
 	import mx.events.CloseEvent;
@@ -19,9 +20,9 @@ package com.codecatalyst.component.behavior.ui
 	import mx.events.FlexEvent;
 	import mx.managers.PopUpManager;
 	import mx.styles.IStyleClient;
-
+	
 	[DefaultProperty("renderer")]
-
+	
 	/**
 	 *   The Popup Behavior provides easy-to-use functionality to show any content using the Flex PopupManager. 
 	 *   The behavior, however, provides extra features such as autoClose, show/hide effects, positioning, and
@@ -40,10 +41,9 @@ package com.codecatalyst.component.behavior.ui
 	 *   Positioning is relative to the specified parent; even thought the content's true parent is the [parent's]
 	 *   SystemManager.
 	 *   </p>
- 	 * 
+	 * 
 	 *   <p>
-	 *    The show action must be programmatically triggered. While the hide action can be  
-	 *    triggered:
+	 *    The show action must be programmatically triggered. While the hide action can be triggered:
 	 * 	  <ul>
 	 * 	    <li>with a programmatically call to Popup::hide()</li>
 	 * 	    <li>with a CloseEvent dispatched from the content instance, or</li> 
@@ -52,12 +52,13 @@ package com.codecatalyst.component.behavior.ui
 	 * 	  The show and hide actions may also have effects (such as FadeIn or FadeOut) attached.
 	 *   </p>
 	 * 
- 	 *   <p>
-	 *    By default the popup content instance will be cached and reused.  
- 	 *   <p>
+	 *   <p>
+	 *    Note that, by default, the popup content instance will be cached and reused. Popup::release(true) will
+	 * 	  force the instance cache to be temporarily cleared.
+	 *   <p>
 	 *    
 	 * 
- 	 *  <code>
+	 *  <code>
 	 * 
 	 *   <mx:Script>
 	 *  	<![CDATA[
@@ -72,7 +73,27 @@ package com.codecatalyst.component.behavior.ui
 	 *          	_swiz.registerWindow(_window);
 	 *          }
 	 *          
-	 *          protected var _window : CorrelationWindow = null;
+	 *          protected function onProgrammaticPopup():void {
+	 * 				// data, positioning configuration, and show/hide effects for the popup
+	 * 
+	 *          	var config       : Object 	= { histograms:this.availableHistograms, horizontalCenter:0, bottom:20 };
+	 *          	var renderer     : IFactory = new StyleableFactory( Performances, null, config );
+	 *          	var params       : Object 	= {  showEffect : new ClassFactory( FadeIn, null, {duration:1000} ),
+	 *          								     hideEffect : new ClassFactory( FadeIn, null, {duration:300} ),
+	 *          								     autoClose  : true };
+	 * 
+	 *          	// Since not instantiated via MXML, we MUST manually initialize
+	 * 
+	 *          	var performances : Popup  	= new Popup( renderer, this.testsDataGrid, params );
+	 *          		performances.initialized(this,null);
+	 * 
+	 *          	// The show the poup and register the popup [DisplayObject instance] with Swiz
+	 * 
+	 *          	_swiz.registerWindow( performances.show() );
+	 *           }
+	 *           
+	 *
+	 *           protected var _window : CorrelationWindow = null;
 	 *          
 	 *      ]]>
 	 *  </mx:Script>
@@ -112,7 +133,7 @@ package com.codecatalyst.component.behavior.ui
 		 * @return IEffect 
 		 */
 		public var showEffect 	 	: *;			   	
-
+		
 		[Bindable]
 		[Invalidate("properties")]
 		/**
@@ -144,7 +165,7 @@ package com.codecatalyst.component.behavior.ui
 		 * "center" is used. 
 		 */
 		public var parent    	: DisplayObject;  
-
+		
 		/**
 		 *  Autoclose popup upon MouseDown outside the content popup area
 		 */
@@ -176,7 +197,7 @@ package com.codecatalyst.component.behavior.ui
 							  parent	: DisplayObject	=null, 
 							  params    : Object        =null) 
 		{
-		
+			
 			params ||= new Object;
 			params.renderer = renderer;
 			params.parent   = parent;
@@ -198,9 +219,9 @@ package com.codecatalyst.component.behavior.ui
 			for (var key:String in config) {
 				if ( this.hasOwnProperty(key) ) 
 					this[key] = config[key];
-					
-					if ((key == "showEffect") || (key == "hideEffect")) 
-						effectsEnabled ||= (config[key] != null); 
+				
+				if ((key == "showEffect") || (key == "hideEffect")) 
+					effectsEnabled ||= (config[key] != null); 
 			}
 			return this;
 		}
@@ -226,18 +247,21 @@ package com.codecatalyst.component.behavior.ui
 		 * Show the popup content at the current mouse/cursor location
 		 * with the specified topLeft offsets.
 		 * 
+		 * @param origin Point for top left positioning of the content
 		 * @param offset Point to specify offset of the content top left  
 		 * @return IFlexDisplayObject
 		 * 
 		 */
-		public function showAtMouse(offset:Point):IFlexDisplayObject {
+		public function showAt(origin:Point=null, offset:Point=null):IFlexDisplayObject {
 			try {
 				
-				cursorAnchor = new MouseAnchor(parent, content, offset);
+				stopEffects();
+				cursorAnchor = new MouseAnchor(content, origin, offset);
+				
 				show();
 				
 			} finally {
-				cursorAnchor = null;
+				if ( contentReady ) cursorAnchor = null;
 			}
 			
 			return content;
@@ -252,6 +276,26 @@ package com.codecatalyst.component.behavior.ui
 			onCloseContent();
 		}
 		
+		
+		/**
+		 * After the popup content is hidden, release the constraints
+		 * and optionally release the cached instance.
+		 *  
+		 */
+		public function release(clearCache:Boolean=false):void {
+			if (constraints != null) constraints.release();
+			
+			constraints  = null;
+			cursorAnchor = null;
+			
+			if (instance && (!cacheEnabled || clearCache)) {
+				
+				instance.removeEventListener(EffectEvent.EFFECT_END, onHideFinished);
+				instance.removeEventListener(CloseEvent.CLOSE, onCloseContent);
+				
+				instance = null;
+			}
+		}
 		
 		// ========================================
 		// Protected Overrides 
@@ -269,7 +313,7 @@ package com.codecatalyst.component.behavior.ui
 				showEffect 	= buildEffect(showEffect);
 				updateFadeEffects();
 			}
-
+			
 			if ( propertyTracker.invalidated( [ "effectsEnabled", "hideEffect" ] ) )
 			{
 				hideEffect	= buildEffect(hideEffect);
@@ -291,7 +335,7 @@ package com.codecatalyst.component.behavior.ui
 		// ========================================
 		// Protected EventHandlers 
 		// ========================================
-
+		
 		/**
 		 * 
 		 * @param event
@@ -303,6 +347,11 @@ package com.codecatalyst.component.behavior.ui
 			content.stage.addEventListener(MouseEvent.MOUSE_DOWN,onMouseDown,true,0,true);
 			
 			showInstance();
+			
+			// Since positioning changes [in showInstance() above] may affect content rendering
+			
+			if (content is IInvalidating) 
+				IInvalidating(content).invalidateDisplayList();
 		}
 		
 		/**
@@ -375,7 +424,7 @@ package com.codecatalyst.component.behavior.ui
 				
 				if (effectsEnabled && showEffect) 
 					content.visible = false; 
-
+				
 				if (effectsEnabled && hideEffect) 
 					content.addEventListener(EffectEvent.EFFECT_END, onHideFinished, false, 0, true);
 			}
@@ -390,10 +439,20 @@ package com.codecatalyst.component.behavior.ui
 		protected function buildEffect(effect:*):IEffect 
 		{
 			var results : IEffect = (effect is IFactory) ?  IFactory(effect).newInstance() as IEffect :
-									(effect is Class)    ?  new effect() as IEffect					  : 
-									effect as IEffect;
+				(effect is Class)    ?  new effect() as IEffect					  : 
+				effect as IEffect;
 			
 			return results;
+		}
+		
+		protected function stopEffects():void {
+			
+			function endPlay(effect:IEffect):void {
+				if ( effect && effect.isPlaying)  effect.end();		
+			}
+			
+			endPlay( showEffect as IEffect);
+			endPlay( hideEffect as IEffect); 
 		}
 		
 		
@@ -424,7 +483,7 @@ package com.codecatalyst.component.behavior.ui
 		protected function showInstance():void 
 		{
 			adjustPosition();
-
+			
 			PopUpManager.bringToFront(content);
 			if (content is UIComponent) UIComponent(content).isPopUp = true;
 			
@@ -446,7 +505,7 @@ package com.codecatalyst.component.behavior.ui
 			
 			PopUpManager.centerPopUp(content);
 		}
-
+		
 		
 		/**
 		 * Dynamically move and resize (if needed) the popup content according to the anchor
@@ -457,32 +516,12 @@ package com.codecatalyst.component.behavior.ui
 			// Since the content constraint styles may change at any time, always create new Anchor instance 
 			
 			constraints = new Anchors(parent,content);
-
+			
 			// Apply cursorAnchor FIRST (if specified), fallback to constraints (if specified)
 			
 			return (cursorAnchor && cursorAnchor.apply()) || constraints.apply()
 		}
 		
-		
-		/**
-		 * After the popup content is hidden, release the constraints
-		 * and optionally release the cached instance.
-		 *  
-		 */
-		protected function release():void {
-			constraints.release();
-			
-			constraints  = null;
-			cursorAnchor = null;
-			
-			if (instance && !cacheEnabled) {
-				
-				instance.removeEventListener(EffectEvent.EFFECT_END, onHideFinished);
-				instance.removeEventListener(CloseEvent.CLOSE, onCloseContent);
-				
-				instance = null;
-			}
-		}
 		
 		// ========================================
 		// Protected Properties
@@ -507,15 +546,15 @@ package com.codecatalyst.component.behavior.ui
 			
 			return instance;
 		}
-
+		
 		/**
 		 * Getter to determine if the content is ready 
 		 * @return Boolean 
 		 */
 		protected function get contentReady():Boolean {
 			return (  content 							&& 
-					 (content is UIComponent) 			&& 
-					 UIComponent(content).initialized	);
+				(content is UIComponent) 			&& 
+				UIComponent(content).initialized	);
 		}
 		
 		/**
@@ -542,7 +581,7 @@ package com.codecatalyst.component.behavior.ui
 		 * Invalidation tracker.
 		 */
 		protected var propertyTracker:InvalidationTracker = new InvalidationTracker( this as IEventDispatcher );
-
+		
 		// **********************************************************
 		// Utility Methods 
 		// **********************************************************
@@ -561,7 +600,7 @@ package com.codecatalyst.component.behavior.ui
 			
 			/**
 			 * If the mouse coordinates are (0,0), there  is a chance the component 
-		     * has not been positioned yet and we'll end up mistakenly hitTest will 
+			 * has not been positioned yet and we'll end up mistakenly hitTest will 
 			 * return true.
 			 */ 
 			if ( (target.stage.mouseX == 0) && (target.stage.mouseY == 0) )
@@ -594,6 +633,10 @@ import mx.core.UIComponent;
 import mx.styles.IStyleClient;
 
 
+/**
+ * This class manages the positioning of the popup target according
+ * to [optional] mouse coordinates or specific pixel location.  
+ */
 class MouseAnchor {
 	
 	/**
@@ -602,32 +645,49 @@ class MouseAnchor {
 	 * @param parent Simulated parent for the target; may not be actual parent
 	 * @param child  DisplayObject that will be positioned relative to the parent
 	 */
-	public function MouseAnchor(parent:Object, child:Object, offset:Point) {
-		this.parent = parent as DisplayObject;
+	public function MouseAnchor(child:Object, origin:Point=null, offset:Point=null) {
 		this.child  = child as DisplayObject;
+		
+		this.origin = origin;
 		this.offset = offset || new Point();
 	}
 	
 	public function apply():Boolean {
 		if ( !child || !child.stage ) return false;
 		
-		var pnt : Point = new Point(child.stage.mouseX, child.stage.mouseY);
-			pnt = child.stage.localToGlobal(pnt);
-
-			pnt.add(offset);
-			pnt = child.parent.globalToLocal(pnt);
-			
-			child.x = pnt.x
-			child.y = pnt.y;
-			
+		var mLoc: Point = new Point(child.stage.mouseX, child.stage.mouseY);
+		var pnt : Point = origin || child.stage.localToGlobal(mLoc);
+		
+		pnt = child.parent.globalToLocal( pnt.add(offset) );
+		
+		child.x = pnt.x
+		child.y = pnt.y;
+		
 		return true;
 	}
-
-	protected var parent : DisplayObject;
+	
+	/**
+	 * Popup target instance 
+	 */
 	protected var child  : DisplayObject;
+	
+	/**
+	 * Offset of TopLeft wrt Origin 
+	 */
 	protected var offset : Point;
+	/**
+	 * LeftTop coordinates of the popup in Global coordinates 
+	 */
+	protected var origin : Point;
 }
 
+
+
+/**
+ * Anchors manages position changes to conform to target anchor styles with respect
+ * to the popup's parent
+ * 
+ */
 class Anchors {
 	
 	public function get hasAnchors():Boolean {
@@ -674,7 +734,7 @@ class Anchors {
 		applyAnchors(bounds, child as IUIComponent);
 	}
 	
-
+	
 	/**
 	 *  @private
 	 *  Here is a description of the layout algorithm.
@@ -757,27 +817,27 @@ class Anchors {
 		// minus any specified left, top, right, or bottom anchors for this child. Also, respect the child's minimum and maximum sizes.
 		
 		w 	=	( !isNaN(left) && !isNaN(right) )	?	Math.max(availableWidth - left - right, child.minWidth)									:
-				( !isNaN(child.percentWidth) )		?	inBounds(child.percentWidth / 100 * availableWidth, child.minWidth, child.maxWidth)		:
-				child.getExplicitOrMeasuredWidth();
+			( !isNaN(child.percentWidth) )		?	inBounds(child.percentWidth / 100 * availableWidth, child.minWidth, child.maxWidth)		:
+			child.getExplicitOrMeasuredWidth();
 		
 		//The height of the region which the control will live in. 
 		
 		h 	=	( !isNaN(top) && !isNaN(bottom) )	?	Math.max(availableHeight - top - bottom, child.minHeight)								:
-				( !isNaN(child.percentHeight) )		?	inBounds(child.percentHeight / 100 * availableHeight, child.minHeight, child.maxHeight)	:
-				child.getExplicitOrMeasuredHeight();
+			( !isNaN(child.percentHeight) )		?	inBounds(child.percentHeight / 100 * availableHeight, child.minHeight, child.maxHeight)	:
+			child.getExplicitOrMeasuredHeight();
 		
 		// The left, right, and horizontalCenter styles affect the child's x and/or its actual width.
 		
-	 	x = !isNaN(horizontalCenter) ?	Math.round((availableWidth - w) / 2 + horizontalCenter)	:
+		x = !isNaN(horizontalCenter) ?	Math.round((availableWidth - w) / 2 + horizontalCenter)	:
 			!isNaN(left)             ?  left 													:
 			!isNaN(right)            ?  availableWidth - right - w								: child.y;
-				
+		
 		// The top, bottom, verticalCenter and baseline styles affect the child's y and/or its actual height.
-			
+		
 		y = !isNaN(verticalCenter) 	 ?	Math.round((availableHeight - h) / 2 + verticalCenter)	:
 			!isNaN(top)              ?  top 													:
 			!isNaN(bottom)           ?  availableHeight - bottom - h							: child.x;
-					
+		
 		// One last test here. If the width/height is a percentage,
 		// limit the width/height to the available content width/height, 
 		// but honor the minWidth/minHeight.
@@ -786,14 +846,14 @@ class Anchors {
 		h = checkHeight	&& (y + h > availableHeight)	?	Math.max(availableHeight - y, child.minHeight)		: NaN;
 		
 		var pnt : Point = parent.localToGlobal(new Point(x, y));
-		    pnt         = child.parent.globalToLocal(pnt);
+		pnt         = child.parent.globalToLocal(pnt);
 		
 		child.move(pnt.x, pnt.y);
 		
 		if ( !isNaN(w) && !isNaN(h) )
 			child.setActualSize(w, h);
 	}
-
+	
 	/**
 	 *  @private
 	 *  Collect all the layout constraints for this child and package
@@ -806,12 +866,12 @@ class Anchors {
 		
 		var constraints	: LayoutConstraints = new LayoutConstraints();
 		
-			constraints.top 				= constraintChild.getStyle("top");
-			constraints.left 				= constraintChild.getStyle("left");
-			constraints.bottom 				= constraintChild.getStyle("bottom");
-			constraints.right 				= constraintChild.getStyle("right");
-			constraints.horizontalCenter 	= constraintChild.getStyle("horizontalCenter");
-			constraints.verticalCenter 		= constraintChild.getStyle("verticalCenter");
+		constraints.top 				= constraintChild.getStyle("top");
+		constraints.left 				= constraintChild.getStyle("left");
+		constraints.bottom 				= constraintChild.getStyle("bottom");
+		constraints.right 				= constraintChild.getStyle("right");
+		constraints.horizontalCenter 	= constraintChild.getStyle("horizontalCenter");
+		constraints.verticalCenter 		= constraintChild.getStyle("verticalCenter");
 		
 		return constraints;
 	}
@@ -824,7 +884,7 @@ class Anchors {
 	private function inBounds(a:Number, min:Number, max:Number):Number
 	{
 		return   ( a < min ) ? min	:
-			     ( a > max ) ? max  : Math.floor(a);
+			( a > max ) ? max  : Math.floor(a);
 	}
 	
 	protected var parent : DisplayObject;
@@ -833,6 +893,9 @@ class Anchors {
 
 
 
+/**
+ * A data structure snapshot of the target's current anchors/constraints 
+ */
 class LayoutConstraints
 {
 	public var top				:*;

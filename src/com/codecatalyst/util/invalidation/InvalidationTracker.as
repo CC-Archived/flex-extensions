@@ -229,7 +229,7 @@ package com.codecatalyst.util.invalidation
 				invalidateMetadataOptions
 					.split(",")
 					.map( function ( item:String, index:int, array:Array ):uint { 
-						switch( StringUtil.trim( item ) )
+						switch( StringUtil.trim( item ).toLowerCase() )
 						{
 							case "displaylist":  return InvalidationFlags.DISPLAY_LIST;
 							case "size":         return InvalidationFlags.SIZE;
