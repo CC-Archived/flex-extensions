@@ -78,8 +78,8 @@ package com.codecatalyst.component.behavior.ui
 	 * 
 	 *          	var config       : Object 	= { histograms:this.availableHistograms, horizontalCenter:0, bottom:20 };
 	 *          	var renderer     : IFactory = new StyleableFactory( Performances, null, config );
-	 *          	var params       : Object 	= {  showEffect : new ClassFactory( FadeIn, null, {duration:1000} ),
-	 *          								     hideEffect : new ClassFactory( FadeIn, null, {duration:300} ),
+	 *          	var params       : Object 	= {  showEffect : new ClassFactory( Fade, null, {duration:1000} ),
+	 *          								     hideEffect : new ClassFactory( Fade, null, {duration:300} ),
 	 *          								     autoClose  : true };
 	 * 
 	 *          	// Since not instantiated via MXML, we MUST manually initialize
@@ -103,8 +103,8 @@ package com.codecatalyst.component.behavior.ui
 	 *				parent="{this}"
 	 *				autoClose="true"	
 	 *				modal="false" 
-	 *				showEffect="{   new ClassFactory( FadeIn,null,{duration:600} )    }" 	
-	 *				hideEffect="{  new ClassFactory( FadeOut,null,{duration:400} )   }" 	
+	 *				showEffect="{   new ClassFactory( Fade,null,{duration:600} )    }" 	
+	 *				hideEffect="{  new ClassFactory( Fade,null,{duration:400} )   }" 	
 	 *				renderer="{ new StyleableFactory( CorrelationWindow, null,{ bottom:100, right:100 } ) }"  
 	 *				xmlns:ui="com.codecatalyst.component.behavior.ui.*" />
 	 * 

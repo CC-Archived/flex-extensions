@@ -26,6 +26,7 @@ package com.codecatalyst.component.renderer
 	import flash.events.MouseEvent;
 	
 	import mx.containers.Canvas;
+	import mx.controls.listClasses.AdvancedListBase;
 	import mx.controls.listClasses.BaseListData;
 	import mx.controls.listClasses.ListBase;
 	import mx.core.IStateClient;
@@ -200,14 +201,20 @@ package com.codecatalyst.component.renderer
 		override protected function updateDisplayList( unscaledWidth:Number, unscaledHeight:Number ):void
 		{
 			super.updateDisplayList( unscaledWidth, unscaledHeight );
+			
+			var listBase 	  : ListBase 			= (_listData && _listData.owner is ListBase) 		 ?	_listData.owner as ListBase 		: null;
+			var adgBase  	  : AdvancedListBase	= (_listData && _listData.owner is AdvancedListBase) ?	_listData.owner as AdvancedListBase : null;
+			
+			var isHighlighted : Boolean 			= listBase ? listBase.isItemHighlighted(data) 	:
+										  			  adgBase  ? adgBase.isItemHighlighted(data)  	: false;
+			var isSelected	  : Boolean 			= listBase ? listBase.isItemSelected(data) 		:
+													  adgBase  ? adgBase.isItemSelected(data)  		: false;
 
-			if ( ( _listData != null ) && ( _listData.owner is ListBase ) )
+			if ( _listData != null ) 
 			{
-				var listBase:ListBase = _listData.owner as ListBase;
-				
-				setHighlighted( listBase.isItemHighlighted( data ) );
-				setSelected( listBase.isItemSelected( data ) );
-			}
+				setHighlighted( isHighlighted );
+				setSelected( isSelected );
+			} 
 						
 			if ( border != null )
 			{
