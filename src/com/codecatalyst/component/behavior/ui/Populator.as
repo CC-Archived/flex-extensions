@@ -26,6 +26,7 @@ package com.codecatalyst.component.behavior.ui
 	import com.codecatalyst.component.behavior.IBehavior;
 	import com.codecatalyst.util.CollectionViewUtil;
 	import com.codecatalyst.util.FactoryPool;
+	import com.codecatalyst.util.invalidation.InvalidationTracker;
 	
 	import flash.display.DisplayObject;
 	import flash.events.Event;
@@ -46,39 +47,14 @@ package com.codecatalyst.component.behavior.ui
 		// ========================================
 		
 		/**
-		 * Backing variable for <code>target</code> property.
+		 * Invalidation tracker.
 		 */
-		protected var _target:Container;
-		
-		/**
-		 * Backing variable for <code>dataProvider</code> property.
-		 */
-		protected var _dataProvider:Object;
-		
-		/**
-		 * Backing variable for <code>itemRenderer</code> property.
-		 */			
-		protected var _itemRenderer:IFactory;
+		protected var propertyTracker:InvalidationTracker;
 		
 		/**
 		 * An ICollectionView that represents the data provider.
 		 */
 		protected var collection:ICollectionView;
-		
-		/**
-		 * Indicates the <code>target</code> property changed and must be committed.
-		 */
-		protected var targetChanged:Boolean;
-		
-		/**
-		 * Indicates the <code>dataProvider</code> property changed and must be committed.
-		 */
-		protected var dataProviderChanged:Boolean;
-		
-		/**
-		 * Indicates the <code>itemRenderer</code> property changed and must be committed.
-		 */
-		protected var itemRendererChanged:Boolean;
 		
 		/**
 		 * Item renderer object pool.
@@ -89,81 +65,31 @@ package com.codecatalyst.component.behavior.ui
 		// Public properties
 		// ========================================
 		
-		[Bindable( "targetChanged" )]
+		[Bindable]
+		[Invalidate("properties")]
 		/**
 		 * Target container.
 		 */
-		public function get target():Container
-		{
-			return _target;	
-		}
+		public var target : Container;
+
 		
-		public function set target( value:Container ):void
-		{
-			if ( _target != value )
-			{			
-				_target = value;
-				
-				targetChanged = true;
-				
-				invalidateProperties();
-				
-				dispatchEvent( new Event( "targetChanged" ) );
-			}
-		}
-		
-		[Bindable( "dataProviderChanged" )]
+		[Bindable]
+		[Invalidate("properties")]
 		/**
 		 * Data provider.
 		 */		
-		public function get dataProvider():Object
-		{
-			return _dataProvider;
-		}
+		public var dataProvider : Object;
+
 		
-		public function set dataProvider( value:Object ):void
-		{
-			if ( _dataProvider != value )
-			{
-				_dataProvider = value;
-				
-				dataProviderChanged = true;
-				
-				invalidateProperties();
-				
-				dispatchEvent( new Event( "dataProviderChanged" ) );
-			}
-		}
-		
-		[Bindable( "itemRendererChanged" )]
+		[Bindable]
+		[Invalidate("properties")]
 		/**
 		 * Custom view to use to render the data.
 		 * 
 		 * @see mx.core.IDataRenderer IDataRenderer
-		 */	
-		public function get itemRenderer():IFactory
-		{
-			return _itemRenderer;
-		}
+		 */
+		public var itemRenderer : IFactory;
 		
-		public function set itemRenderer( value:IFactory ):void
-		{
-			if ( _itemRenderer != value )
-			{
-				_itemRenderer = value;
-				
-				if ( itemRendererPool != null )
-					itemRendererPool.reset();
-				
-				itemRendererPool = new FactoryPool( value );
-				
-				itemRendererChanged = true;
-				
-				invalidateProperties();
-				
-				dispatchEvent( new Event( "itemRendererChanged" ) );
-			}
-		}
 		
 		// ========================================
 		// Constructor
@@ -175,6 +101,7 @@ package com.codecatalyst.component.behavior.ui
 		public function Populator()
 		{
 			super();
+			propertyTracker = new InvalidationTracker( this )
 		}
 		
 		// ========================================
@@ -188,24 +115,27 @@ package com.codecatalyst.component.behavior.ui
 		{
 			super.commitProperties();
 			
-			if ( dataProviderChanged )
+			if (propertyTracker.invalidated( ["dataProvider"] ))
 			{
 				if ( collection != null )
 					collection.removeEventListener( CollectionEvent.COLLECTION_CHANGE, collectionChangeHandler );
 				
-				collection = CollectionViewUtil.create( _dataProvider );
+				collection = CollectionViewUtil.create( dataProvider );
 				
 				collection.addEventListener( CollectionEvent.COLLECTION_CHANGE, collectionChangeHandler, false, 0, true );
 			}
 			
-			if ( dataProviderChanged || itemRendererChanged  || targetChanged )
+			if (propertyTracker.invalidated( ["itemRenderer"] ))
 			{
-				reset();
+				if ( itemRendererPool != null )
+					itemRendererPool.reset();
 				
-				dataProviderChanged = false;
-				itemRendererChanged = false;
-				targetChanged = false;
+				itemRendererPool = new FactoryPool( itemRenderer );
 			}
+			
+			
+			if (propertyTracker.invalidated( ["dataProvider", "itemRenderer", "target"] )) 
+				reset();
 		}
 		
 		/**
