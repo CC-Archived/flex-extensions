@@ -342,13 +342,13 @@ package com.codecatalyst.component.behavior.ui
 		 * @param document Object parent container for the tag 
 		 * @param id String identifier for this popup instance
 		 */
-		/*override public function initialized( document:Object, id:String ):void 
+		override public function initialized( document:Object, id:String ):void 
 		{
 			if ((document is DisplayObject) && !parent) 
 				this.parent = document as DisplayObject;
 			
 			super.initialized(document,id);
-		}*/
+		}
 		
 		// ========================================
 		// Protected EventHandlers 
