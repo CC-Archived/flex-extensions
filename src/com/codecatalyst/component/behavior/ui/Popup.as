@@ -58,10 +58,10 @@ package com.codecatalyst.component.behavior.ui
 	 *   <p>
 	 *    
 	 * 
-	 *  <code>
+	 *  <pre>
 	 * 
-	 *   <mx:Script>
-	 *  	<![CDATA[
+	 *   &lt;mx:Script&gt;
+	 *  	&lt;![CDATA[
 	 *  		import com.codecatalyst.component.behavior.ui.Popup;
 	 *  		import com.codecatalyst.factory.ClassFactory;
 	 *  		import com.codecatalyst.factory.styleable.StyleableFactory;
@@ -95,10 +95,10 @@ package com.codecatalyst.component.behavior.ui
 	 *
 	 *           protected var _window : CorrelationWindow = null;
 	 *          
-	 *      ]]>
-	 *  </mx:Script>
+	 *      ]]&gt;
+	 *  &lt;/mx:Script&gt;
 	 * 
-	 *	<ui:Popup 	
+	 *	&lt;ui:Popup 	
 	 *        id="correlations"
 	 *				parent="{this}"
 	 *				autoClose="true"	
@@ -106,23 +106,23 @@ package com.codecatalyst.component.behavior.ui
 	 *				showEffect="{   new ClassFactory( Fade,null,{duration:600} )    }" 	
 	 *				hideEffect="{  new ClassFactory( Fade,null,{duration:400} )   }" 	
 	 *				renderer="{ new StyleableFactory( CorrelationWindow, null,{ bottom:100, right:100 } ) }"  
-	 *				xmlns:ui="com.codecatalyst.component.behavior.ui.*" />
+	 *				xmlns:ui="com.codecatalyst.component.behavior.ui.*" /&gt;
 	 * 
-	 * 	<ui:Popup	id="performances"
+	 * 	&lt;ui:Popup	id="performances"
 	 * 				parent="testsGrid"
 	 * 				autoClose="true" modal="true"
-	 * 				xmlns:ui="com.codecatalyst.component.behavior.ui.*" >
+	 * 				xmlns:ui="com.codecatalyst.component.behavior.ui.*" &gt;
 	 * 
-	 * 			<mx:Component>
-	 * 				<PerformanceHistory  
+	 * 			&lt;mx:Component&gt;
+	 * 				&lt;PerformanceHistory  
 	 * 						histograms="{this.availableHistograms}" 
 	 * 						horizontalCenter="0" 
-	 * 						bottom="20" />
-	 * 			</mx:Component>
+	 * 						bottom="20" /&gt;
+	 * 			&lt;/mx:Component&gt;
 	 * 
-	 *  </ui:Popup>
+	 *  &lt;/ui:Popup&gt;
 	 * 
-	 * </code>
+	 * </pre>
 	 */	
 	public class Popup extends AbstractBehavior implements IBehavior
 	{
@@ -335,6 +335,20 @@ package com.codecatalyst.component.behavior.ui
 			}
 			
 		}
+		
+		/**
+		 * Override to auto-set the "parent" if not already initialized
+		 *  
+		 * @param document Object parent container for the tag 
+		 * @param id String identifier for this popup instance
+		 */
+		/*override public function initialized( document:Object, id:String ):void 
+		{
+			if ((document is DisplayObject) && !parent) 
+				this.parent = document as DisplayObject;
+			
+			super.initialized(document,id);
+		}*/
 		
 		// ========================================
 		// Protected EventHandlers 
