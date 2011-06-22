@@ -1,0 +1,269 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas width="200" height="21"
+		   initialize="this.delay = 400;"
+		   click="event.stopImmediatePropagation();"
+		   cornerRadius="3" backgroundColor="#ffffff"
+		   borderStyle="solid" borderThickness="1" borderColor="#CCCCCC"
+		   xmlns:mx="http://www.adobe.com/2006/mxml">
+	
+	<mx:Metadata>
+		/**
+		 * Simple announcement of change to listeners
+		 */
+		[Event(name="change", type="flash.events.Event")]
+		
+		/**
+		* Background color to use while the filter is active
+		*/
+		[Style(name="filterActiveColor", type="Number", inherit="no")]
+		
+		/**
+		* Background color to use while the filter is idle (text == "")
+		*/
+		[Style(name="filterIdleColor", type="Number", inherit="no")]
+
+	</mx:Metadata>
+	
+	
+
+	<mx:Script>
+		<![CDATA[
+			import asset.image.search.SearchAsset;
+			
+			import mx.effects.Fade;
+			import mx.utils.ColorUtil;
+			import mx.utils.StringUtil;
+			
+			
+			// ************************************************************************************
+			// Public Properties 
+			// ************************************************************************************
+
+			/**
+			 * Flag determines if any keyDown will dispatch a 
+			 * change event. Otherwise an ENTER key is required to commit.
+			 */
+			public var live : Boolean = true;
+			
+			/**
+			 * Delay [in milliseconds] before the `change` event is dispatched. 
+			 */
+			public function set delay (val:uint):void {
+				if (_delay != val) {
+					_delay = val;
+					buildTimer(val);
+				}
+			}
+			
+			[Bindable('change')]
+			public function get text():String {
+				return input ? StringUtil.trim(input.text) : ""; 
+			}
+			public function set text(val:String):void {
+				if (text != val) {
+					input.text = val;
+					announce();
+				}
+			}
+			
+			[Bindable]
+			public var hint : String = "Search for..."; 
+			
+			
+			// ************************************************************************************
+			// Public methods  
+			// ************************************************************************************
+			
+			public function reset():void {
+				if ( _timer ) 
+					_timer.stop;
+				
+				input.text = '';
+				
+				invalidateDisplayList();
+			}
+			
+			// ************************************************************************************
+			// Overrides  
+			// ************************************************************************************
+			
+			/**
+			 * @inheritDoc
+			 */
+			override public function styleChanged( styleProp:String ):void
+			{
+				var allStyles:Boolean = ( ( styleProp == null ) || ( styleProp == "styleName" ) );
+				
+				super.styleChanged( styleProp );
+				
+					function isChanged(style:String):Boolean {
+						return ( ( allStyles == true ) || ( styleProp == style ) );
+					}
+				
+				filterActiveColor = isChanged("filterActiveColor") ? getStyle( "filterActiveColor" ) : filterActiveColor;
+				filterActiveColor ||= 0xbfe5a7;
+				
+				filterIdleColor   = isChanged("filterIdleColor") ? getStyle( "filterIdleColor" ) : filterIdleColor;
+				filterIdleColor   ||= 0xffffff;
+
+				invalidateDisplayList();
+				
+			}
+
+			/**
+			 * @inheritDoc
+			 */
+			override protected function updateDisplayList( unscaledWidth:Number, unscaledHeight:Number ):void
+			{
+				super.updateDisplayList( unscaledWidth, unscaledHeight );
+				
+				setStyle("backgroundColor",(text != '') ? filterActiveColor : filterIdleColor);
+			}
+			
+			// ************************************************************************************
+			// Protected Eventhandlers 
+			// ************************************************************************************
+			
+			
+			protected function onSelectAll(e:Event):void {
+				input.selectionBeginIndex = 0;
+				input.selectionEndIndex = input.text.length;
+			}
+			
+			protected function onKeyDown(event:KeyboardEvent):void {
+				var commit : Boolean = event.keyCode == Keyboard.ENTER;
+				
+				if ( commit == true ) {
+					this.setFocus();	
+					callLater( announce );
+				}
+
+				if ( live ) 
+					announce( text == '' );
+				
+			}
+			
+			/**
+			 *  
+			 */
+			protected function onClearSearch():void {
+				input.text = ''; 
+				
+				input.setFocus();
+				input.validateNow();
+				
+				callLater( announce, [true] );
+			}
+			
+			/**
+			 * The Timer event has fired; so the delay was achieved without a 
+			 * reset. Therefore, announce changes and stop the timer. 
+			 */
+			protected function onDelayedAnnounce(event:Event):void {
+				announce(true);
+			}
+			
+			// ************************************************************************************
+			// Private Announce Method 
+			// ************************************************************************************
+			
+			/**
+			 * Notify listeners that the `text` [aka search criteria] has changed.
+			 * If not `immediate` then reset the time for the next interval (ala callLater)
+			 * to support future changes and batch-like notifications
+			 * 
+			 * @param immediate Boolean true is the timer should be stopped/ignored and notification sent immediately. 
+			 */
+			protected function announce(immediate:Boolean=false):void {
+				
+				if ( immediate ) 	
+				{
+					if ( _timer ) 
+						_timer.stop();
+					
+					invalidateDisplayList();
+					
+					dispatchEvent( new Event("change") );
+					
+				} else {
+					
+					resetDelay();
+					
+				}
+				
+			}
+			
+			// ************************************************************************************
+			// Protected Methods for timer and delayed change announcements
+			// ************************************************************************************
+			
+			/**
+			 * Build internal timer instance; used to feature `delayed` change notifications 
+			 */
+			protected function buildTimer(delay:int):void {
+				if ( _timer ) _timer.stop();
+				_timer = (delay == 0) ? null : new Timer(delay);
+				
+				if ( _timer ) 
+					_timer.addEventListener(TimerEvent.TIMER,onDelayedAnnounce,false,0,true);
+			}
+			
+			/**
+			 * Reset timer to wait another delay interval before announcing `text` changes 
+			 * Whenever the text changes (except for the `clear` action), restart the timer.
+			 */
+			protected function resetDelay():void {
+				if ( !_timer ) return;
+				
+				_timer.reset();
+				_timer.start();
+			}
+			
+			// ************************************************************************************
+			// Private Properties
+			// ************************************************************************************
+			
+			protected var _timer : Timer = null;
+			protected var _delay : uint  = 0;
+			
+			/**
+			 * Background color to use while the filter is active
+			 */
+			protected var filterActiveColor:Number = 0xbfe5a7;
+			
+			/**
+			 * Background color to use while the filter is idle (text == "")
+			 */
+			protected var filterIdleColor:Number = 0xffffff;
+			
+		]]>
+	</mx:Script>
+	
+	<mx:Image source="{SearchAsset.SEARCH_FOR}" 
+			  alpha="0.8" filters="{[new DropShadowFilter(1,45,0,.2)]}"
+			  x="5" y="3" 
+			  mouseEnabled="false"/>
+	
+	<mx:Label x="25"
+			  text="{hint}" alpha=".5" visible="{input.text == ''}" 
+			  showEffect="Fade"
+			  mouseEnabled="false" selectable="false" />
+	
+	<mx:TextInput id="input" 
+				  width="100%" 
+				  paddingLeft="25" 
+				  backgroundAlpha="0.01" borderThickness="0" borderStyle="none"
+				  focusIn="onSelectAll(event);"
+				  keyUp="onKeyDown(event)" />
+	
+	
+	<mx:Image source="{SearchAsset.SEARCH_CLEAR}" 
+			  right="5" y="{text == '' ? 3 : 2}"
+			  buttonMode="true" useHandCursor="true"
+			  filters="{text == '' ? [ ] : [new DropShadowFilter(1,45,0,.6)]}"
+			  click="onClearSearch()" 
+			  toolTip="Clear this filter" 
+			  visible="{!input.text==''}" />
+	
+	
+</mx:Canvas>
