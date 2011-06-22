@@ -52,12 +52,12 @@ package com.codecatalyst.component.behavior.ui
 		 * @see #selectedItem
 		 * @see #selectedItems
 		 */
-		protected var _selectedItems:Array;
+		protected var _selectedItems:Array = new Array();
 		
 		/**
 		 * Property invalidation tracker.
 		 */
-		protected var propertyTracker:InvalidationTracker;
+		protected var propertyTracker:InvalidationTracker = new InvalidationTracker( this as IEventDispatcher );
 		
 		/**
 		 * 'data' Property.
