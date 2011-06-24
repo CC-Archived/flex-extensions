@@ -14,5 +14,12 @@ package asset.image.search
 		 */
 		public static const SEARCH_FOR:Class;
 		
+		
+		[Embed(source="/asset/image/search/busy.png")]
+		/**
+		 * 'Busy searching...' icon.
+		 */
+		public static const SEARCH_BUSY:Class;
+		
 	}
 }
