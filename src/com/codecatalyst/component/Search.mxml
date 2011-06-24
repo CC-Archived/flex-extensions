@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:Canvas width="200" height="21"
-		   initialize="this.delay = 400;"
+		   initialize="this.delay = 600;"
 		   click="event.stopImmediatePropagation();"
 		   cornerRadius="3" backgroundColor="#ffffff"
 		   borderStyle="solid" borderThickness="1" borderColor="#CCCCCC"
@@ -21,6 +21,11 @@
 		* Background color to use while the filter is idle (text == "")
 		*/
 		[Style(name="filterIdleColor", type="Number", inherit="no")]
+		
+		/**
+		* Background color to use while the filter is idle (text == "")
+		*/
+		[Style(name="filterDirtyColor", type="Number", inherit="no")]
 
 	</mx:Metadata>
 	
@@ -100,10 +105,10 @@
 						return ( ( allStyles == true ) || ( styleProp == style ) );
 					}
 				
-				filterActiveColor = isChanged("filterActiveColor") ? getStyle( "filterActiveColor" ) : filterActiveColor;
+				filterActiveColor   = isChanged("filterActiveColor") ? getStyle( "filterActiveColor" ) : filterActiveColor;
 				filterActiveColor ||= 0xbfe5a7;
 				
-				filterIdleColor   = isChanged("filterIdleColor") ? getStyle( "filterIdleColor" ) : filterIdleColor;
+				filterIdleColor     = isChanged("filterIdleColor") ? getStyle( "filterIdleColor" ) : filterIdleColor;
 				filterIdleColor   ||= 0xffffff;
 
 				invalidateDisplayList();
@@ -117,7 +122,7 @@
 			{
 				super.updateDisplayList( unscaledWidth, unscaledHeight );
 				
-				setStyle("backgroundColor",(text != '') ? filterActiveColor : filterIdleColor);
+				updateStatusColor();
 			}
 			
 			// ************************************************************************************
@@ -133,13 +138,19 @@
 			protected function onKeyDown(event:KeyboardEvent):void {
 				var commit : Boolean = event.keyCode == Keyboard.ENTER;
 				
-				if ( commit == true ) {
+				if ( commit && !live ) {
 					this.setFocus();	
 					callLater( announce );
 				}
-
+			}
+			
+			protected function onCriteriaChange(event:Event):void {
+				
+				dirty = live && true;
+				updateStatusColor();
+				
 				if ( live ) 
-					announce( text == '' );
+					announce( );
 				
 			}
 			
@@ -178,6 +189,8 @@
 				
 				if ( immediate ) 	
 				{
+					dirty = false;
+					
 					if ( _timer ) 
 						_timer.stop();
 					
@@ -185,12 +198,25 @@
 					
 					dispatchEvent( new Event("change") );
 					
+					
+					
 				} else {
 					
 					resetDelay();
 					
 				}
 				
+			}
+			
+			
+			protected function updateStatusColor():void {
+				var bkgrndColor : Number = 	getStyle("backgroundColor") as Number;
+				
+				var newColor    : Number = 	dirty 		 ? filterDirtyColor : 
+											(text != '') ? filterActiveColor : filterIdleColor;
+				
+				if (bkgrndColor != newColor) 
+					setStyle("backgroundColor", newColor);
 			}
 			
 			// ************************************************************************************
@@ -236,6 +262,17 @@
 			 */
 			protected var filterIdleColor:Number = 0xffffff;
 			
+			/**
+			 * Background color to use while the filter has changed is preparing to announcd
+			 * changes.
+			 */
+			protected var filterDirtyColor:Number = 0xfbf2b9;
+			
+			/**
+			 * Has the changed search criteria been announced ?
+			 */
+			protected var dirty	: Boolean = false;
+			
 		]]>
 	</mx:Script>
 	
@@ -254,7 +291,8 @@
 				  paddingLeft="25" 
 				  backgroundAlpha="0.01" borderThickness="0" borderStyle="none"
 				  focusIn="onSelectAll(event);"
-				  keyUp="onKeyDown(event)" />
+				  keyDown="onKeyDown(event)" 
+				  change="onCriteriaChange(event)"/>
 	
 	
 	<mx:Image source="{SearchAsset.SEARCH_CLEAR}" 

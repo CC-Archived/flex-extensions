@@ -392,6 +392,8 @@ package com.codecatalyst.component.behavior.ui
 			
 			if (hideEffect == null) 
 				onHideFinished();
+			
+			event.stopPropagation();
 		}
 		
 		/**
