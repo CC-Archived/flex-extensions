@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <actionScriptProperties analytics="false" mainApplicationPath="foundation.as" projectUUID="c404e846-5879-4b64-92d8-b5a70efef147" version="10">
-  <compiler additionalCompilerArguments="-locale en_US -keep-as3-metadata+=Invalidate -define=CONFIG::FLEX3,true -define=CONFIG::FLEX4,false" autoRSLOrdering="true" copyDependentFiles="false" flex3CompatMode="false" fteInMXComponents="false" generateAccessible="false" htmlExpressInstall="true" htmlGenerate="false" htmlHistoryManagement="false" htmlPlayerVersionCheck="true" includeNetmonSwc="false" outputFolderPath="bin" removeUnusedRSL="true" sourceFolderPath="src" strict="true" targetPlayerVersion="0.0.0" useApolloConfig="false" useDebugRSLSwfs="true" verifyDigests="true" warn="true">
+  <compiler additionalCompilerArguments="-locale en_US -keep-as3-metadata+=Invalidate -define=CONFIG::FLEX3,true -define=CONFIG::FLEX4,false" autoRSLOrdering="true" copyDependentFiles="false" flex3CompatMode="false" fteInMXComponents="false" generateAccessible="false" htmlExpressInstall="true" htmlGenerate="false" htmlHistoryManagement="false" htmlPlayerVersionCheck="true" includeNetmonSwc="false" outputFolderPath="bin" removeUnusedRSL="true" sourceFolderPath="src" strict="true" targetPlayerVersion="10.0.124" useApolloConfig="false" useDebugRSLSwfs="true" verifyDigests="true" warn="true">
     <compilerSourcePath/>
     <libraryPath defaultLinkType="0">
       <libraryPathEntry kind="4" path="">

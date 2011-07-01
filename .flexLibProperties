@@ -2,6 +2,7 @@
 <flexLibProperties includeAllClasses="false" useMultiPlatformConfig="false" version="3">
   <includeClasses>
     <classEntry path="asset.image.cursor.CursorAsset"/>
+    <classEntry path="asset.image.search.SearchAsset"/>
     <classEntry path="asset.skin.slider.BackgroundSkin"/>
     <classEntry path="asset.skin.slider.HandleSkin"/>
     <classEntry path="asset.skin.slider.ThumbSkin"/>
@@ -109,6 +110,7 @@
     <resourceEntry destPath="asset/image/cursor/resize-row.png" sourcePath="asset/image/cursor/resize-row.png"/>
     <resourceEntry destPath="asset/image/cursor/zoom-in.png" sourcePath="asset/image/cursor/zoom-in.png"/>
     <resourceEntry destPath="asset/image/cursor/zoom-out.png" sourcePath="asset/image/cursor/zoom-out.png"/>
+    <resourceEntry destPath="asset/image/search/busy.png" sourcePath="asset/image/search/busy.png"/>
     <resourceEntry destPath="asset/image/search/clearSearch.png" sourcePath="asset/image/search/clearSearch.png"/>
     <resourceEntry destPath="asset/image/search/search.png" sourcePath="asset/image/search/search.png"/>
     <resourceEntry destPath="asset/skin/slider/grip-pattern.png" sourcePath="asset/skin/slider/grip-pattern.png"/>

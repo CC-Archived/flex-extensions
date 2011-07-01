@@ -54,6 +54,16 @@
 			 */
 			public var live : Boolean = true;
 			
+			[Bindable]
+			[Invalidate("displayList")]
+			/**
+			 * Status of search: 
+			 * 	<1   === no matches found, 
+			 * 	>0   === # of matches
+			 */
+			public var status : int    = -1;
+			
+			
 			/**
 			 * Delay [in milliseconds] before the `change` event is dispatched.
 			 * 
@@ -66,15 +76,16 @@
 				}
 			}
 			
+			[Bindable]
 			/**
 			 * Should this control display a `search busy` indicator
+			 * And is reset() enabled to clear the search criteria or is it temporarily busy!
+			 * 
 			 * NOTE: this indicator overlays the delete button while active 
 			 */
-			public function set busy(val:Boolean):void {
-				if (_busy != val) {
-					_busy = val;
-				}
-			}
+			public var busy : Boolean = false;
+
+			
 			
 			[Bindable('change')]
 			public function get text():String {
@@ -82,7 +93,9 @@
 			}
 			public function set text(val:String):void {
 				if (text != val) {
+					_dirty     = true;
 					input.text = val;
+					
 					announce();
 				}
 			}
@@ -96,12 +109,17 @@
 			// ************************************************************************************
 			
 			public function reset():void {
+				if ( busy ) return;
+				
 				if ( _timer ) 
 					_timer.stop();
 				
 				input.text = '';
 				
 				invalidateDisplayList();
+				
+				// Notify listeners to reset any filters based on cleared search
+				announce(true);
 			}
 			
 			// ************************************************************************************
@@ -121,9 +139,10 @@
 				
 				var allStyles:Boolean = ( ( styleProp == null ) || ( styleProp == "styleName" ) );
 				
-				filterActiveColor   = isChanged("filterActiveColor") ? getStyle( "filterActiveColor" ) : filterActiveColor;
-				filterIdleColor     = isChanged("filterIdleColor")   ? getStyle( "filterIdleColor" )   : filterIdleColor;
-				filterDirtyColor	= isChanged("filterDirtyColor")  ? getStyle( "filterDirtyColor" )  : filterDirtyColor;
+				filterActiveColor   = isChanged("filterActiveColor")   ? getStyle( "filterActiveColor" )   : filterActiveColor;
+				filterIdleColor     = isChanged("filterIdleColor")     ? getStyle( "filterIdleColor" )     : filterIdleColor;
+				filterDirtyColor	= isChanged("filterDirtyColor")    ? getStyle( "filterDirtyColor" )    : filterDirtyColor;
+				filterNoMatchColor	= isChanged("filterNoMatchColor")  ? getStyle( "filterNoMatchColor" )  : filterNoMatchColor;
 
 				invalidateDisplayList();
 			}
@@ -179,10 +198,8 @@
 			 *  Click eventHandler for the Clear button.
 			 */
 			protected function onClearSearch():void {
-				input.text = ''; 
-				
+				text = ''; 
 				input.setFocus();
-				input.validateNow();
 				
 				callLater( announce, [true] );
 			}
@@ -207,25 +224,25 @@
 			 * @param immediate Boolean true is the timer should be stopped/ignored and notification sent immediately. 
 			 */
 			protected function announce(immediate:Boolean=false):void {
+				status = -1;
 				
 				if ( immediate ) 	
 				{
-					if ( _timer ) 
-						_timer.stop();
-					
-					if ( enabled != true ) return;
+					if ( _timer ) 			_timer.stop();
+					if ( enabled != true ) 	return;
 					
 					_dirty = false;
 					
-					invalidateDisplayList();
-					
 					dispatchEvent( new Event("change") );
 					
+					invalidateDisplayList();
 					
 				} else {
 					
-					resetDelay();
+					invalidateDisplayList();
+					validateNow();
 					
+					resetDelay();
 				}
 				
 			}
@@ -234,8 +251,9 @@
 			protected function updateStatusColor():void {
 				var bkgrndColor : Number = 	getStyle("backgroundColor") as Number;
 				
-				var newColor    : Number = 	_dirty 		 ? filterDirtyColor : 
-											(text != '') ? filterActiveColor : filterIdleColor;
+				var newColor    : Number = 	_dirty 		 	? filterDirtyColor  : 
+											(text == '') 	? filterIdleColor   :
+											(status > 0)	? filterActiveColor : filterNoMatchColor;
 				
 				if (bkgrndColor != newColor) 
 					setStyle("backgroundColor", newColor);
@@ -298,16 +316,14 @@
 			protected var filterDirtyColor:Number;
 			
 			/**
+			 * Background color to use while the filter has zero matches
+			 */
+			protected var filterNoMatchColor:Number;
+			
+			/**
 			 * Has the changed search criteria been announced ?
 			 */
 			protected var _dirty	: Boolean = false;
-			
-			[Bindable]
-			/**
-			 * Should this control display a `search busy` indicator
-			 * NOTE: this indicator overlays the delete button while active 
-			 */
-			protected var _busy   	: Boolean = false;
 			
 			
 			// ========================================
@@ -329,6 +345,7 @@
 						this.filterActiveColor      = 0xbfe5a7;
 						this.filterIdleColor	    = 0xffffff;
 						this.filterDirtyColor       = 0xfbf2b9;
+						this.filterNoMatchColor     = 0xf6928e;
 					};
 				
 				StyleUtil.setStyleDeclaration( "Search", declaration, false );
@@ -365,11 +382,11 @@
 			  filters="{text == '' ? [ ] : [new DropShadowFilter(1,45,0,.6)]}"
 			  click="onClearSearch()" 
 			  toolTip="Clear this filter" 
-			  visible="{!input.text=='' &amp;&amp; !_busy}" />
+			  visible="{!input.text=='' &amp;&amp; !busy}" />
 	
 	<mx:Image source="{SearchAsset.SEARCH_BUSY}" 
 			  right="2" y="0"
 			  toolTip="Busy searching... Please wait!" 
-			  visible="{ _busy }" />
+			  visible="{ busy }" />
 	
 </mx:Canvas>
