@@ -77,11 +77,12 @@ package com.codecatalyst.util
 		/**
 		 * Traverse a 'dot notation' style property path for the specified object instance and return the corresponding value.
 		 */
-		public static function getObjectPropertyValue( object:Object, propertyPath:String ):Object
+		public static function getObjectPropertyValue( object:Object, propertyPath:String, defaultVal:*=null ):*
 		{
 			try
 			{
-				return traversePropertyPath( object, propertyPath );
+				var val : * = traversePropertyPath( object, propertyPath ); 
+				return (val == null) ? defaultVal : val;
 			}
 			catch ( error:ReferenceError )
 			{
@@ -119,6 +120,8 @@ package com.codecatalyst.util
 		 */
 		protected static function traversePropertyPath( object:Object, propertyPath:String ):*	
 		{
+			if (object == null) return null;
+			
 			// Split the 'dot notation' path into segments
 			
 			var path:Array = propertyPath.split( "." );
@@ -130,7 +133,7 @@ package com.codecatalyst.util
 			{
 				// Set the new parent for traversal
 				
-				node = node[ segment ];
+				node = (node && node.hasOwnProperty(segment)) ? node[ segment ] : null;
 			}
 			
 			return node;			
