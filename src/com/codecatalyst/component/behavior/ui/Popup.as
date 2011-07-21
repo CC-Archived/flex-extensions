@@ -364,6 +364,9 @@ package com.codecatalyst.component.behavior.ui
 			content.removeEventListener(FlexEvent.CREATION_COMPLETE, onContentReady);
 			content.stage.addEventListener(MouseEvent.MOUSE_DOWN,onMouseDown,true,0,true);
 			
+			// Announce changed and ready!
+			dispatchEvent(new Event('contentChanged'));
+			
 			showInstance();
 			
 			// Since positioning changes [in showInstance() above] may affect content rendering
@@ -554,13 +557,14 @@ package com.codecatalyst.component.behavior.ui
 		// Protected Properties
 		// ========================================
 		
+		[Bindable("contentChanged")]
 		/**
 		 * Internal builder that will create a new content instance
 		 * and prepare it for management by the Popup behavior
 		 *  
 		 * @return IFlexDisplayObject 
 		 */
-		protected function get content():IFlexDisplayObject 
+		public function get content():IFlexDisplayObject 
 		{
 			if (isInitialized && (renderer as IFactory) && !instance) {
 				instance = renderer.newInstance();
@@ -580,7 +584,7 @@ package com.codecatalyst.component.behavior.ui
 		 */
 		protected function get contentReady():Boolean {
 			return (  content 							&& 
-				(content is UIComponent) 			&& 
+				(content is UIComponent) 				&& 
 				UIComponent(content).initialized	);
 		}
 		

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:Canvas width="200" height="21"
-		   initialize="this.delay = 600;"
+		   initialize="onInitialize();"
 		   click="event.stopImmediatePropagation();"
 		   cornerRadius="3" backgroundColor="#ffffff"
-		   borderStyle="solid" borderThickness="1" borderColor="#CCCCCC"
+		   borderStyle="solid" borderColor="#CCCCCC"
 		   xmlns:mx="http://www.adobe.com/2006/mxml">
 	
 	<mx:Metadata>
@@ -161,6 +161,10 @@
 			// Protected Eventhandlers 
 			// ************************************************************************************
 			
+			protected function onInitialize():void {
+				this.delay = 600;
+				this.input.setStyle("backgroundAlpha", 0.01); 
+			}
 			
 			/**
 			 * FocusIn eventHandler for the TextInput 
@@ -370,7 +374,7 @@
 	<mx:TextInput id="input" 
 				  width="100%" 
 				  paddingLeft="25" 
-				  backgroundAlpha="0.01" borderThickness="0" borderStyle="none"
+				  borderStyle="none"
 				  focusIn="onSelectAll(event);"
 				  keyDown="onKeyDown(event)" 
 				  change="onCriteriaChange(event)"/>
