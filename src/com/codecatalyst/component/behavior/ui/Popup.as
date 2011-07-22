@@ -21,6 +21,8 @@ package com.codecatalyst.component.behavior.ui
 	import mx.managers.PopUpManager;
 	import mx.styles.IStyleClient;
 	
+	[Event(name="contentChange", type="flash.events.Event")]
+	
 	[DefaultProperty("renderer")]
 	
 	/**
@@ -181,6 +183,30 @@ package com.codecatalyst.component.behavior.ui
 		 * Cache the content instance for multiple showings 
 		 */
 		public var cacheEnabled : Boolean = true;
+		
+		
+		[Bindable("contentChange")]
+		/**
+		 * Internal builder that will create a new content instance
+		 * and prepare it for management by the Popup behavior
+		 *  
+		 * @return IFlexDisplayObject 
+		 */
+		public function get content():UIComponent 
+		{
+			if (isInitialized && (renderer as IFactory) && !instance) {
+				instance = renderer.newInstance();
+				updateFadeEffects();
+				
+				// Listen to ready notification so positioning will work...
+				instance.addEventListener(FlexEvent.CREATION_COMPLETE, onContentReady, false, 0, true);
+				instance.addEventListener(CloseEvent.CLOSE, onCloseContent, false, 0, true);
+				
+				dispatchEvent(new Event('contentChange'));
+			}
+			
+			return instance;
+		}
 		
 		// ========================================
 		// Public Methods
@@ -364,9 +390,6 @@ package com.codecatalyst.component.behavior.ui
 			content.removeEventListener(FlexEvent.CREATION_COMPLETE, onContentReady);
 			content.stage.addEventListener(MouseEvent.MOUSE_DOWN,onMouseDown,true,0,true);
 			
-			// Announce changed and ready!
-			dispatchEvent(new Event('contentChanged'));
-			
 			showInstance();
 			
 			// Since positioning changes [in showInstance() above] may affect content rendering
@@ -407,6 +430,8 @@ package com.codecatalyst.component.behavior.ui
 		protected function onHideFinished(event:EffectEvent=null):void
 		{
 			if ( !event || (event.effectInstance.effect == hideEffect) ) {
+				content.visible = false;
+				
 				PopUpManager.removePopUp(content);
 				release();
 			}
@@ -557,27 +582,6 @@ package com.codecatalyst.component.behavior.ui
 		// Protected Properties
 		// ========================================
 		
-		[Bindable("contentChanged")]
-		/**
-		 * Internal builder that will create a new content instance
-		 * and prepare it for management by the Popup behavior
-		 *  
-		 * @return IFlexDisplayObject 
-		 */
-		public function get content():IFlexDisplayObject 
-		{
-			if (isInitialized && (renderer as IFactory) && !instance) {
-				instance = renderer.newInstance();
-				updateFadeEffects();
-				
-				// Listen to ready notification so positioning will work...
-				instance.addEventListener(FlexEvent.CREATION_COMPLETE, onContentReady, false, 0, true);
-				instance.addEventListener(CloseEvent.CLOSE, onCloseContent, false, 0, true);
-			}
-			
-			return instance;
-		}
-		
 		/**
 		 * Getter to determine if the content is ready 
 		 * @return Boolean 
@@ -592,7 +596,7 @@ package com.codecatalyst.component.behavior.ui
 		 * Cached instance of the renderer instance 
 		 * May be an instance of IDataRenderer
 		 */
-		protected var instance : IFlexDisplayObject;
+		protected var instance : UIComponent;
 		
 		
 		/**
