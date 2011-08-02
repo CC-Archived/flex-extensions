@@ -61,9 +61,17 @@
 			 * 	<1   === no matches found, 
 			 * 	>0   === # of matches
 			 */
-			public var status : int    = -1;
-			
-			
+			public function get status():int {
+				return _status;
+			}
+			public function set status(value:int):void
+			{
+				_status = value;
+				
+				// Always update displaylist regardless of any change...
+				invalidateDisplayList();
+			}
+
 			/**
 			 * Delay [in milliseconds] before the `change` event is dispatched.
 			 * 
@@ -254,10 +262,11 @@
 			
 			protected function updateStatusColor():void {
 				var bkgrndColor : Number = 	getStyle("backgroundColor") as Number;
+				var isDirty     : Boolean=  _dirty || (status < 0);
 				
-				var newColor    : Number = 	_dirty 		 	? filterDirtyColor  : 
-											(text == '') 	? filterIdleColor   :
-											(status > 0)	? filterActiveColor : filterNoMatchColor;
+				var newColor    : Number = 	(text == '') 	? filterIdleColor    :
+											(status > 0)	? filterActiveColor  : 
+											isDirty 		? filterDirtyColor   : filterNoMatchColor ; 
 				
 				if (bkgrndColor != newColor) 
 					setStyle("backgroundColor", newColor);
@@ -329,6 +338,13 @@
 			 */
 			protected var _dirty	: Boolean = false;
 			
+			
+			/**
+			 * Status of search: 
+			 * 	<1   === no matches found, 
+			 * 	>0   === # of matches
+			 */
+			protected var _status : int    = -1;
 			
 			// ========================================
 			// Static initializers
