@@ -21,7 +21,10 @@ package com.codecatalyst.component.behavior.ui
 	import mx.managers.PopUpManager;
 	import mx.styles.IStyleClient;
 	
-	[Event(name="contentChange", type="flash.events.Event")]
+	[Event(name="contentChange",	 	type="flash.events.Event")]
+	[Event(name="contentInitialized",  	type="flash.events.Event")]
+	[Event(name="contentReady",  		type="flash.events.Event")]
+	
 	
 	[DefaultProperty("renderer")]
 	
@@ -201,6 +204,7 @@ package com.codecatalyst.component.behavior.ui
 				// Listen to ready notification so positioning will work...
 				instance.addEventListener(FlexEvent.CREATION_COMPLETE, onContentReady, false, 0, true);
 				instance.addEventListener(CloseEvent.CLOSE, onCloseContent, false, 0, true);
+				instance.addEventListener(FlexEvent.INITIALIZE, onContentInitialized, false, 0 , true);
 				
 				dispatchEvent(new Event('contentChange'));
 			}
@@ -288,7 +292,7 @@ package com.codecatalyst.component.behavior.ui
 				
 			} finally {
 				
-				if ( contentReady ) 
+				if ( isContentReady ) 
 					cursorAnchor = null;
 			}
 			
@@ -324,6 +328,7 @@ package com.codecatalyst.component.behavior.ui
 				instance.removeEventListener(CloseEvent.CLOSE, onCloseContent);
 				
 				instance = null;
+				dispatchEvent(new Event('contentChange'));
 			}
 		}
 		
@@ -380,6 +385,20 @@ package com.codecatalyst.component.behavior.ui
 		// Protected EventHandlers 
 		// ========================================
 		
+		
+		/**
+		 * Notify listeners that the content has initialized (but not yet creationComplete).
+		 *  
+		 * @param event
+		 */
+		protected function onContentInitialized(event:FlexEvent):void 
+		{
+			content.removeEventListener(FlexEvent.INITIALIZE, onContentInitialized);
+			
+			dispatchEvent( new Event('contentInitialized') );
+		}
+		
+		
 		/**
 		 * 
 		 * @param event
@@ -390,6 +409,8 @@ package com.codecatalyst.component.behavior.ui
 			content.removeEventListener(FlexEvent.CREATION_COMPLETE, onContentReady);
 			content.stage.addEventListener(MouseEvent.MOUSE_DOWN,onMouseDown,true,0,true);
 			
+			dispatchEvent( new Event('contentReady') );
+			
 			showInstance();
 			
 			// Since positioning changes [in showInstance() above] may affect content rendering
@@ -397,6 +418,8 @@ package com.codecatalyst.component.behavior.ui
 			if (content is IInvalidating) 
 				IInvalidating(content).invalidateDisplayList();
 		}
+		
+		
 		
 		/**
 		 * 
@@ -419,7 +442,8 @@ package com.codecatalyst.component.behavior.ui
 			if (hideEffect == null) 
 				onHideFinished();
 			
-			event.stopPropagation();
+			if (event != null)
+				event.stopPropagation();
 		}
 		
 		/**
@@ -432,7 +456,9 @@ package com.codecatalyst.component.behavior.ui
 			if ( !event || (event.effectInstance.effect == hideEffect) ) {
 				content.visible = false;
 				
-				PopUpManager.removePopUp(content);
+				if ( content.stage ) 
+					PopUpManager.removePopUp(content);
+				
 				release();
 			}
 		}
@@ -519,7 +545,9 @@ package com.codecatalyst.component.behavior.ui
 			if (renderer is IFactory) return;
 			if (renderer == null)     return;
 			
+			
 			renderer = new ClassFactory(renderer);
+			release(true);
 		}
 		
 		// ========================================
@@ -542,7 +570,7 @@ package com.codecatalyst.component.behavior.ui
 			if (content is UIComponent) 
 				UIComponent(content).isPopUp = true;	
 			
-			content.visible = contentReady;
+			content.visible = isContentReady;
 			content.stage.addEventListener(MouseEvent.MOUSE_DOWN,onMouseDown,true,0,true);
 			
 		}
@@ -555,7 +583,7 @@ package com.codecatalyst.component.behavior.ui
 		protected function adjustPosition():void 
 		{
 			if ( !parent || !parent.stage ) return;
-			if ( !contentReady )			return;
+			if ( !isContentReady )			return;
 			if ( manuallyPositioned )		return;
 			
 			PopUpManager.centerPopUp(content);
@@ -586,7 +614,9 @@ package com.codecatalyst.component.behavior.ui
 		 * Getter to determine if the content is ready 
 		 * @return Boolean 
 		 */
-		protected function get contentReady():Boolean {
+		[Bindable("contentReady")]
+		
+		protected function get isContentReady():Boolean {
 			return (  content 							&& 
 				(content is UIComponent) 				&& 
 				UIComponent(content).initialized	);
