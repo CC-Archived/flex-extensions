@@ -209,7 +209,7 @@ package com.codecatalyst.component.date
 			declaration.defaultFactory = 
 				function ():void
 				{
-					this.backgroundSki                      = BackgroundSkin;
+					this.backgroundSkin                      = BackgroundSkin;
 					this.thumbSkin                          = ThumbSkin;
 					this.handleSkin                         = HandleSkin;
 					this.handleWidth                        = DEFAULT_HANDLE_WIDTH;
