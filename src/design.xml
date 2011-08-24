@@ -1,0 +1,55 @@
+<?xml version="1.0"?>
+<design version="2">
+
+    <namespaces>
+        <namespace prefix="fe" uri="http://fe.codecatalyst.com/2011/flex-extensions" />
+    </namespaces>
+ 
+    <categories>
+        <category id="FlexExt" label="Flex Extensions" defaultExpand="true" />
+    </categories>
+    
+    <components>
+		<component name="Button" 				        namespace="fe" category="FlexExt"  displayName="Button" />
+		<component name="TabBar" 				        namespace="fe" category="FlexExt"  displayName="TabBar" />
+		<component name="OverlappingTabBar" 	        namespace="fe" category="FlexExt"  displayName="OverlappingTabBar" />
+		<component name="Populator" 			        namespace="fe" category="FlexExt"  displayName="Populator" />
+		<component name="Selectable" 			        namespace="fe" category="FlexExt"  displayName="Selectable" />
+		<component name="Popup" 				        namespace="fe" category="FlexExt"  displayName="Popup" />
+		<component name="DynamicChart" 			        namespace="fe" category="FlexExt"  displayName="DynamicChart" />
+		<component name="DynamicAxisRenderer" 		 	namespace="fe" category="FlexExt"  displayName="DynamicAxisRenderer" />
+		<component name="TruncatedAxisLabelRenderer" 	namespace="fe" category="FlexExt"  displayName="TruncatedAxisLabelRenderer" />
+		<component name="ChartHoverControl" 		 	namespace="fe" category="FlexExt"  displayName="ChartHoverControl" />
+		<component name="ChartHoverCrosshairControl" 	namespace="fe" category="FlexExt"  displayName="ChartHoverCrosshairControl" />
+		<component name="ChartPanControl" 				namespace="fe" category="FlexExt"  displayName="ChartPanControl" />
+		<component name="ChartZoomInControl" 			namespace="fe" category="FlexExt"  displayName="ChartZoomInControl" />
+		<component name="ChartZoomOutControl" 			namespace="fe" category="FlexExt"  displayName="ChartZoomOutControl" />
+		<component name="AnnotationLine" 				namespace="fe" category="FlexExt"  displayName="AnnotationLine" />
+		<component name="Background" 					namespace="fe" category="FlexExt"  displayName="Background" />
+		<component name="DateTimeGridLines" 			namespace="fe" category="FlexExt"  displayName="DateTimeGridLines" />
+		<component name="DateTimeGridLineSet" 			namespace="fe" category="FlexExt"  displayName="DateTimeGridLineSet" />
+		<component name="HighlightedRegion" 			namespace="fe" category="FlexExt"  displayName="HighlightedRegion" />
+		<component name="LinearTrendLine" 				namespace="fe" category="FlexExt"  displayName="LinearTrendLine" />
+		<component name="BoxFrame" 						namespace="fe" category="FlexExt"  displayName="iner.BoxFrame"/>
+		<component name="DateRangeInput" 				namespace="fe" category="FlexExt"  displayName="DateRangeInput" />
+		<component name="DateRangeSlider" 				namespace="fe" category="FlexExt"  displayName="DateRangeSlider" />
+		<component name="MonthPicker" 					namespace="fe" category="FlexExt"  displayName="MonthPicker" />
+		<component name="BoxItemRenderer" 				namespace="fe" category="FlexExt"  displayName="BoxItemRenderer" />
+		<component name="CanvasItemRenderer" 			namespace="fe" category="FlexExt"  displayName="CanvasItemRenderer" />
+		<component name="CheckGroup" 					namespace="fe" category="FlexExt"  displayName="CheckGroup" />
+		<component name="Group" 						namespace="fe" category="FlexExt"  displayName="Group" />
+		<component name="MasterDetail" 					namespace="fe" category="FlexExt"  displayName="MasterDetail" />
+		<component name="RadioGroup" 					namespace="fe" category="FlexExt"  displayName="RadioGroup" />
+		<component name="Label" 						namespace="fe" category="FlexExt"  displayName="Label" />
+		<component name="Text" 							namespace="fe" category="FlexExt"  displayName="Text" />
+	    <component name="DateRange" 					namespace="fe" category="FlexExt"  displayName="DateRange" />
+	    <component name="NumericRange" 					namespace="fe" category="FlexExt"  displayName="NumericRange" />
+	    <component name="TimeInterval" 					namespace="fe" category="FlexExt"  displayName="TimeInterval" />
+	    <component name="ClassFactory" 					namespace="fe" category="FlexExt"  displayName="ClassFactory" />
+	    <component name="DataRendererFactory" 			namespace="fe" category="FlexExt"  displayName="DataRendererFactory" />
+		<component name="StyleableFactory" 				namespace="fe" category="FlexExt"  displayName="StyleableFactory" />
+		<component name="StyleableRendererFactory" 		namespace="fe" category="FlexExt"  displayName="StyleableRendererFactory" />
+		<component name="InvalidationTracker" 			namespace="fe" category="FlexExt"  displayName="InvalidationTracker" />    
+	</components>
+    
+</design>

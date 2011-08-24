@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<annotations version="1.0">
+
+	<metadata name="Invalidate" description="Attaches invalidation functionality to target">
+		<context name="variable" />
+		<context name="setter" />
+		<context name="method" />
+		
+		<attribute name="scope" 
+				   type="String"
+				   values="properties, displayList, size"
+				   defaultValue="properties"
+				   required="true" 
+				   description="Defines which parts of the component must update during next validation cycle." />
+	</metadata>
+	
+</annotations>

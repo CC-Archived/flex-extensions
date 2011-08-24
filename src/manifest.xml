@@ -1,92 +1,45 @@
 <?xml version="1.0"?>
 <componentPackage>
 	
-	<!-- Component -->
-	
-	<component id="Button" class="com.codecatalyst.component.Button" />
-	<component id="TabBar" class="com.codecatalyst.component.TabBar" />
-	<component id="OverlappingTabBar" class="com.codecatalyst.component.OverlappingTabBar" />
-	
-		<!-- Behavior -->
-		
-			<!-- UI -->
-	
-			<component id="Populator" 	class="com.codecatalyst.component.behavior.ui.Populator" />
-			<component id="Selectable" 	class="com.codecatalyst.component.behavior.ui.Selectable" />
-			<component id="Popup" 		class="com.codecatalyst.component.behavior.ui.Popup" />
-
-		<!-- Chart -->
-		
-		<component id="DynamicChart" class="com.codecatalyst.component.chart.DynamicChart" />
-		<component id="DynamicAxisRenderer" class="com.codecatalyst.component.chart.DynamicAxisRenderer" />
-		<component id="TruncatedAxisLabelRenderer" class="com.codecatalyst.component.chart.TruncatedAxisLabelRenderer" />
-		
-			<!-- Control -->
-	
-			<component id="ChartHoverControl" class="com.codecatalyst.component.chart.control.ChartHoverControl" />
-			<component id="ChartHoverCrosshairControl" class="com.codecatalyst.component.chart.control.ChartHoverCrosshairControl" />
-			<component id="ChartPanControl" class="com.codecatalyst.component.chart.control.ChartPanControl" />
-			<component id="ChartZoomInControl" class="com.codecatalyst.component.chart.control.ChartZoomInControl" />
-			<component id="ChartZoomOutControl" class="com.codecatalyst.component.chart.control.ChartZoomOutControl" />
-		
-			<!-- Element -->
-			
-			<component id="AnnotationLine" class="com.codecatalyst.component.chart.element.AnnotationLine" />
-			<component id="Background" class="com.codecatalyst.component.chart.element.Background" />
-			<component id="DateTimeGridLines" class="com.codecatalyst.component.chart.element.DateTimeGridLines" />
-			<component id="DateTimeGridLineSet" class="com.codecatalyst.component.chart.element.DateTimeGridLineSet" />
-			<component id="HighlightedRegion" class="com.codecatalyst.component.chart.element.HighlightedRegion" />
-			<component id="LinearTrendLine" class="com.codecatalyst.component.chart.element.LinearTrendLine" />
-		
-		<!-- Container -->
-	
-		<component id="BoxFrame" class="com.codecatalyst.component.container.BoxFrame"/>
-		
-		<!-- Date -->
-		
-		<component id="DateRangeInput" class="com.codecatalyst.component.date.DateRangeInput" />
-		<component id="DateRangeSlider" class="com.codecatalyst.component.date.DateRangeSlider" />
-		<component id="MonthPicker" class="com.codecatalyst.component.date.MonthPicker" />
-		
-		<!-- Renderer -->
-		
-		<component id="BoxItemRenderer" class="com.codecatalyst.component.renderer.BoxItemRenderer" />
-		<component id="CanvasItemRenderer" class="com.codecatalyst.component.renderer.CanvasItemRenderer" />
-		
-		<!-- Template -->
-		
-		<component id="CheckGroup" class="com.codecatalyst.component.template.CheckGroup" />
-		<component id="Group" class="com.codecatalyst.component.template.Group" />
-		<component id="MasterDetail" class="com.codecatalyst.component.template.MasterDetail" />
-		<component id="RadioGroup" class="com.codecatalyst.component.template.RadioGroup" />
-		
-		<!-- Text -->
-		
-		<component id="Label" class="com.codecatalyst.component.text.Label" />
-		<component id="Text" class="com.codecatalyst.component.text.Text" />
-	
-	<!--  Data -->
-	
-	<component id="DateRange" class="com.codecatalyst.data.DateRange" />
-	<component id="NumericRange" class="com.codecatalyst.data.NumericRange" />
-	<component id="TimeInterval" class="com.codecatalyst.data.TimeInterval" />
-	
-	<!-- Factory -->
-	
-	<component id="ClassFactory" class="com.codecatalyst.factory.ClassFactory" />
-	<component id="DataRendererFactory" class="com.codecatalyst.factory.DataRendererFactory" />
-	
-		<!-- Factory for Styleable Instances -->
-	
-		<component id="StyleableFactory" class="com.codecatalyst.factory.styleable.StyleableFactory" />
-		<component id="StyleableRendererFactory" class="com.codecatalyst.factory.styleable.StyleableRendererFactory" />
-	
-	<!-- Util -->
-	
-		<!-- Invalidation -->
-		
-			<!-- MXML -->
-		
-			<component id="InvalidationTracker" class="com.codecatalyst.util.invalidation.mxml.InvalidationTracker" />
+		<component id="Button" 				        class="com.codecatalyst.component.Button" />
+		<component id="TabBar" 				        class="com.codecatalyst.component.TabBar" />
+		<component id="OverlappingTabBar" 	        class="com.codecatalyst.component.OverlappingTabBar" />
+		<component id="Populator" 			        class="com.codecatalyst.component.behavior.ui.Populator" />
+		<component id="Selectable" 			        class="com.codecatalyst.component.behavior.ui.Selectable" />
+		<component id="Popup" 				        class="com.codecatalyst.component.behavior.ui.Popup" />
+		<component id="DynamicChart" 			    class="com.codecatalyst.component.chart.DynamicChart" />
+		<component id="DynamicAxisRenderer" 		class="com.codecatalyst.component.chart.DynamicAxisRenderer" />
+		<component id="TruncatedAxisLabelRenderer" 	class="com.codecatalyst.component.chart.TruncatedAxisLabelRenderer" />
+		<component id="ChartHoverControl" 		 	class="com.codecatalyst.component.chart.control.ChartHoverControl" />
+		<component id="ChartHoverCrosshairControl" 	class="com.codecatalyst.component.chart.control.ChartHoverCrosshairControl" />
+		<component id="ChartPanControl" 			class="com.codecatalyst.component.chart.control.ChartPanControl" />
+		<component id="ChartZoomInControl" 			class="com.codecatalyst.component.chart.control.ChartZoomInControl" />
+		<component id="ChartZoomOutControl" 		class="com.codecatalyst.component.chart.control.ChartZoomOutControl" />
+		<component id="AnnotationLine" 				class="com.codecatalyst.component.chart.element.AnnotationLine" />
+		<component id="Background" 					class="com.codecatalyst.component.chart.element.Background" />
+		<component id="DateTimeGridLines" 			class="com.codecatalyst.component.chart.element.DateTimeGridLines" />
+		<component id="DateTimeGridLineSet" 		class="com.codecatalyst.component.chart.element.DateTimeGridLineSet" />
+		<component id="HighlightedRegion" 			class="com.codecatalyst.component.chart.element.HighlightedRegion" />
+		<component id="LinearTrendLine" 			class="com.codecatalyst.component.chart.element.LinearTrendLine" />
+		<component id="BoxFrame" 					class="com.codecatalyst.component.container.BoxFrame"/>
+		<component id="DateRangeInput" 				class="com.codecatalyst.component.date.DateRangeInput" />
+		<component id="DateRangeSlider" 			class="com.codecatalyst.component.date.DateRangeSlider" />
+		<component id="MonthPicker" 				class="com.codecatalyst.component.date.MonthPicker" />
+		<component id="BoxItemRenderer" 			class="com.codecatalyst.component.renderer.BoxItemRenderer" />
+		<component id="CanvasItemRenderer" 			class="com.codecatalyst.component.renderer.CanvasItemRenderer" />
+		<component id="CheckGroup" 					class="com.codecatalyst.component.template.CheckGroup" />
+		<component id="Group" 						class="com.codecatalyst.component.template.Group" />
+		<component id="MasterDetail" 				class="com.codecatalyst.component.template.MasterDetail" />
+		<component id="RadioGroup" 					class="com.codecatalyst.component.template.RadioGroup" />
+		<component id="Label" 						class="com.codecatalyst.component.text.Label" />
+		<component id="Text" 						class="com.codecatalyst.component.text.Text" />
+	    <component id="DateRange" 					class="com.codecatalyst.data.DateRange" />
+	    <component id="NumericRange" 				class="com.codecatalyst.data.NumericRange" />
+	    <component id="TimeInterval" 				class="com.codecatalyst.data.TimeInterval" />
+	    <component id="ClassFactory" 				class="com.codecatalyst.factory.ClassFactory" />
+	    <component id="DataRendererFactory" 		class="com.codecatalyst.factory.DataRendererFactory" />
+		<component id="StyleableFactory" 			class="com.codecatalyst.factory.styleable.StyleableFactory" />
+		<component id="StyleableRendererFactory" 	class="com.codecatalyst.factory.styleable.StyleableRendererFactory" />
+		<component id="InvalidationTracker" 		class="com.codecatalyst.util.invalidation.mxml.InvalidationTracker" />
 		
 </componentPackage>
