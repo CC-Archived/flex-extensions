@@ -27,7 +27,10 @@ package com.codecatalyst.util
 	import mx.collections.IList;
 	import mx.collections.ListCollectionView;
 	import mx.collections.XMLListCollection;
-
+	import mx.core.mx_internal;
+	
+	use namespace mx_internal;
+	
 	public class CollectionViewUtil
 	{
 		// ========================================
@@ -76,5 +79,42 @@ package com.codecatalyst.util
 			
 			return collectionView;			
 		}
+		
+		/**
+		 * Silently clear the filterFunction and reset the list to have all elements available
+		 * for a future filter scan.
+		 *  
+		 * @param target
+		 * @param silent
+		 */
+		public static function reset( target : ListCollectionView, silent:Boolean=true) : ListCollectionView
+		{
+			if (target.filterFunction != null) {
+				
+				var origFlag : Boolean = target.mx_internal::dispatchResetEvent;
+				
+				target.filterFunction = null;
+				
+				try {
+					if (silent == true) {
+						
+						target.mx_internal::dispatchResetEvent = false;
+						target.mx_internal::reset();
+						
+					} else {
+						
+						target.refresh();
+						
+					}
+					
+				} finally {
+					
+					target.mx_internal::dispatchResetEvent = origFlag;
+				}
+			}
+			
+			return target;
+		}		
 	}
+	
 }
