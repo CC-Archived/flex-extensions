@@ -200,10 +200,10 @@ package com.codecatalyst.component.template
 				{
 					addChild ( detail as DisplayObject );
 					
+					detail.visible = false;
+					
 					if ( layoutObject.direction == BoxDirection.VERTICAL )    detail.height = calculatedDetailHeight;
 					if ( layoutObject.direction == BoxDirection.HORIZONTAL )  detail.width  = calculatedDetailWidth;
-					
-					detail.visible = expanded;
 				}
 				
 				setDividerVisiblity( detail != null );
