@@ -3,3 +3,5 @@
 .settings
 bin-debug
 html-template
+
+/bin/flex-extensions.swc Folder/
