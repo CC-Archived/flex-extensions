@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:Box 
 	xmlns:mx="http://www.adobe.com/2006/mxml"
-	xmlns="http://fe.codecatalyst.com/2011/flex-extensions">
+	xmlns:behavior="com.codecatalyst.component.behavior.ui.*">
 	
 	<mx:Metadata>
 		
@@ -93,16 +93,17 @@
 		]]>
 	</mx:Script>
 	
-	<Selectable
+	<behavior:Selectable
 		id="selectable"
 		target="{ this }"
 		allowMultipleSelection="true"
 		selectedItems="{ selectedItems }"
 		selectedField="{ selectedField }"
 		changeEventType="{ changeEventType }" 
-		change="selectable_changeHandler( event )" />
+		change="selectable_changeHandler( event )"
+		xmlns="com.codecatalyst.component.behavior.ui.*" />
 	
-	<Populator
+	<behavior:Populator
 		target="{ this }"
 		dataProvider="{ dataProvider }"
 		itemRenderer="{ itemRenderer }" />

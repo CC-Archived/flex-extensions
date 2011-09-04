@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:Box 
 	xmlns:mx="http://www.adobe.com/2006/mxml"
-	xmlns="http://fe.codecatalyst.com/2011/flex-extensions">
+	xmlns:behavior="com.codecatalyst.component.behavior.ui.*">
 	
 	<mx:Script>
 		<![CDATA[
@@ -42,7 +42,7 @@
 		]]>
 	</mx:Script>
 	
-	<Populator
+	<behavior:Populator
 		target="{ this }"
 		dataProvider="{ dataProvider }"
 		itemRenderer="{ itemRenderer }" />
