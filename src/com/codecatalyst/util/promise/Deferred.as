@@ -341,11 +341,14 @@ package com.codecatalyst.util.promise
 		 */
 		public function resolve( result:* ):void
 		{
-			this.result = result;
-			setState( Deferred.SUCCEEDED_STATE );
-			
-			notify( resultCallbacks.concat( alwaysCallbacks ), result );
-			releaseCallbacks();
+			if ( state == Deferred.PENDING_STATE )
+			{
+				this.result = result;
+				setState( Deferred.SUCCEEDED_STATE );
+				
+				notify( resultCallbacks.concat( alwaysCallbacks ), result );
+				releaseCallbacks();
+			}
 		}
 		
 		/**
@@ -353,11 +356,14 @@ package com.codecatalyst.util.promise
 		 */
 		public function reject( error:* ):void
 		{
-			this.error = error;
-			setState( Deferred.FAILED_STATE );
-			
-			notify( errorCallbacks.concat( alwaysCallbacks ), error );
-			releaseCallbacks();
+			if ( state == Deferred.PENDING_STATE )
+			{
+				this.error = error;
+				setState( Deferred.FAILED_STATE );
+				
+				notify( errorCallbacks.concat( alwaysCallbacks ), error );
+				releaseCallbacks();
+			}
 		}
 		
 		/**
@@ -365,9 +371,12 @@ package com.codecatalyst.util.promise
 		 */
 		public function update( progress:* ):void
 		{
-			this.progress = progress;
+			if ( state == Deferred.PENDING_STATE )
+			{
+				this.progress = progress;
 			
-			notify( progressCallbacks, progress );
+				notify( progressCallbacks, progress );
+			}
 		}
 		
 		/**
@@ -375,9 +384,12 @@ package com.codecatalyst.util.promise
 		 */
 		public function cancel():void
 		{
-			setState( Deferred.CANCELLED_STATE );
+			if ( state == Deferred.PENDING_STATE )
+			{
+				setState( Deferred.CANCELLED_STATE );
 			
-			releaseCallbacks();
+				releaseCallbacks();
+			}
 		}
 		
 		// ========================================
