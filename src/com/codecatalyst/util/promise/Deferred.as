@@ -209,23 +209,18 @@ package com.codecatalyst.util.promise
 		 */
 		public function always( alwaysCallback:Function ):Deferred
 		{
-			if ( state == Deferred.PENDING_STATE )
+			if ( pending )
 			{
 				if ( alwaysCallback != null )
 					alwaysCallbacks.push( alwaysCallback );
 			}
-			else
+			else if ( succeeded )
 			{
-				switch ( state )
-				{
-					case Deferred.SUCCEEDED_STATE:
-						notify( [ alwaysCallback ], result );
-						break;
-					
-					case Deferred.FAILED_STATE:
-						notify( [ alwaysCallback ], error );
-						break;
-				}
+				notify( [ alwaysCallback ], result );
+			}
+			else if ( failed )
+			{
+				notify( [ alwaysCallback ], error );
 			}
 				
 			return this;
@@ -295,7 +290,7 @@ package com.codecatalyst.util.promise
 		 */
 		public function onProgress( progressCallback:Function ):Deferred
 		{
-			if ( state == Deferred.PENDING_STATE )
+			if ( pending )
 			{
 				if ( progressCallback != null )
 					progressCallbacks.push( progressCallback );
@@ -312,12 +307,12 @@ package com.codecatalyst.util.promise
 		 */
 		public function onResult( resultCallback:Function ):Deferred
 		{
-			if ( state == Deferred.PENDING_STATE )
+			if ( pending )
 			{
 				if ( resultCallback != null )
 					resultCallbacks.push( resultCallback );
 			}
-			else
+			else if ( succeeded )
 			{
 				notify( [ resultCallback ], result );
 			}
@@ -330,8 +325,15 @@ package com.codecatalyst.util.promise
 		 */
 		public function onError( errorCallback:Function ):Deferred
 		{
-			if ( errorCallback != null )
-				errorCallbacks.push( errorCallback );
+			if ( pending )
+			{
+				if ( errorCallback != null )
+					errorCallbacks.push( errorCallback );
+			}
+			else if ( failed )
+			{
+				notify( [ errorCallback ], error );
+			}
 			
 			return this;
 		}
@@ -341,7 +343,7 @@ package com.codecatalyst.util.promise
 		 */
 		public function resolve( result:* ):void
 		{
-			if ( state == Deferred.PENDING_STATE )
+			if ( pending )
 			{
 				this.result = result;
 				setState( Deferred.SUCCEEDED_STATE );
@@ -356,7 +358,7 @@ package com.codecatalyst.util.promise
 		 */
 		public function reject( error:* ):void
 		{
-			if ( state == Deferred.PENDING_STATE )
+			if ( pending )
 			{
 				this.error = error;
 				setState( Deferred.FAILED_STATE );
@@ -371,7 +373,7 @@ package com.codecatalyst.util.promise
 		 */
 		public function update( progress:* ):void
 		{
-			if ( state == Deferred.PENDING_STATE )
+			if ( pending )
 			{
 				this.progress = progress;
 			
@@ -384,7 +386,7 @@ package com.codecatalyst.util.promise
 		 */
 		public function cancel():void
 		{
-			if ( state == Deferred.PENDING_STATE )
+			if ( pending )
 			{
 				setState( Deferred.CANCELLED_STATE );
 			
