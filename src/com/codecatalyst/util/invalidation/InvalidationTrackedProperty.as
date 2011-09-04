@@ -157,7 +157,10 @@ package com.codecatalyst.util.invalidation
 			{
 				var currentValue:* = PropertyUtil.getObjectPropertyValue( source, propertyName );
 				
-				callback( propertyName, previousValue, currentValue );
+				if ( callback.length == 3 )
+					callback( propertyName, previousValue, currentValue );
+				else
+					callback();
 			}
 		}
 		
