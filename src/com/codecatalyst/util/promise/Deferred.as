@@ -120,6 +120,33 @@ package com.codecatalyst.util.promise
 			return ( state == CANCELLED_STATE );
 		}
 		
+		[Bindable( "stateChanged" )]
+		/**
+		 * Progress supplied when this Deferred was updated.
+		 */
+		public function get progress():*
+		{
+			return _progress;
+		}
+		
+		[Bindable( "stateChanged" )]
+		/**
+		 * Result supplied when this Deferred was resolved.
+		 */
+		public function get result():*
+		{
+			return _result;
+		}
+		
+		[Bindable( "stateChanged" )]
+		/**
+		 * Error supplied when this Deferred was rejected.
+		 */
+		public function get error():*
+		{
+			return _error;
+		}
+		
 		// ========================================
 		// Protected properties
 		// ========================================
@@ -127,7 +154,22 @@ package com.codecatalyst.util.promise
 		/**
 		 * Backing variable for <code>promise</code> property.
 		 */
-		protected var _promise:Promise;
+		protected var _promise:Promise = null;
+		
+		/**
+		 * Backing variable for <code>progress</code.
+		 */
+		protected var _progress:* = null;
+		
+		/**
+		 * Backing variable for <code>result</code.
+		 */
+		protected var _result:* = null;
+		
+		/**
+		 * Backing variable for <code>error</code.
+		 */
+		protected var _error:* = null;
 		
 		/**
 		 * Deferred state.
@@ -157,22 +199,7 @@ package com.codecatalyst.util.promise
 		/**
 		 * Callbacks to be called when this Deferred is resolved or rejected.
 		 */
-		protected var alwaysCallbacks:Array = [];	
-		
-		/**
-		 * Result supplied when this Deferred was resolved.
-		 */
-		protected var result:* = null;
-		
-		/**
-		 * Error supplied when this Deferred was rejected.
-		 */
-		protected var error:* = null;
-		
-		/**
-		 * Progress supplied when this Deferred was updated.
-		 */
-		protected var progress:* = null;
+		protected var alwaysCallbacks:Array = [];
 		
 		// ========================================
 		// Constructor
@@ -339,13 +366,26 @@ package com.codecatalyst.util.promise
 		}
 		
 		/**
+		 * Update this Deferred and notify relevant callbacks.
+		 */
+		public function update( progress:* ):void
+		{
+			if ( pending )
+			{
+				_progress = progress;
+				
+				notify( progressCallbacks, progress );
+			}
+		}
+		
+		/**
 		 * Resolve this Deferred and notify relevant callbacks.
 		 */
 		public function resolve( result:* ):void
 		{
 			if ( pending )
 			{
-				this.result = result;
+				_result = result;
 				setState( Deferred.SUCCEEDED_STATE );
 				
 				notify( resultCallbacks.concat( alwaysCallbacks ), result );
@@ -360,24 +400,11 @@ package com.codecatalyst.util.promise
 		{
 			if ( pending )
 			{
-				this.error = error;
+				_error = error;
 				setState( Deferred.FAILED_STATE );
 				
 				notify( errorCallbacks.concat( alwaysCallbacks ), error );
 				releaseCallbacks();
-			}
-		}
-		
-		/**
-		 * Update this Deferred and notify relevant callbacks.
-		 */
-		public function update( progress:* ):void
-		{
-			if ( pending )
-			{
-				this.progress = progress;
-			
-				notify( progressCallbacks, progress );
 			}
 		}
 		
@@ -424,6 +451,10 @@ package com.codecatalyst.util.promise
 			{
 				switch ( callback.length )
 				{
+					case 2:
+						callback( promise, value );
+						break;
+					
 					case 1:
 						callback( value );
 						break;

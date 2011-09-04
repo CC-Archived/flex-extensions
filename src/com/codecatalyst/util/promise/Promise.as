@@ -76,6 +76,33 @@ package com.codecatalyst.util.promise
 			return deferred.cancelled;
 		}
 		
+		[Bindable( "stateChanged" )]
+		/**
+		 * Progress supplied when this Promise was updated.
+		 */
+		public function get progress():*
+		{
+			return deferred.progress;
+		}
+		
+		[Bindable( "stateChanged" )]
+		/**
+		 * Result supplied when this Promise was fulfilled.
+		 */
+		public function get result():*
+		{
+			return deferred.result;
+		}
+		
+		[Bindable( "stateChanged" )]
+		/**
+		 * Error supplied when this Promise failed.
+		 */
+		public function get error():*
+		{
+			return deferred.error;
+		}
+		
 		// ========================================
 		// Protected properties
 		// ========================================
