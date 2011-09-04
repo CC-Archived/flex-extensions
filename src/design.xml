@@ -1,0 +1,55 @@
+<?xml version="1.0"?>
+<design version="2">
+
+	<namespaces>
+		<namespace prefix="fe" uri="http://fe.codecatalyst.com/2011/flex-extensions" />
+		</namespaces>
+
+	<categories>
+	<category id="Extensions" label="Flex Extensions" defaultExpand="true" />
+		<category id="Extensions" label="Flex Extensions" defaultExpand="true" />
+	</categories>
+	
+	<components>
+		<component name="Button" displayName="Button" namespace="fe" category="Extensions" />
+		<component name="TabBar" displayName="TabBar" namespace="fe" category="Extensions" />
+		<component name="OverlappingTabBar" displayName="OverlappingTabBar" namespace="fe" category="Extensions" />
+		<component name="Populator" displayName="Populator" namespace="fe" category="Extensions" />
+		<component name="Selectable" displayName="Selectable" namespace="fe" category="Extensions" />
+		<component name="DynamicChart" displayName="DynamicChart" namespace="fe" category="Extensions" />
+		<component name="DynamicAxisRenderer" displayName="DynamicAxisRenderer" namespace="fe" category="Extensions" />
+		<component name="TruncatedAxisLabelRenderer" displayName="TruncatedAxisLabelRenderer" namespace="fe" category="Extensions" />
+		<component name="ChartHoverControl" displayName="ChartHoverControl" namespace="fe" category="Extensions" />
+		<component name="ChartHoverCrosshairControl" displayName="ChartHoverCrosshairControl" namespace="fe" category="Extensions" />
+		<component name="ChartPanControl" displayName="ChartPanControl" namespace="fe" category="Extensions" />
+		<component name="ChartZoomInControl" displayName="ChartZoomInControl" namespace="fe" category="Extensions" />
+		<component name="ChartZoomOutControl" displayName="ChartZoomOutControl" namespace="fe" category="Extensions" />
+		<component name="AnnotationLine" displayName="AnnotationLine" namespace="fe" category="Extensions" />
+		<component name="Background" displayName="Background" namespace="fe" category="Extensions" />
+		<component name="DateTimeGridLines" displayName="DateTimeGridLines" namespace="fe" category="Extensions" />
+		<component name="DateTimeGridLineSet" displayName="DateTimeGridLineSet" namespace="fe" category="Extensions" />
+		<component name="HighlightedRegion" displayName="HighlightedRegion" namespace="fe" category="Extensions" />
+		<component name="LinearTrendLine" displayName="LinearTrendLine" namespace="fe" category="Extensions" />
+		<component name="BoxFrame" displayName="BoxFrame" namespace="fe" category="Extensions" />
+		<component name="DateRangeInput" displayName="DateRangeInput" namespace="fe" category="Extensions" />
+		<component name="DateRangeSlider" displayName="DateRangeSlider" namespace="fe" category="Extensions" />
+		<component name="MonthPicker" displayName="MonthPicker" namespace="fe" category="Extensions" />
+		<component name="BoxItemRenderer" displayName="BoxItemRenderer" namespace="fe" category="Extensions" />
+		<component name="CanvasItemRenderer" displayName="CanvasItemRenderer" namespace="fe" category="Extensions" />
+		<component name="CheckGroup" displayName="CheckGroup" namespace="fe" category="Extensions" />
+		<component name="Group" displayName="Group" namespace="fe" category="Extensions" />
+		<component name="MasterDetail" displayName="MasterDetail" namespace="fe" category="Extensions" />
+		<component name="RadioGroup" displayName="RadioGroup" namespace="fe" category="Extensions" />
+		<component name="Label" displayName="Label" namespace="fe" category="Extensions" />
+		<component name="Text" displayName="Text" namespace="fe" category="Extensions" />
+		<component name="DateRange" displayName="DateRange" namespace="fe" category="Extensions" />
+		<component name="NumericRange" displayName="NumericRange" namespace="fe" category="Extensions" />
+		<component name="TimeInterval" displayName="TimeInterval" namespace="fe" category="Extensions" />
+		<component name="ClassFactory" displayName="ClassFactory" namespace="fe" category="Extensions" />
+		<component name="DataRendererFactory" displayName="DataRendererFactory" namespace="fe" category="Extensions" />
+		<component name="StyleableFactory" displayName="StyleableFactory" namespace="fe" category="Extensions" />
+		<component name="StyleableRendererFactory" displayName="StyleableRendererFactory" namespace="fe" category="Extensions" />
+		<component name="InvalidationTracker" displayName="InvalidationTracker" namespace="fe" category="Extensions" />
+	</components>
+	
+</design>
