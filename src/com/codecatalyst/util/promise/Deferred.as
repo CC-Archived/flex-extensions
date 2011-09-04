@@ -342,6 +342,7 @@ package com.codecatalyst.util.promise
 		public function resolve( result:* ):void
 		{
 			this.result = result;
+			setState( Deferred.SUCCEEDED_STATE );
 			
 			notify( resultCallbacks.concat( alwaysCallbacks ), result );
 			releaseCallbacks();
@@ -353,6 +354,7 @@ package com.codecatalyst.util.promise
 		public function reject( error:* ):void
 		{
 			this.error = error;
+			setState( Deferred.FAILED_STATE );
 			
 			notify( errorCallbacks.concat( alwaysCallbacks ), error );
 			releaseCallbacks();
@@ -373,6 +375,8 @@ package com.codecatalyst.util.promise
 		 */
 		public function cancel():void
 		{
+			setState( Deferred.CANCELLED_STATE );
+			
 			releaseCallbacks();
 		}
 		
