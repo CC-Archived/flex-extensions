@@ -260,7 +260,7 @@ package com.codecatalyst.util.promise
 		{
 			var deferred:Deferred = new Deferred();
 			
-			deferred.then(
+			then(
 				function ( result:* ):void
 				{
 					if ( resultCallback != null )
