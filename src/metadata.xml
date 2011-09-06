@@ -13,7 +13,17 @@
 			type="String"
 			values="displaylist,properties,size"
 			defaultValue="properties"
-			required="true" />
+			required="false" />
+		
+	</metadata>
+	
+	<metadata
+		name="Persistent"
+		description="Marks a property as eligible to be persisted by a persistent data store.">
+		
+		<context name="variable" />
+		<context name="getter" />
+		<context name="setter" />
 		
 	</metadata>
 </annotations>
