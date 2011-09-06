@@ -141,6 +141,8 @@ package com.codecatalyst.util.persistence
 		 */
 		protected function createChangeEventHandler( propertyName:String ):Function
 		{
+			var instance:Object = this;
+			
 			var handler:Function =
 				
 				function ( event:Event ):void
@@ -149,12 +151,12 @@ package com.codecatalyst.util.persistence
 					{
 						if ( ( event as PropertyChangeEvent ).property == propertyName )
 						{
-							setPropertyValue( propertyName, this[ propertyName ] );
+							setPropertyValue( propertyName, instance[ propertyName ] );
 						}
 					}
 					else
 					{
-						setPropertyValue( propertyName, this[ propertyName ] );
+						setPropertyValue( propertyName, instance[ propertyName ] );
 					}
 				};
 			
