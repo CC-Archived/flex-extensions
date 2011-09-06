@@ -7,6 +7,6 @@ package com.codecatalyst.data.enumeration
 	 */
 	public interface IEnumeration
 	{
-		function get id():String;
+		function get id():*;
 	}
 }

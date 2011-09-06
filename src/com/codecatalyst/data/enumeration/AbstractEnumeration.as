@@ -13,7 +13,7 @@ package com.codecatalyst.data.enumeration
 		/**
 		 * Unique identifier.
 		 */
-		public function get id():String
+		public function get id():*
 		{
 			return _id;
 		}
@@ -25,7 +25,7 @@ package com.codecatalyst.data.enumeration
 		/**
 		 * Backing variable for <code>id</code>.
 		 */
-		protected var _id:String = null;
+		protected var _id:* = null;
 		
 		// ========================================
 		// Constructor
