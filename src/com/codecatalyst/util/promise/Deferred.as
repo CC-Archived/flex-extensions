@@ -256,7 +256,7 @@ package com.codecatalyst.util.promise
 		/**
 		 * Utility method to filter and/or chain Deferreds.
 		 */
-		public function pipe( resultCallback:Function, errorCallback:Function ):Promise
+		public function pipe( resultCallback:Function, errorCallback:Function = null ):Promise
 		{
 			var deferred:Deferred = new Deferred();
 			
