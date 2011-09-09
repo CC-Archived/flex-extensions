@@ -236,18 +236,20 @@ package com.codecatalyst.util.promise
 		 */
 		public function always( alwaysCallback:Function ):Deferred
 		{
-			if ( pending )
+			if ( alwaysCallback != null )
 			{
-				if ( alwaysCallback != null )
+				if ( pending )
+				{
 					alwaysCallbacks.push( alwaysCallback );
-			}
-			else if ( succeeded )
-			{
-				notify( [ alwaysCallback ], result );
-			}
-			else if ( failed )
-			{
-				notify( [ alwaysCallback ], error );
+				}
+				else if ( succeeded )
+				{
+					notify( [ alwaysCallback ], result );
+				}
+				else if ( failed )
+				{
+					notify( [ alwaysCallback ], error );
+				}
 			}
 				
 			return this;
@@ -317,13 +319,15 @@ package com.codecatalyst.util.promise
 		 */
 		public function onProgress( progressCallback:Function ):Deferred
 		{
-			if ( pending )
+			if ( progressCallback != null )
 			{
-				if ( progressCallback != null )
+				if ( pending )
+				{
 					progressCallbacks.push( progressCallback );
-				
-				if ( progress != null )
-					notify( [ progressCallback ], progress );
+					
+					if ( progress != null )
+						notify( [ progressCallback ], progress );
+				}
 			}
 			
 			return this;
@@ -334,14 +338,16 @@ package com.codecatalyst.util.promise
 		 */
 		public function onResult( resultCallback:Function ):Deferred
 		{
-			if ( pending )
+			if ( resultCallback != null )
 			{
-				if ( resultCallback != null )
+				if ( pending )
+				{
 					resultCallbacks.push( resultCallback );
-			}
-			else if ( succeeded )
-			{
-				notify( [ resultCallback ], result );
+				}
+				else if ( succeeded )
+				{
+					notify( [ resultCallback ], result );
+				}
 			}
 			
 			return this;
@@ -352,14 +358,16 @@ package com.codecatalyst.util.promise
 		 */
 		public function onError( errorCallback:Function ):Deferred
 		{
-			if ( pending )
+			if ( errorCallback != null )
 			{
-				if ( errorCallback != null )
+				if ( pending )
+				{
 					errorCallbacks.push( errorCallback );
-			}
-			else if ( failed )
-			{
-				notify( [ errorCallback ], error );
+				}
+				else if ( failed )
+				{
+					notify( [ errorCallback ], error );
+				}
 			}
 			
 			return this;
