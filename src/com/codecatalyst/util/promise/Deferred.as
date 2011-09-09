@@ -419,7 +419,7 @@ package com.codecatalyst.util.promise
 		/**
 		 * Cancel this Deferred.
 		 */
-		public function cancel( silent:Boolean=true ):void
+		public function cancel( silent:Boolean = true ):void
 		{
 			if ( pending )
 			{
