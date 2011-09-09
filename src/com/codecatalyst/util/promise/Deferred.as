@@ -419,12 +419,15 @@ package com.codecatalyst.util.promise
 		/**
 		 * Cancel this Deferred.
 		 */
-		public function cancel():void
+		public function cancel( silent:Boolean=true ):void
 		{
 			if ( pending )
 			{
 				setState( Deferred.CANCELLED_STATE );
-			
+				
+				if ( silent != true)
+				    notify ( alwaysCallbacks, state );
+
 				releaseCallbacks();
 			}
 		}
