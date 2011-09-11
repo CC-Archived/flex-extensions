@@ -147,6 +147,15 @@ package com.codecatalyst.util.promise
 			return _error;
 		}
 		
+		[Bindable( "stateChanged" )]
+		/**
+		 * Reason supplied when this Deferred was cancelled.
+		 */
+		public function get reason():*
+		{
+			return _reason;
+		}
+		
 		// ========================================
 		// Protected properties
 		// ========================================
@@ -170,6 +179,11 @@ package com.codecatalyst.util.promise
 		 * Backing variable for <code>error</code.
 		 */
 		protected var _error:* = null;
+		
+		/**
+		 * Backing variable for <code>reason</code.
+		 */
+		protected var _reason:* = null;
 		
 		/**
 		 * Deferred state.
@@ -197,6 +211,11 @@ package com.codecatalyst.util.promise
 		protected var errorCallbacks:Array = [];
 		
 		/**
+		 * Callbacks to be called when this Deferred is cancelled.
+		 */
+		protected var cancelCallbacks:Array = [];
+		
+		/**
 		 * Callbacks to be called when this Deferred is resolved or rejected.
 		 */
 		protected var alwaysCallbacks:Array = [];
@@ -220,19 +239,20 @@ package com.codecatalyst.util.promise
 		// ========================================
 		
 		/**
-		 * Register callbacks to be called when this Deferred is resolved or rejected.
+		 * Register callbacks to be called when this Deferred is resolved, rejected, cancelled and updated.
 		 */
-		public function then( resultCallback:Function, errorCallback:Function = null, progressCallback:Function = null ):Deferred
+		public function then( resultCallback:Function, errorCallback:Function = null, progressCallback:Function = null, cancelCallback:Function = null ):Deferred
 		{
 			onResult( resultCallback );
 			onError( errorCallback );
 			onProgress( progressCallback );
+			onCancel( cancelCallback );
 			
 			return this;
 		}
 		
 		/**
-		 * Registers a callback to be called when this Deferred is either resolved or rejected.
+		 * Registers a callback to be called when this Deferred is either resolved, rejected or cancelled.
 		 */
 		public function always( alwaysCallback:Function ):Deferred
 		{
@@ -249,6 +269,10 @@ package com.codecatalyst.util.promise
 				else if ( failed )
 				{
 					notify( [ alwaysCallback ], error );
+				}
+				else if ( cancelled )
+				{
+					notify( [ alwaysCallback ], reason );
 				}
 			}
 				
@@ -270,11 +294,11 @@ package com.codecatalyst.util.promise
 						var returnValue:* = resultCallback( result );
 						if ( returnValue is Deferred )
 						{
-							returnValue.promise.then( deferred.resolve, deferred.reject, deferred.update );
+							returnValue.promise.then( deferred.resolve, deferred.reject, deferred.update, deferred.cancel );
 						}
 						else if ( returnValue is Promise )
 						{
-							returnValue.then( deferred.resolve, deferred.reject, deferred.update );
+							returnValue.then( deferred.resolve, deferred.reject, deferred.update, deferred.cancel );
 						}
 						else
 						{
@@ -293,11 +317,11 @@ package com.codecatalyst.util.promise
 						var returnValue:* = errorCallback( error );
 						if ( returnValue is Deferred )
 						{
-							returnValue.promise.then( deferred.resolve, deferred.reject, deferred.update );
+							returnValue.promise.then( deferred.resolve, deferred.reject, deferred.update, deferred.cancel );
 						}
 						else if ( returnValue is Promise )
 						{
-							returnValue.then( deferred.resolve, deferred.reject, deferred.update );
+							returnValue.then( deferred.resolve, deferred.reject, deferred.update, deferred.cancel );
 						}
 						else
 						{
@@ -308,6 +332,14 @@ package com.codecatalyst.util.promise
 					{
 						deferred.reject( error );
 					}
+				},
+				function ( update:* ):void
+				{
+					deferred.update( update );
+				},
+				function ( reason:* ):void
+				{
+					deferred.cancel( reason );
 				}
 			);
 			
@@ -374,6 +406,26 @@ package com.codecatalyst.util.promise
 		}
 		
 		/**
+		 * Registers a callback to be called when this Deferred is cancelled.
+		 */
+		public function onCancel( cancelCallback:Function ):Deferred
+		{
+			if ( cancelCallback != null )
+			{
+				if ( pending )
+				{
+					cancelCallbacks.push( cancelCallback );
+				}
+				else if ( failed )
+				{
+					notify( [ cancelCallback ], reason );
+				}
+			}
+			
+			return this;
+		}
+		
+		/**
 		 * Update this Deferred and notify relevant callbacks.
 		 */
 		public function update( progress:* ):void
@@ -417,17 +469,15 @@ package com.codecatalyst.util.promise
 		}
 		
 		/**
-		 * Cancel this Deferred.
+		 * Cancel this Deferred and notify relevant callbacks.
 		 */
-		public function cancel( silent:Boolean = true ):void
+		public function cancel( reason:* = null ):void
 		{
 			if ( pending )
 			{
 				setState( Deferred.CANCELLED_STATE );
 				
-				if ( silent != true)
-				    notify ( alwaysCallbacks, state );
-
+				notify( cancelCallbacks.concat( alwaysCallbacks ), reason );
 				releaseCallbacks();
 			}
 		}
@@ -485,6 +535,7 @@ package com.codecatalyst.util.promise
 			resultCallbacks = [];
 			errorCallbacks = [];
 			progressCallbacks = [];
+			cancelCallbacks = [];
 			alwaysCallbacks = [];
 		}
 	}

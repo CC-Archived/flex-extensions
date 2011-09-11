@@ -103,6 +103,15 @@ package com.codecatalyst.util.promise
 			return deferred.error;
 		}
 		
+		[Bindable( "stateChanged" )]
+		/**
+		 * Reason supplied when this Promise failed.
+		 */
+		public function get reason():*
+		{
+			return deferred.reason;
+		}
+		
 		// ========================================
 		// Protected properties
 		// ========================================
@@ -135,9 +144,9 @@ package com.codecatalyst.util.promise
 		/**
 		 * Register callbacks to be called when this Promise is resolved or rejected.
 		 */
-		public function then( resultCallback:Function, errorCallback:Function = null, progressCallback:Function = null ):Promise
+		public function then( resultCallback:Function, errorCallback:Function = null, progressCallback:Function = null, cancelCallback:Function = null ):Promise
 		{
-			return deferred.then( resultCallback, errorCallback, progressCallback ).promise;
+			return deferred.then( resultCallback, errorCallback, progressCallback, cancelCallback ).promise;
 		}
 		
 		/**
@@ -181,11 +190,19 @@ package com.codecatalyst.util.promise
 		}
 		
 		/**
+		 * Registers a callback to be called when this Promise is cancelled.
+		 */
+		public function onCancel( cancelCallback:Function ):Promise
+		{
+			return deferred.onCancel( cancelCallback ).promise;
+		}
+		
+		/**
 		 * Cancel this Promise.
 		 */
-		public function cancel():void
+		public function cancel( reason:* = null ):void
 		{
-			deferred.cancel();
+			deferred.cancel( reason );
 		}
 		
 		// ========================================
