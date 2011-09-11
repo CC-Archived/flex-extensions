@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Label 
+	xmlns:fx="http://ns.adobe.com/mxml/2009" 
+	xmlns:s="library://ns.adobe.com/flex/spark" 
+	xmlns:mx="library://ns.adobe.com/flex/mx">
+	
+	<fx:Script>
+		<![CDATA[
+			import com.codecatalyst.util.invalidation.InvalidationTracker;
+			
+			import spark.formatters.NumberFormatter;
+			
+			// ========================================
+			// Public properties
+			// ========================================
+			
+			[Bindable]
+			/**
+			 * Animation duration.
+			 */
+			public var duration:Number = 400;
+			
+			[Bindable]
+			/**
+			 * Easing function (optional).
+			 */
+			public var easingFunction:Function = null;
+			
+			[Bindable]
+			/**
+			 * Number formatter (optional).
+			 */
+			public var formatter:NumberFormatter = null;
+			
+			[Bindable]
+			[Invalidate("properties")]
+			/**
+			 * Value.
+			 */
+			public var value:Number = NaN;
+			
+			/**
+			 * @inheritDoc
+			 */
+			override public function set text( value:String ):void
+			{
+				var numericValue:Number = Number( value );
+				if ( formatter != null && isNaN( numericValue ) )
+				{
+					super.text = formatter.format( numericValue );
+				}
+				else
+				{
+					super.text = value;
+				}
+			}
+			
+			// ========================================
+			// Protected properties
+			// ========================================
+			
+			/**
+			 * Property invalidation tracker.
+			 */
+			protected var propertyTracker:InvalidationTracker = new InvalidationTracker( this as IEventDispatcher );
+			
+			// ========================================
+			// Protected methods
+			// ========================================
+			
+			/**
+			 * @inheritDoc
+			 */
+			override protected function commitProperties():void
+			{
+				super.commitProperties();
+				
+				if ( propertyTracker.invalidated( "value" ) )
+				{
+					var previousValue:Number = propertyTracker.previousValue( "value" );
+					
+					if ( !isNaN( value ) )
+					{
+						if ( !isNaN( previousValue ) )
+						{
+							animation.fromValue = previousValue;
+							animation.toValue   = value;
+							
+							animation.play();
+						}
+						else
+						{
+							text = value.toString();
+						}
+					}
+					else
+					{
+						text = "";
+					}
+				}
+			}
+			
+		]]>
+	</fx:Script>
+	
+	<fx:Declarations>
+		
+		<mx:AnimateProperty 
+			id="animation"
+			target="{ this }" 
+			property="text"
+			duration="{ duration }" 
+			easingFunction="{ easingFunction }" />
+		
+	</fx:Declarations>
+	
+</s:Label>

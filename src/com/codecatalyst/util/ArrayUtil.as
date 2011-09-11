@@ -155,5 +155,20 @@ package com.codecatalyst.util
 		{
 			return merge( exclude( array1, array2 ), exclude( array2, array1 ) );
 		}
+		
+		/**
+		 * Returns a string representation of the array, delimited by `separator` 
+		 */
+		public static function toCSV(array:Array,separator:String=","):String {
+			return array.join(separator);
+		}
+		
+		/**
+		 * Returns a representation of string whose elements/segments are delimited by `separator` 
+		 * or returns the string as the only array element
+		 */
+		public static function toArray(source:String, separator:String=","):Array {
+			return (source.indexOf(separator) > -1) ? source.split(separator) : new Array().concat(source);
+		}		
 	}
 }

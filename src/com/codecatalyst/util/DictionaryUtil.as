@@ -31,6 +31,21 @@ package com.codecatalyst.util
 		// ========================================
 		
 		/**
+		 * Clone existing dictionary into independent snapshot 
+		 */
+		public static function clone(source:Dictionary,weak:Boolean=false, deep:Boolean=false):Dictionary {
+			var result : Dictionary = new Dictionary(weak);
+			for (var key:* in source) {
+				var val:* = source[key];
+				
+				if (val is Object) result[key] = deep ? Object(val).clone() : val;
+				else               result[key] = val;
+			}
+			
+			return result;
+		}
+			
+		/**
 		 * Create an Array representation of the specified Dictionary's contents.
 		 *  
 		 * @param source Dictionary
@@ -116,7 +131,7 @@ package com.codecatalyst.util
 		}
 		
 		/**
-		 * Given an iterable set (Array, ArrayCollection, Proxy, etc.) of Objects, returns a Dictionary of Objects indexed by the specified property name.
+		 * Given an iterable set (Array, ArrayCollection, Proxy, etc.) of Objects, returns a Dictionary of Objects indexed by the specified property value.
 		 * 
 		 * NOTE: 'dot notation' is supported.
 		 */

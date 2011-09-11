@@ -127,7 +127,7 @@ package com.codecatalyst.util.invalidation
 			this.callback          = callback;
 			
 			if ( ! ChangeWatcher.canWatch( source, propertyName ) )
-				throw new Error( "The specified property is not [Bindable]." );
+				throw new Error( "The specified property '" + propertyName + "' is not [Bindable]." );
 			
 			watcher = ChangeWatcher.watch( source, [ propertyName ], changeEventHandler );
 			
