@@ -74,19 +74,7 @@ package com.codecatalyst.util.invalidation
 		protected var invalidationFlags:uint = InvalidationFlags.NONE;
 		
 		/**
-		 * Notification function useful for tracking changes properties.
-		 * 
-		 * <p>This callback is especially useful if <code>[Invalidate]</code> is used on non-<code>IInvalidating</code>
-		 * classes. Such classes do NOT have a mx validation lifecycle. So this callback allows "immediate" 
-		 * notifications for any property changes to the instance to be dispatched.
-		 * 
-		 * <pre>
-		 *    function ( target:IEventDispatcher, property:String, previousVal:*, newVal:* ) : void
-		 * </pre>
-		 * 
-		 * (optional).
-		 * 
-		 * @default NULL 
+		 * Invalidation callback (optional).
 		 */
 		protected var callback:Function;
 		
@@ -127,7 +115,7 @@ package com.codecatalyst.util.invalidation
 			this.callback          = callback;
 			
 			if ( ! ChangeWatcher.canWatch( source, propertyName ) )
-				throw new Error( "The specified property '" + propertyName + "' is not [Bindable]." );
+					throw new Error( "The specified property '" + propertyName + "' is not [Bindable]." );
 			
 			watcher = ChangeWatcher.watch( source, [ propertyName ], changeEventHandler );
 			
@@ -169,9 +157,10 @@ package com.codecatalyst.util.invalidation
 			{
 				var currentValue:* = PropertyUtil.getObjectPropertyValue( source, propertyName );
 				
-				// Method signature required == function ( target:IEventDispatcher, property:String, previousVal:*, newVal:* ):void 
-				
-				callback( source, propertyName, previousValue, currentValue );
+				if ( callback.length == 3 )
+					callback( propertyName, previousValue, currentValue );
+				else
+					callback();
 			}
 		}
 		

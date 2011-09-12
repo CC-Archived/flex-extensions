@@ -22,6 +22,12 @@
 
 package com.codecatalyst.util
 {
+<<<<<<< HEAD
+=======
+	import com.codecatalyst.util.promise.Deferred;
+	import com.codecatalyst.util.promise.Promise;
+	
+>>>>>>> d1aea2534f5af9120627ef0b5e39666d28ac9b3f
 	import mx.rpc.AsyncToken;
 	import mx.rpc.IResponder;
 	import mx.rpc.Responder;
@@ -42,6 +48,7 @@ package com.codecatalyst.util
 		 */
 		public static function intercept( token:AsyncToken, result:Function, fault:Function = null ):AsyncToken
 		{
+<<<<<<< HEAD
 			// create a proxy AsyncToken based on the original AsyncToken
 			
 			var proxyToken:AsyncToken = new AsyncToken( token.message );
@@ -54,11 +61,26 @@ package com.codecatalyst.util
 
 					// create a result handling function closure
 					
+=======
+			// Create a proxy AsyncToken based on the original AsyncToken.
+			var proxyToken:AsyncToken = new AsyncToken( token.message );
+			
+			// Create and add an intercepting IResponder to the original AsyncToken.
+			token.addResponder(
+
+				new Responder(
+					
+					// Create a result handling function closure.
+>>>>>>> d1aea2534f5af9120627ef0b5e39666d28ac9b3f
 					function ( data:Object ):void
 					{
 						var resultData:Object = data;
 						
+<<<<<<< HEAD
 						// execute the specified result interceptor function
+=======
+						// Execute the specified result interceptor function.
+>>>>>>> d1aea2534f5af9120627ef0b5e39666d28ac9b3f
 
 						if ( result != null )
 						{
@@ -68,22 +90,34 @@ package com.codecatalyst.util
 								resultData = interceptorReturnValue;
 						}
 						
+<<<<<<< HEAD
 						// notify the proxy AsyncToken's responders
 						
+=======
+						// Notify the proxy AsyncToken's responders.
+>>>>>>> d1aea2534f5af9120627ef0b5e39666d28ac9b3f
 						for each ( var responder:IResponder in proxyToken.responders )
 						{						
 							responder.result( resultData );
 						}
 					},
 					
+<<<<<<< HEAD
 					// create a fault handling function closure
 					
+=======
+					// Create a fault handling function closure.
+>>>>>>> d1aea2534f5af9120627ef0b5e39666d28ac9b3f
 					function ( info:Object ):void
 					{
 						var faultInfo:Object = info;
 						
+<<<<<<< HEAD
 						// execute the specified fault interceptor function
 						
+=======
+						// Execute the specified fault interceptor function.
+>>>>>>> d1aea2534f5af9120627ef0b5e39666d28ac9b3f
 						if ( fault != null )
 						{
 							var interceptorReturnValue:* = fault( info );
@@ -92,8 +126,12 @@ package com.codecatalyst.util
 								faultInfo = interceptorReturnValue;
 						}
 						
+<<<<<<< HEAD
 						// notify the proxy AsyncToken's responders
 						
+=======
+						// Notify the proxy AsyncToken's responders.
+>>>>>>> d1aea2534f5af9120627ef0b5e39666d28ac9b3f
 						for each ( var responder:IResponder in proxyToken.responders )
 						{						
 							responder.fault( faultInfo );
@@ -104,5 +142,23 @@ package com.codecatalyst.util
 			
 			return proxyToken;
 		}
+<<<<<<< HEAD
+=======
+		
+		/**
+		 * Create a Promise for the specified AsyncToken.
+		 * 
+		 * @see com.codecatalyst.util.promise.Promise
+		 */
+		public static function createPromise( token:AsyncToken ):Promise
+		{
+			var deferred:Deferred = new Deferred();
+			
+			var responder:Responder = new Responder( deferred.resolve, deferred.reject );
+			token.addResponder( responder );
+			
+			return deferred.promise;
+		}
+>>>>>>> d1aea2534f5af9120627ef0b5e39666d28ac9b3f
 	}
 }
