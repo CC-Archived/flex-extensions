@@ -114,7 +114,29 @@ package com.codecatalyst.util
 			}
 			
 			return target;
-		}		
+		}
+		
+		/**
+		 * Since ListCollectionViews may have filters applied to the list
+		 * this method quickly gathers all non-filtered items into an array.
+		 *  
+		 * @param list ListCollectionView
+		 * @return Array
+		 */
+		public static function toArray( list:ListCollectionView ) : Array 
+		{
+			var results : Array = [ ];
+			
+			if ( list != null) 
+			{
+				for each (var it:* in list) 
+				{
+					results.push(it);
+				}
+			}
+			
+			return results;
+		}
 	}
 	
 }
