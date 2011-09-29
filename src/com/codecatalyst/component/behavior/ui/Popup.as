@@ -181,6 +181,11 @@ package com.codecatalyst.component.behavior.ui
 		 */
 		public var modal     	: Boolean = false;
 		
+		[Bindable("visibleChanged")]
+		public function get visible() : Boolean
+		{
+			return (isContentReady && content.visible);	
+		}
 		
 		/**
 		 * Cache the content instance for multiple showings 
@@ -460,6 +465,11 @@ package com.codecatalyst.component.behavior.ui
 					PopUpManager.removePopUp(content);
 				
 				release();
+				
+				if (content is UIComponent) 
+					UIComponent(content).isPopUp = false;
+				
+				dispatchEvent(new Event("visibleChanged") );
 			}
 		}
 		
@@ -570,8 +580,13 @@ package com.codecatalyst.component.behavior.ui
 			if (content is UIComponent) 
 				UIComponent(content).isPopUp = true;	
 			
+			if ( content.stage )
+				content.stage.addEventListener(MouseEvent.MOUSE_DOWN,onMouseDown,true,0,true);
+			
 			content.visible = isContentReady;
-			content.stage.addEventListener(MouseEvent.MOUSE_DOWN,onMouseDown,true,0,true);
+			
+			if ( content.visible && content.stage )
+				dispatchEvent(new Event("visibleChanged") );
 			
 		}
 		
@@ -618,8 +633,8 @@ package com.codecatalyst.component.behavior.ui
 		
 		protected function get isContentReady():Boolean {
 			return (  content 							&& 
-				(content is UIComponent) 				&& 
-				UIComponent(content).initialized	);
+					  (content is UIComponent) 			&& 
+					  UIComponent(content).initialized		);
 		}
 		
 		/**

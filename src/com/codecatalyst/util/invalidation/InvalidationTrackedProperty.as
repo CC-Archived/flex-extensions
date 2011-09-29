@@ -22,13 +22,17 @@
 
 package com.codecatalyst.util.invalidation
 {
+	import com.codecatalyst.util.MetadataUtil;
+	import com.codecatalyst.util.PropertyUtil;
+	
 	import flash.events.Event;
 	import flash.events.IEventDispatcher;
 	
 	import mx.binding.utils.ChangeWatcher;
 	import mx.core.IInvalidating;
 	import mx.events.PropertyChangeEvent;
-	import com.codecatalyst.util.PropertyUtil;
+	import mx.utils.DescribeTypeCache;
+	
 	
 	[ExcludeClass]
 	public class InvalidationTrackedProperty
@@ -114,10 +118,7 @@ package com.codecatalyst.util.invalidation
 			this.invalidationFlags = invalidationFlags;
 			this.callback          = callback;
 			
-			if ( ! ChangeWatcher.canWatch( source, propertyName ) )
-					throw new Error( "The specified property '" + propertyName + "' is not [Bindable]." );
-			
-			watcher = ChangeWatcher.watch( source, [ propertyName ], changeEventHandler );
+			attachWatcher(source, propertyName);
 			
 			reset();
 		}
@@ -126,42 +127,156 @@ package com.codecatalyst.util.invalidation
 		// Public methods
 		// ========================================
 		
+		
+		/**
+		 * Properties with [Invalidate()] attached must have a [Bindable] also attached so property changes
+		 * can be detected and invalidation auto-initiated. Custom databinding events can also use [Bindable('xxxx')]
+		 * notations where the change event not a `propertyChange` event. (note `xxxx` is a placeholder for the custom event type).
+		 *      
+		 * 
+		 * Custom databinding events must be manually/programmatically dispatched. Therefore, when used with [Invalidate()]
+		 * custom databindings require manual invalidation.
+		 * e.g.
+		 * 
+		 *       Bindable(event="selectedChanged")]
+		 *       [Invalidate("properties")]
+		 *       
+		 *       // Which button is selected in the StatusFilter toggleButton bar
+		 *       // 
+		 *       // NOTE: unable to use [Invalidate(...)] here since we are using
+		 *       //  a custom databinding event name `change`
+		 *          
+		 *       public function get selected():StatusFilterEnum
+		 *       {
+		 *       	return _selected;
+		 *       }
+		 *       public function set selected(value:StatusFilterEnum):void
+		 *       {
+		 *       	if (_selected != value)
+		 *       	{
+		 *       		_selected 		 = value;
+		 *       		
+		 *       		// Defer change response until commitProperties
+		 *       		
+		 *       		// propertyTracker.invalidate("selected");
+		 *       	}
+		 *       }
+		 * 
+		 * @param source
+		 * @param propertyName
+		 * 
+		 */		
+		public function attachWatcher(source:IEventDispatcher, propertyName:String):void 
+		{
+			if ( ChangeWatcher.canWatch( source, propertyName ) )
+			{
+				watcher = ChangeWatcher.watch( source, [ propertyName ], changeEventHandler );
+			} 
+			
+			if ( watcher == null) 
+			{
+				if ( !hasCustomEvent )  
+				{
+					throw new Error( "The specified property '" + propertyName + "' is not [Bindable]" );
+				}
+				
+				var msg : String  = "Warning: The specified property '" + propertyName + "' uses a custom databinding [Bindable('" + customBinding + "')]";
+				
+					msg += "\r";
+					msg += "Custom databindings must be manually [programmatically] invalidated with the InvalidationTracker!"
+				
+				trace ( msg );
+			}
+		}
+		
+		/**
+		 * Does this property have a custom databinding event name ?
+		 * e.g  [Bindable(event="<custom name>")]
+		 *  
+		 * @return Boolean false if [Bindable] 
+		 * 
+		 */
+		protected function get hasCustomEvent():Boolean
+		{
+			// Use internal, previously cached flag if available
+			
+			return ( _customEventName || customBinding );
+			
+		}
+
+		/**
+		 * Parse the custom event type used for databinding notifications; if present.
+		 * e.g  [Bindable(event="<custom name>")]
+		 * 
+		 * @return String null if no custom event type 
+		 */		
+		protected function get customBinding():String 
+		{
+			var description	:XML 	 = DescribeTypeCache.describeType( source ).typeDescription;
+			var list		:XMLList = description..metadata.(@name == 'Bindable');
+			
+			// Parse the type description for the property's [Bindable] information
+			
+			for each ( var item:XML in list )
+			{
+				var property    :XML    = item.parent();
+				var propertyName:String = property.@name;
+				
+				if (propertyName == this.propertyName )
+				{
+					var bindable	:XML 	 = property.metadata.(@name == "Bindable")[0];
+					
+					_customEventName = MetadataUtil.getMetadataAttribute( bindable, "event", true ); 
+					break;
+				}
+			}
+			
+			_customEventName =  _customEventName == "" 				  ? null :
+								_customEventName == "propertyChange"  ? null : _customEventName;
+			
+			return _customEventName;
+		}
+		
 		/**
 		 * Invalidate this tracked property and automatically execute the IInvalidating methods for the specified InvalidationFlags (if applicable).
 		 */
 		public function invalidate():void
 		{
-			_invalidated = true;
-			
-			if ( source is IInvalidating )
+			if (_invalidated == false) 
 			{
-				var invalidating:IInvalidating = source as IInvalidating;
+				_invalidated = true;
 				
-				if ( invalidationFlags & InvalidationFlags.DISPLAY_LIST )
+				if ( source is IInvalidating )
 				{
-					invalidating.invalidateDisplayList();
-				}
-				
-				if ( invalidationFlags & InvalidationFlags.PROPERTIES )
-				{
-					invalidating.invalidateProperties();
-				}
-				
-				if ( invalidationFlags & InvalidationFlags.SIZE )
-				{
-					invalidating.invalidateSize();
+					var invalidating:IInvalidating = source as IInvalidating;
+					
+					if ( invalidationFlags & InvalidationFlags.DISPLAY_LIST )
+					{
+						invalidating.invalidateDisplayList();
+					}
+					
+					if ( invalidationFlags & InvalidationFlags.PROPERTIES )
+					{
+						invalidating.invalidateProperties();
+					}
+					
+					if ( invalidationFlags & InvalidationFlags.SIZE )
+					{
+						invalidating.invalidateSize();
+					}
 				}
 			}
-			
+				
 			if ( callback != null )
 			{
 				var currentValue:* = PropertyUtil.getObjectPropertyValue( source, propertyName );
-				
+					
 				if ( callback.length == 3 )
 					callback( propertyName, previousValue, currentValue );
 				else
 					callback();
 			}
+			
 		}
 		
 		/**
@@ -195,5 +310,7 @@ package com.codecatalyst.util.invalidation
 				invalidate();
 			}
 		}
+		
+		private var _customEventName : String;
 	}
 }
