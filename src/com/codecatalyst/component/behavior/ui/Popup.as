@@ -24,6 +24,7 @@ package com.codecatalyst.component.behavior.ui
 	[Event(name="contentChange",	 	type="flash.events.Event")]
 	[Event(name="contentInitialized",  	type="flash.events.Event")]
 	[Event(name="contentReady",  		type="flash.events.Event")]
+	[Event(name="close",				type="flash.events.Event")]
 	
 	
 	[DefaultProperty("renderer")]
@@ -470,6 +471,7 @@ package com.codecatalyst.component.behavior.ui
 					UIComponent(content).isPopUp = false;
 				
 				dispatchEvent(new Event("visibleChanged") );
+				dispatchEvent(new Event("close") );
 			}
 		}
 		
