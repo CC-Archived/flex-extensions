@@ -17,6 +17,9 @@
     <classEntry path="com.codecatalyst.component.behavior.ui.Populator"/>
     <classEntry path="com.codecatalyst.component.behavior.ui.Popup"/>
     <classEntry path="com.codecatalyst.component.behavior.ui.Selectable"/>
+    <classEntry path="com.codecatalyst.component.behavior.ui.Zoomer"/>
+    <classEntry path="com.codecatalyst.component.behavior.ui.swap.Swapper"/>
+    <classEntry path="com.codecatalyst.component.behavior.ui.swap.events.SwapperEvent"/>
     <classEntry path="com.codecatalyst.component.chart.DynamicAxisRenderer"/>
     <classEntry path="com.codecatalyst.component.chart.DynamicChart"/>
     <classEntry path="com.codecatalyst.component.chart.TruncatedAxisLabelRenderer"/>
@@ -62,9 +65,6 @@
     <classEntry path="com.codecatalyst.data.SampleSet"/>
     <classEntry path="com.codecatalyst.data.TemporalData"/>
     <classEntry path="com.codecatalyst.data.TimeInterval"/>
-    <classEntry path="com.codecatalyst.data.enumeration.AbstractEnumeration"/>
-    <classEntry path="com.codecatalyst.data.enumeration.AbstractLabeledEnumeration"/>
-    <classEntry path="com.codecatalyst.data.enumeration.IEnumeration"/>
     <classEntry path="com.codecatalyst.factory.ClassFactory"/>
     <classEntry path="com.codecatalyst.factory.DataRendererFactory"/>
     <classEntry path="com.codecatalyst.factory.styleable.StyleableFactory"/>
@@ -86,8 +86,12 @@
     <classEntry path="com.codecatalyst.util.IObjectPool"/>
     <classEntry path="com.codecatalyst.util.ImageUtil"/>
     <classEntry path="com.codecatalyst.util.IterableUtil"/>
+    <classEntry path="com.codecatalyst.util.KeyManager"/>
+    <classEntry path="com.codecatalyst.util.LayoutCache"/>
+    <classEntry path="com.codecatalyst.util.LayoutUtil"/>
     <classEntry path="com.codecatalyst.util.LogicUtil"/>
     <classEntry path="com.codecatalyst.util.MetadataUtil"/>
+    <classEntry path="com.codecatalyst.util.MouseUtil"/>
     <classEntry path="com.codecatalyst.util.NumberUtil"/>
     <classEntry path="com.codecatalyst.util.PropertyUtil"/>
     <classEntry path="com.codecatalyst.util.RandomUtil"/>
@@ -103,15 +107,13 @@
     <classEntry path="com.codecatalyst.util.invalidation.InvalidationTrackedProperty"/>
     <classEntry path="com.codecatalyst.util.invalidation.InvalidationTracker"/>
     <classEntry path="com.codecatalyst.util.invalidation.mxml.InvalidationTracker"/>
-    <classEntry path="com.codecatalyst.util.persistence.IKeyValueStore"/>
-    <classEntry path="com.codecatalyst.util.persistence.KeyValueStoreAdapter"/>
-    <classEntry path="com.codecatalyst.util.persistence.PersistentObject"/>
     <classEntry path="com.codecatalyst.util.promise.Deferred"/>
     <classEntry path="com.codecatalyst.util.promise.Promise"/>
     <classEntry path="com.codecatalyst.util.promise.PromiseUtil"/>
     <classEntry path="qs.charts.DashedAreaRenderer"/>
     <classEntry path="qs.charts.DashedLineRenderer"/>
     <classEntry path="qs.utils.GraphicsUtils"/>
+    <classEntry path="utils.display.bringToFront"/>
   </includeClasses>
   <includeResources>
     <resourceEntry destPath="manifest.xml" sourcePath="manifest.xml"/>
@@ -124,8 +126,8 @@
     <resourceEntry destPath="asset/image/cursor/resize-column.png" sourcePath="asset/image/cursor/resize-column.png"/>
     <resourceEntry destPath="asset/image/search/search.png" sourcePath="asset/image/search/search.png"/>
     <resourceEntry destPath="asset/image/search/busy.png" sourcePath="asset/image/search/busy.png"/>
-    <resourceEntry destPath="asset/image/search/clearSearch.png" sourcePath="asset/image/search/clearSearch.png"/>
     <resourceEntry destPath="asset/skin/slider/grip-pattern.png" sourcePath="asset/skin/slider/grip-pattern.png"/>
+    <resourceEntry destPath="asset/image/search/clearSearch.png" sourcePath="asset/image/search/clearSearch.png"/>
   </includeResources>
   <namespaceManifests>
     <namespaceManifestEntry manifest="manifest.xml" namespace="http://fe.codecatalyst.com/2011/flex-extensions"/>

@@ -1,0 +1,597 @@
+<?xml version="1.0" encoding="utf-8"?>
+<behavior:AbstractBehavior 
+		xmlns:behavior="com.codecatalyst.component.behavior.*"
+		xmlns:mx="http://www.adobe.com/2006/mxml">
+	
+		<!-- 
+			This component is based on the concept of attaching [runtime or compile-time] behaviours to existing components...
+			
+			Here the Swapper "attaches" or provides drag-n-swap features for 1-n UI components/containers. Those components
+			do NOT know ANYTHING about dragging or swapping... all that functionality is handled internally by the Swapper.
+			
+			The only requirement is that the target components must be in a container where the layoutManager does not interefere
+			with the swap activity. Canvas with its "absolute" layout is ideal. Swapper even swaps the anchor-based or percentage-based constraints.
+	
+			All targets for swapping must be at the same peer/parent-container level			
+			
+			Note: (1) while the size and position morphs to new dimensions, the # of dimensions do NOT change.
+			 	      So a rectangular area CANNOT morph to a triangular area. 
+			      (2) Anchors specified with the targets are NOW currently supported !!
+			      (3) Swapping from VBox or HBox containers is NOT currently supported !!
+		-->
+	
+		<mx:Metadata>
+			[DefaultProperty("dropIndicator")]	
+			
+			[Event(name='swapStarted', 		type='com.codecatalyst.component.behavior.ui.swap.events.SwapperEvent')]
+			[Event(name='swapPerformed', 	type='com.codecatalyst.component.behavior.ui.swap.events.SwapperEvent')]
+			[Event(name='swapFinished', 	type='com.codecatalyst.component.behavior.ui.swap.events.SwapperEvent')]
+				
+		</mx:Metadata>
+		
+		<mx:Script>
+			<![CDATA[
+				import com.codecatalyst.component.behavior.ui.swap.events.SwapperEvent;
+				import com.codecatalyst.util.DisplayObjectContainerUtil;
+				import com.codecatalyst.util.LayoutCache;
+				
+				import mx.containers.Box;
+				import mx.containers.Canvas;
+				import mx.core.UIComponent;
+				import mx.effects.easing.Bounce;
+				import mx.effects.effectClasses.ParallelInstance;
+				import mx.events.EffectEvent;
+				import mx.events.FlexEvent;
+				import mx.managers.CursorManager;
+				
+				import utils.display.bringToFront;
+
+				[Bindable] public  var durationResize : uint = 300;
+				[Bindable] public  var durationMove   : uint = 500;						   
+
+				public var dragFilters      : Array     = [];
+			    public var dropIndicator	: *;						// may be another UIComponent/Canvas or a GlowFilter (etc.)
+				public var autoSwapEnabled 	: Boolean 	= true;			// swap components while dragging...		    or can swap only after MOUSEUP
+				public var dragResize		: Boolean   = false;		// resize the source component when swapping... normally resizes after MOUSEUP
+				public var paddingAutoSwap	: uint		= 0;			// 0% of the target area is padded... any move into target 'interior' immediately triggers autoSwap 
+				
+				public function get isSwapping():Boolean {
+					return __isDragging;
+				}
+				
+				[Bindable]
+				public function get active():Boolean {
+					return __isActive;
+				}
+				public function set active(enabled:Boolean):void {
+					if (enabled != __isActive) {
+						// Force reset cursor if needed...
+						if (!enabled && __isActive) showSwapping(false); 
+						
+						__isActive     = enabled;
+						__pendingDrops = __allowedDrops;
+						
+						dispatchEvent(new Event('activeChange'));
+
+						// Defer the "real" actions until this component is READY!
+						invalidateProperties();						
+					}	
+				}
+				
+				
+				public function get allowedDrops():Array { 
+					return __allowedDrops; 
+				}
+			    public function set allowedDrops(swapTargets : Array):void {
+			    	__pendingDrops = swapTargets ? swapTargets : [];
+			    	
+					// Defer the "real" actions until this component is READY!
+			    	invalidateProperties();
+			    }
+			    
+				
+				public function init(active:Boolean=false, dragFilters:Array=null):Swapper {
+					this.active 		= active;
+					this.dragFilters 	= !dragFilters ? [new GlowFilter(0x00ff00,.6,15,15)] : dragFilters;
+					
+					return this;
+				}
+		
+				override protected function commitProperties():void
+				{
+					super.commitProperties();
+					
+					// its now safe to switch over new dataProviders.
+					// attach mouseDown listeners.
+					if(__pendingDrops != null)
+					{
+						attachSwapperListeners(false);						
+						__allowedDrops = __pendingDrops;						
+
+						attachSwapperListeners(__isActive);
+						__pendingDrops = null;
+					}
+				}
+
+				private function attachSwapperListeners(shouldListen:Boolean):void {
+					var uiParent : DisplayObject = null;
+					
+					if (shouldListen != true) {
+						
+						for each (var it:UIComponent in __allowedDrops) {
+							it.removeEventListener(MouseEvent.MOUSE_DOWN, onMouseDown, false);
+							it.removeEventListener(MouseEvent.MOUSE_OVER, onMouseOver);
+						}
+						
+						// Tell the 'common' parent to hide the swap cursor when the mouse is outside
+						// any allowed swap/drop areas.
+						if (__allowedDrops && (__allowedDrops.length>0))  {
+							uiParent = (__allowedDrops[0] as DisplayObject).parent;
+							if (uiParent != null) uiParent.removeEventListener(MouseEvent.MOUSE_MOVE, this.onMouseOver);
+						}
+						
+					} else {
+						for each (var item:UIComponent  in __allowedDrops) {
+							item.addEventListener(MouseEvent.MOUSE_DOWN, onMouseDown,false,99,true);
+							item.addEventListener(MouseEvent.MOUSE_OVER, onMouseOver,false, 0, true);
+						}
+						
+						// Tell the 'common' parent to hide the swap cursor when the mouse is outside
+						// any allowed swap/drop areas.
+						if (__allowedDrops && (__allowedDrops.length>0))  {
+							uiParent = (__allowedDrops[0] as DisplayObject).parent;
+							if (uiParent != null) uiParent.addEventListener(MouseEvent.MOUSE_MOVE, this.onMouseOver,false, 0, true);
+						}
+					}
+					
+				}
+				
+				public function startDragging( 	ui 			: UIComponent,
+												dropElements: Array 		= null,
+												dragBounds	: Rectangle 	= null		 ) :  void {
+													
+					if (ui == null)        return;
+					if (relocateTarget.isPlaying || relocateSrc.isPlaying)	return;
+					
+					clearCache();
+					
+					bringToFront(ui);
+					prepareDropIndicator(ui.parent as DisplayObjectContainer);
+
+					ui.addEventListener(MouseEvent.MOUSE_MOVE,onDragMove,false,0,true);
+					ui.addEventListener(MouseEvent.MOUSE_UP,onDragFinished,false,0,true);
+					if (ui.stage) ui.stage.addEventListener(KeyboardEvent.KEY_DOWN,onKeyDown,false,0,true);
+					attachSwapperListeners(false);
+					
+					
+					this.source 	  = ui;
+				    this.target		  = null;
+
+					cacheLayouts(dropElements);
+					
+					source.alpha = .8;					
+					source.startDrag(false,dragBounds);
+					
+					__isDragging = true;
+										
+					dispatchEvent(new SwapperEvent(SwapperEvent.STARTED,ui));
+				}
+
+								
+				// ************************************************************
+				// Event Handlers
+				// ************************************************************
+				public function onMouseOver(event:MouseEvent):void {
+					if ((event != null) && (event.target != null)) {
+						var swapItem : UIComponent = null;					
+						for each (var allowedItem : UIComponent in __allowedDrops) {
+							if (allowedItem == event.target) {
+								swapItem = allowedItem;
+								break;
+							}
+						}
+						
+						if (!__isDragging) showSwapping(swapItem != null);
+					}
+				}
+				
+				public function onMouseDown(event:MouseEvent):void {
+					checkSwapTargets();
+					
+					if ((event != null) && (event.target != null)) {
+						var swapItem : UIComponent = null;					
+						for each (var allowedItem : UIComponent in __allowedDrops) {
+							if (allowedItem == event.target) {
+								swapItem = allowedItem;
+								break;
+							}
+						}
+						
+						if (swapItem != null) {
+							this.startDragging(swapItem);
+							
+							event.stopImmediatePropagation();
+							event.preventDefault();
+						}
+					}
+				}
+				
+				private function onKeyDown(event:KeyboardEvent):void {
+					if (event.keyCode == Keyboard.ESCAPE) {
+						onDragFinished(null,true);
+					}
+				}
+				
+				private function onDragMove(ev:MouseEvent):void {
+					if (ev == null) return;
+					
+					if (hasMouseLock(ev) == true) {
+						var dest		: UIComponent	= findDropTarget(ev,__src);
+						if (dest != null && !relocateTarget.isPlaying) {
+							showDropIndicator(true,dest);
+							
+							__lastMouseEvent = null;
+							
+							if (shouldAutoSwap(dest,ev) == true) {
+								__lastMouseEvent = ev;
+								__targetSwapped  = true;
+								
+								swapTarget(dest);
+								
+								// update the new bounds for the ui component that is being dragged
+								__sBounds	    = __layouts.getItemBoundsFor(dest);
+								
+							  	if (dragResize == true) dragSourceResizer.play([source]);
+							}
+							
+						} else showDropIndicator(false);
+					} else {
+						onDragFinished(ev,true);	
+					}
+				}
+
+				private function onDragFinished(ev:MouseEvent, isCancelled:Boolean = false):void {
+					var isCancelled : Boolean 		= false;
+					var ui 			: UIComponent 	= ((ev == null) ? source : ev.target as UIComponent);
+					var dest		: UIComponent	= null;
+										
+					if (ui == null) return;
+					
+					ui.removeEventListener(MouseEvent.MOUSE_UP,onDragFinished);
+					ui.removeEventListener(MouseEvent.MOUSE_MOVE,onDragMove);
+					attachSwapperListeners(true);
+					
+					__src    = ui;
+					dest     = findDropTarget(ev,__src);
+	
+					if (!isCancelled && canSwapElements(__src,dest)) {
+						swapTarget(dest);
+						stopDragging(isCancelled = false);
+					} else {
+						stopDragging(isCancelled = !__targetSwapped);
+						if (!relocateTarget.isPlaying && !relocateSrc.isPlaying) onSwapDone();
+					}
+
+				}
+				
+				private function onSwapDone(ev:EffectEvent = null):void {
+					var it : UIComponent = null;
+					if (ev != null) {
+						it = ((ev.effectInstance).target as UIComponent);
+	
+						// Finished with dynamic swap, so update the known bounds (may still be dragging)
+						__layouts.updateItem(it);
+						
+						if ((it != null) && (it != this.source)) {
+							// Target has changed with source, so swap its anchors
+							// ... for later us.							
+							__layouts.swapAnchors(it,source);
+
+							showDropIndicator(false);
+							dispatchEvent(new SwapperEvent(SwapperEvent.SWAPPED,source,it));
+							
+							// No it is possible that the mouse is over ANOTHER target when the previous swap is done
+							// in that case, we must autoswap that one also...
+							onDragMove(__lastMouseEvent);
+						}
+					}
+										
+					if (__isDragging != true) {
+						// FINISHED with ALL swapping...
+						restoreSpeeds();
+						__layouts.restoreAnchors();						
+												
+						// Only when BOTH swaps are done does the "swapper" notify listeners
+						dispatchEvent(new SwapperEvent(SwapperEvent.FINISHED,__src,__target));
+						
+					} 
+				}
+								
+							
+				// ************************************************************
+				// Private Methods
+				// ************************************************************
+				private function showDropIndicator(isVisible:Boolean, dest : UIComponent = null):void {								
+					if (relocateTarget.isPlaying == true) return;
+					
+					if (__lastDrop != null) __lastDrop.filters = [];					
+					if (dest != null) {						
+						__lastDrop   = dest;
+						
+						if (dropIndicator != null) {
+						   if (isVisible == true) {
+						   		// The drop indicator could be some UIComponent OR a glow/shadow filter...
+						   		if (dropIndicator is UIComponent) {
+									bringToFront(dropIndicator);
+									
+									var cornerRadius : * = __lastDrop.getStyle("cornerRadius");
+									if (cornerRadius != undefined) dropIndicator.setStyle("cornerRadius",cornerRadius);
+									
+									dropIndicator.x 		= __lastDrop.x - 7;
+									dropIndicator.y 		= __lastDrop.y - 7;
+									dropIndicator.width		= scaledWidth(__lastDrop) + 14;
+									dropIndicator.height	= scaledHeight(__lastDrop) + 14;
+									
+									dropIndicator.visible   = true;
+						   		} else if (dropIndicator is BitmapFilter) {
+						   			dest.filters = [dropIndicator];
+						   		}
+						   }
+						} else {
+							// use halo effect to indicator drop target...
+							dest.filters = isVisible ? dragFilters : [];
+						}
+					} else { 
+						if (dropIndicator != null) 
+							if (dropIndicator is UIComponent) dropIndicator.visible = isVisible;
+					}
+				}
+				
+				private function shouldAutoSwap(dest : UIComponent, ev:MouseEvent):Boolean {
+					var performSwap : Boolean = false;
+					var src         : UIComponent   = ev.target as UIComponent;					
+					
+					if (autoSwapEnabled && (src != null)) {
+						var gPnt	: Point 		= src.localToGlobal(scaledPoint(src,new Point(ev.localX,ev.localY)));
+						var rPnt	: Point 		= dest.globalToLocal(gPnt);
+						
+						var dWidth  : Number        = scaledWidth(dest);
+						var dHeight : Number        = scaledHeight(dest);
+						
+													// 10% padding area
+						var wPad	: uint			= Math.ceil(dWidth  * (paddingAutoSwap/100));
+						var hPad    : uint			= Math.ceil(dHeight * (paddingAutoSwap/100));
+						
+						if ((rPnt.x > wPad) 				&&
+						    (rPnt.x < dWidth - wPad) 	&& 
+						    (rPnt.y > hPad)					&&
+						    (rPnt.y < dHeight - hPad)) {
+						    	performSwap = true;
+						    }
+					}
+					
+					return performSwap;
+				}
+				
+				
+				private function stopDragging(isCancelled:Boolean = true):void {
+					source.stopDrag();
+					
+					source.removeEventListener(MouseEvent.MOUSE_UP,onDragFinished);
+					source.removeEventListener(MouseEvent.MOUSE_MOVE,onDragMove);
+					if (source.stage) source.stage.removeEventListener(KeyboardEvent.KEY_DOWN,onKeyDown);									
+					
+					if (isCancelled == true) {
+						// Move the source ui BACK to its original size/position
+						// Since __src == new bounds, we must get the original bounds;
+						// stored as 1st item in the layoutCache
+						__tBounds = __sBounds;
+					} 
+					
+					__isDragging = false;
+					source.alpha = 1.0;						
+					
+					animateFinish(isCancelled);	
+					
+				}
+
+				private function swapTarget(targetUI:UIComponent):void {
+					var isCancelled : Boolean 		= false;
+
+					if (dropIndicator != null) showDropIndicator(false);
+					this.target = targetUI;					
+					
+					relocateTarget.play();	
+				}	
+
+				private function canSwapElements(src:UIComponent,target:UIComponent):Boolean {
+					// TODO: the dropTarget may be "locked" which means swap requests should fail
+					return (!relocateTarget.isPlaying && (src != target) && (target!=null));
+				}
+				
+				private function prepareDropIndicator(dropParent:DisplayObjectContainer):void {
+					if (dropIndicator != null) {
+						if (dropIndicator.parent ==	null) {
+							// reparent if needed...						
+							dropIndicator.visible = false;
+							
+							if (dropParent != null) {
+								dropParent.addChild(dropIndicator);
+								
+								dropIndicator.addEventListener(FlexEvent.HIDE,function(ev:Event):void {
+																fadeIn.play([dropIndicator]);
+																},false,0,true);
+							}
+						}
+					}
+				}
+				
+				private function hasMouseLock(ev:MouseEvent):Boolean {
+					var isLockedON : Boolean = true;
+					if ((this.source) && (ev != null)) {
+						if (ev.localX < 0 				||
+							ev.localX > source.width 	||
+							ev.localY < 0				|| 
+							ev.localY > source.height) {
+								// sometimes the mouse moves OFF the source UI
+								// then dragging will act funny. So we should cancel the
+								// swap requests
+								isLockedON = false;
+							}
+					}
+					
+					return isLockedON;
+				}
+				
+				private function findDropTarget(ev:MouseEvent, src:UIComponent):UIComponent {
+					var target  : UIComponent 	= null;
+					if (ev != null) {
+						var gPnt	: Point 		= new Point(src.stage.mouseX,src.stage.mouseY);		// localToGlobal(new Point(ev.localX,ev.localY));
+						var rPnt	: Point 		= src.parent.globalToLocal(gPnt);
+						
+						// Is the dragSource over any other "allowed" component 
+						// (which we will refer to as the dropTarget)
+						for each (var it:* in allowedDrops) {
+							if ((it is UIComponent) && (it != src)) {
+								// if the mouse location is in the bounds of the dropTarget
+								if ( (rPnt.x >= it.x) && (rPnt.x < (it.x + scaledWidth(it))) &&
+								     (rPnt.y >= it.y) && (rPnt.y < (it.y + scaledHeight(it)))
+								   ){
+									target = it;
+									break;   	
+								}
+							}	
+						}
+					}
+										
+					return target;	
+				}
+				
+				private function animateFinish(isCancelling:Boolean = false):void {
+					if (isCancelling == true) {
+						// Make the cancel animation a little slower.
+						durationResize = 400;
+						durationMove   = 700;	
+					}
+														
+					relocateSrc.play();
+				}
+				
+				private function getStartBounds(ui:UIComponent):Rectangle {
+					return __layouts.getItemBoundsFor(ui);					
+				}
+				
+				private function checkSwapTargets():void {
+					// Runtime checks for valid swap targets...
+					for each(var ui:* in allowedDrops) {
+						// Currently this is a CRUDE test for parent container...
+						if ((ui.parent is Box) == true) {
+							trace("Swapper targets should be children in a Canvas container!");	
+						}
+					}
+				}
+
+				private function restoreSpeeds():void {
+					durationResize = 300;
+					durationMove   = 500;							
+				}
+				
+				private function clearCache():void {
+					if (__layouts != null) {
+						__layouts.removeAll();
+						__layouts = null;
+					}
+				}
+				
+				private function cacheLayouts(dropElements:Array):void {
+					if (dropElements == null) dropElements 		= this.allowedDrops;
+					else					  this.allowedDrops	= dropElements;
+					
+					if (__layouts == null) __layouts = new LayoutCache(dropElements);			
+					else				   for each (var it:* in dropElements) { __layouts.addItem(it); }
+				}
+				
+				private function showSwapping(isSwapping:Boolean):void {
+					if (isSwapping == true) {				
+						if (__swapCursorID == 0) {
+							__swapCursorID  = CursorManager.setCursor(__swapCursorSymbol);
+		
+						}
+					} else {
+						CursorManager.removeCursor(__swapCursorID);
+						__swapCursorID = 0;
+					}
+				}
+		
+				private function scaledPoint(it:DisplayObject,loc:Point):Point {
+					return new Point(loc.x*it.transform.matrix.a, loc.y*it.transform.matrix.d);
+				}
+				private function scaledWidth(it:DisplayObject):Number {
+					return it.width * it.transform.matrix.a;
+				}
+				
+				private function scaledHeight(it:DisplayObject):Number {
+					return it.height * it.transform.matrix.d;
+				}
+		
+				// ****************************************************
+				// Private properties
+				// ****************************************************
+
+				private function set target(ui:UIComponent):void {
+					__target  = ui;
+					__layouts.updateItem(ui,true);	// this updates the anchors and current bounds...
+
+					__tBounds = __layouts.getItemBoundsFor ((ui!=null) ? ui : this.source);
+				}
+				
+				private function get source():UIComponent { return __src; }
+				private function set source(ui:UIComponent):void {
+					if (__layouts == null)	__layouts = new LayoutCache(__allowedDrops);			
+					__layouts.addItem(ui);					
+								
+					__src 		= ui;					
+					__sBounds	= __layouts.getItemBoundsFor(__src);
+				}
+				
+							[Embed(source="./assets/swapMode.gif")]
+							private var __swapCursorSymbol 	: Class;
+							private var __swapCursorID   	: Number = 0;			
+				
+				[Bindable] private var __target		: UIComponent  		= null;
+				[Bindable] private var __src		: UIComponent 		= null;				
+				[Bindable] private var __tBounds	: Rectangle 		= null;
+				[Bindable] private var __sBounds 	: Rectangle 		= null;
+
+						   private var __isDragging    : Boolean		= false;
+						   private var __targetSwapped : Boolean        = false;
+						   
+						   private var __isActive 	   : Boolean 		= false;
+						   private var __allowedDrops  : Array			= [];
+						   private var __pendingDrops  : Array			= [];
+						   
+						   private var __lastMouseEvent: MouseEvent		= null;
+						   private var __lastDrop      : UIComponent	= null;
+						   private var __layouts	   : LayoutCache	= null;
+						   private var __finishCount   : uint 			= 0;
+						   
+			]]>
+		</mx:Script>
+		<mx:Fade id="fadeIn" duration="600" />
+		
+		<mx:Resize 	id="dragSourceResizer"	heightTo="{__sBounds.height}" widthTo="{__sBounds.width}" 	duration="{durationResize}" 						suspendBackgroundProcessing="false"/>
+		
+		<mx:Parallel id="relocateSrc"  effectEnd="onSwapDone(event);" target="{__src}">
+			<!-- relocate source to bounds of target -->				 
+			<mx:Resize 		heightTo="{__tBounds.height}" widthTo="{__tBounds.width}" 	duration="{durationResize}" 										suspendBackgroundProcessing="false"/>
+			<mx:Move		xTo="{__tBounds.x}" 		  yTo="{__tBounds.y}" 			duration="{durationMove}"											suspendBackgroundProcessing="false"/>			
+		</mx:Parallel>
+		
+		<mx:Parallel id="relocateTarget" effectEnd="onSwapDone(event);" target="{__target}">				 				 
+			<!-- relocate target to bounds of source -->				 
+			<mx:Resize 		heightTo="{__sBounds.height}" widthTo="{__sBounds.width}" 	duration="{durationResize}" 										suspendBackgroundProcessing="false"/>
+			<mx:Move		xTo="{__sBounds.x}" 		  yTo="{__sBounds.y}" 			duration="{durationMove}"											suspendBackgroundProcessing="false"/>	
+		</mx:Parallel>
+		
+		
+</behavior:AbstractBehavior >

@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="utf-8"?>
+<behavior:AbstractBehavior  
+		xmlns:mx="http://www.adobe.com/2006/mxml" 
+		xmlns:behavior="com.codecatalyst.component.behavior.*">
+	
+		<mx:Metadata>
+			[Event(name='change', type='flash.events.Event')]				
+		</mx:Metadata>
+		
+		<mx:Script>
+			<![CDATA[
+				import com.codecatalyst.util.LayoutCache;
+				import com.codecatalyst.util.LayoutUtil;
+				
+				import mx.core.Container;
+				import mx.core.UIComponent;
+				import mx.events.EffectEvent;
+				
+				import utils.display.bringToFront;
+
+				static     public const ZOOM_IN  : String  = 'zoomIn';
+				static     public const ZOOM_OUT : String  = 'zoomOut';
+				
+				[Bindable] public  var durationResize : uint  = 500;
+				[Bindable] public  var durationMove   : uint  = 500;						   
+
+				[Bindable] public  var target   	  : UIComponent = null;
+				           public  var triggers  	  : Array = ['zoomIn','zoomOut'];
+								
+				[Bindable] public  var zoomParent 	  : Container   = null;
+					   	   public  var zoomTo   	  : Rectangle   = null;
+
+				public function get isZoomed():Boolean {
+					return _zoomed;
+				}
+				
+
+				public function zoom(target:UIComponent = null, zoomBounds:Rectangle = null):void {
+					if (!target && !this.target) 	return;
+					if (target != null) 			this.target = target;
+					
+					cacheLayout();
+					changeParent();					
+					
+					// Set the "zoomIn" bounds
+					performZoom(this.target, zoomBounds);	
+				}
+				
+				public function unzoom():void {
+					LayoutUtil.clearAnchors(target); 
+
+					if (!target || !_origGBounds) return;
+					if (zoomParent == null) zoomParent = target.parent as Container;
+					
+					// Set the "zoomOut" bound which is the original Bounds transformed to the zoomParent coordinate space					
+					var topLeft     : Point = _origGBounds.topLeft;					
+					if (zoomParent != target.parent) topLeft = zoomParent.globalToLocal(_origGBounds.topLeft );
+										
+					performZoom(target, new Rectangle(topLeft.x,topLeft.y,_origGBounds.width,_origGBounds.height));
+				}
+				
+
+				// ************************************************************
+				// Protected Overrides
+				// ************************************************************
+
+				override protected function commitProperties():void {
+					super.commitProperties();
+					
+					if ((target != null) && (triggers != null)) {
+						target.addEventListener(triggers[0],onZoomIn);
+						target.addEventListener(triggers[1],onZoomOut);
+					}
+				}
+				
+
+				// ************************************************************
+				// Private methods
+				// ************************************************************
+
+				
+				private function performZoom( ui : UIComponent, targetBounds: Rectangle ) :  void {
+					if (ui == null)        			return;
+					if (relocateTarget.isPlaying)	return;
+					if (targetBounds == null)       targetBounds = ( zoomTo ? zoomTo : new Rectangle(0,0,zoomParent.width,zoomParent.height));
+					
+					_tBounds = targetBounds;
+					relocateTarget.play();	
+				}
+
+				private function changeParent():void {
+					if (target != null) {
+						if (zoomParent == null) zoomParent = target.parent as Container;
+						
+						var topLeft : Point = zoomParent.localToGlobal(new Point(target.x,target.y));
+						// Cache global bounds and original parent (for restore...) 
+						_origGBounds = new Rectangle(topLeft.x, topLeft.y, target.width, target.height);
+						_origParent  = target.parent as Container;
+						
+						if (target.parent != zoomParent) {
+							// Reset the parent (if needed)
+							if (target.parent != null) target.parent.removeChild(target);
+							zoomParent.addChild(target);
+
+							// With new parent, set the position properly...
+							topLeft = zoomParent.globalToLocal(_origGBounds.topLeft );
+							target.x = topLeft.x;
+							target.y = topLeft.y
+						} 
+												
+						bringToFront(target);
+					}
+				}
+
+				private function restoreParent():void {
+					if (target != null) {
+						if ((_origParent != null) && (target.parent != _origParent)) {
+								target.parent.removeChild(target);
+								_origParent.addChild(target);								
+								
+								_origParent = null;
+								_origGBounds = null;
+						}
+
+						_layouts.restoreAll();
+					}
+				}
+
+				// ************************************************************
+				// Event Handlers that "trigger" the zoom In/Out activity
+				// ************************************************************
+				private function onZoomIn(event:Event):void {					
+					zoom(target);
+				}
+				
+				private function onZoomOut(event:Event):void {					
+					unzoom();
+				}
+				
+				private function onZoomDone(ev:EffectEvent = null):void {
+					_zoomed = !_zoomed;
+					
+					if (_zoomed != true) {   restoreParent();		   }
+					if (_zoomed == true) {	  LayoutUtil.useBoundsAsAnchors(target);   }	// set anchors so resize parent maintains the gap while zooming...
+												
+					dispatchEvent(new Event('change'));
+				}
+				
+				// ************************************************************
+				// Private Methods
+				// ************************************************************
+							
+				private function cacheLayout():void {
+					clearCache();
+					_layouts = new LayoutCache([target]);			
+				}
+				
+				private function clearCache():void {
+					if (_layouts != null) {
+						_layouts.removeAll();
+						_layouts = null;
+					}
+				}
+				
+				// ****************************************************
+				// Private properties
+				// ****************************************************
+
+				[Bindable] private var _tBounds		: Rectangle 	= null;
+
+						   private var _origParent 	: Container   	= null;
+						   private var _origGBounds : Rectangle   	= null;
+						   
+						   private var _zoomTo     	: Rectangle     = null;
+						   private var _zoomed 		: Boolean       = false;						   
+						   private var _layouts		: LayoutCache	= null;
+						   
+			]]>
+		</mx:Script>
+	
+	
+
+		<!-- Use Tweener class -->
+		
+		<mx:Parallel id="relocateTarget" effectEnd="onZoomDone(event);" target="{target}">
+						 				 
+			<!-- relocate target to bounds of source -->				 
+			
+			<mx:Move		xTo="{_tBounds.x}" 		  yTo="{_tBounds.y}" 			duration="{durationMove}"	 suspendBackgroundProcessing="true"/>	
+			<mx:Resize 		heightTo="{_tBounds.height}" widthTo="{_tBounds.width}" 	duration="{durationResize}"  suspendBackgroundProcessing="true"/>
+		
+		</mx:Parallel>
+		
+		
+</behavior:AbstractBehavior>
