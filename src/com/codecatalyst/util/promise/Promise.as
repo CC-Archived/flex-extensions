@@ -138,6 +138,60 @@ package com.codecatalyst.util.promise
 		}
 		
 		// ========================================
+		// Public static methods
+		// ========================================		
+		
+		/**
+		 * Utility method to create a new Promise based on one or more Promises (i.e. parallel chaining).
+		 * 
+		 * NOTE: Result and progress handlers added to this new Promise will be passed an Array of aggregated result or progress values.
+		 */
+		public static function when( ...promises ):Promise
+		{
+			var deferred:Deferred = new Deferred();
+
+			// Special handling for when an Array of Promises is specified instead of variable numbe of Promise arguments.
+			if ( ( promises.length == 1 ) && ( promises[ 0 ] is Array ) )
+				promises = promises[ 0 ];
+			
+			var pendingPromiseCount:int = promises.length;
+			
+			var progressValues:Array = new Array( pendingPromiseCount );
+			var resultValues:Array   = new Array( pendingPromiseCount );
+			
+			for each ( var promise:Promise in promises )
+			{
+				promise
+					.then(
+						function ( promise:Promise, result:* ):void
+						{
+							resultValues[ promises.indexOf( promise ) ] = result;
+							
+							pendingPromiseCount--;
+							if ( pendingPromiseCount == 0 )
+								deferred.resolve( resultValues );
+						},
+						function ( error:* ):void
+						{
+							deferred.reject( error );
+						},
+						function ( promise:Promise, update:* ):void
+						{
+							progressValues[ promises.indexOf( promise ) ] = update;
+							
+							deferred.update( progressValues );
+						},
+						function ( reason:* ):void
+						{
+							deferred.cancel( reason );
+						}
+					);
+			}
+			
+			return deferred.promise;
+		}
+		
+		// ========================================
 		// Public methods
 		// ========================================
 		
