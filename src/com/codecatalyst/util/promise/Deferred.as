@@ -428,7 +428,7 @@ package com.codecatalyst.util.promise
 		/**
 		 * Update this Deferred and notify relevant callbacks.
 		 */
-		public function update( progress:* ):void
+		public function update( progress:* ):Deferred
 		{
 			if ( pending )
 			{
@@ -436,12 +436,14 @@ package com.codecatalyst.util.promise
 				
 				notify( progressCallbacks, progress );
 			}
+			
+			return this;
 		}
 		
 		/**
 		 * Resolve this Deferred and notify relevant callbacks.
 		 */
-		public function resolve( result:* ):void
+		public function resolve( result:* ):Deferred
 		{
 			if ( pending )
 			{
@@ -451,12 +453,14 @@ package com.codecatalyst.util.promise
 				notify( resultCallbacks.concat( alwaysCallbacks ), result );
 				releaseCallbacks();
 			}
+			
+			return this;
 		}
 		
 		/**
 		 * Reject this Deferred and notify relevant callbacks.
 		 */
-		public function reject( error:* ):void
+		public function reject( error:* ):Deferred
 		{
 			if ( pending )
 			{
@@ -466,12 +470,14 @@ package com.codecatalyst.util.promise
 				notify( errorCallbacks.concat( alwaysCallbacks ), error );
 				releaseCallbacks();
 			}
+			
+			return this;
 		}
 		
 		/**
 		 * Cancel this Deferred and notify relevant callbacks.
 		 */
-		public function cancel( reason:* = null ):void
+		public function cancel( reason:* = null ):Deferred
 		{
 			if ( pending )
 			{
@@ -480,6 +486,8 @@ package com.codecatalyst.util.promise
 				notify( cancelCallbacks.concat( alwaysCallbacks ), reason );
 				releaseCallbacks();
 			}
+			
+			return this;
 		}
 		
 		// ========================================
