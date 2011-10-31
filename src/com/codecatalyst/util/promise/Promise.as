@@ -154,6 +154,29 @@ package com.codecatalyst.util.promise
 			if ( ( promises.length == 1 ) && ( promises[ 0 ] is Array ) )
 				promises = promises[ 0 ];
 			
+			// Ensure the promises Array is populated with Promises.
+			var parameterCount:int = promises.length;
+			for ( var parameterIndex:int = 0; parameterIndex <  parameterCount; parameterIndex++ )
+			{
+				var parameter:* = promises[ parameterIndex ];
+				
+				switch ( parameter.constructor )
+				{
+					case Promise:
+						break;
+					
+					case Deferred:
+						// Replace the promises Array element with the associated Promise for the specified Deferred value.
+						promises[ parameterIndex ] = parameter.promise;
+						break;
+						
+					default:
+						// Create a new Deferred resolved with the specified parameter value, and replace the promises Array element with the associated Promise.
+						promises[ parameterIndex ] = new Deferred().resolve( parameter ).promise;
+						break;
+				}
+			}
+			
 			var pendingPromiseCount:int = promises.length;
 			
 			var progressValues:Array = new Array( pendingPromiseCount );
