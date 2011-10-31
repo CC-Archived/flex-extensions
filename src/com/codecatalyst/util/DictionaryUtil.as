@@ -31,34 +31,48 @@ package com.codecatalyst.util
 		// ========================================
 		
 		/**
-		 * Clone existing dictionary into independent snapshot 
-		 */
-		public static function clone(source:Dictionary,weak:Boolean=false, deep:Boolean=false):Dictionary {
-			var result : Dictionary = new Dictionary(weak);
-			for (var key:* in source) {
-				var val:* = source[key];
-				
-				if (val is Object) result[key] = deep ? Object(val).clone() : val;
-				else               result[key] = val;
-			}
-			
-			return result;
-		}
-			
-		/**
-		 * Create an Array representation of the specified Dictionary's contents.
+		 * Returns an Array of the keys in the specified dictionary.
 		 *  
-		 * @param source Dictionary
-		 * @return Array of items managed by the dictionary
+		 * @param dictionary Dictionary instance
+		 * @return Array of keys in the dictionary
 		 */
-		public static function toArray( source:Dictionary ):Array
+		public static function keys( dictionary:Dictionary ):Array
 		{
-			var result:Array = [];
+			var keys:Array = [];
 			
-			for each ( var item:* in source ) 
-				result.push( item );
+			for ( var key:* in dictionary )
+				keys.push( key );
 			
-			return result;
+			return keys;
+		}
+		
+		/**
+		 * Returns an Array of the values in the specified dictionary.
+		 *  
+		 * @param dictionary Dictionary instance
+		 * @return Array of values in the dictionary
+		 */
+		public static function values( dictionary:Dictionary ):Array
+		{
+			var values:Array = [];
+			
+			for each ( var item:* in dictionary ) 
+				values.push( item );
+			
+			return values;
+		}
+		
+		/**
+		 * Create an Array representation of the values in the specified dictionary.
+		 * 
+		 * @param dictionary Dictionary
+		 * @return Array of values in the dictionary
+		 * 
+		 * @see #values()
+		 */
+		public static function toArray( dictionary:Dictionary ):Array
+		{
+			return values( dictionary );
 		}
 		
 		/**
@@ -117,21 +131,7 @@ package com.codecatalyst.util
 		}
 		
 		/**
-		 * Given an iterable set (Array, ArrayCollection, Proxy, etc.) of Objects, returns an array of the object values for the key property name.
-		 */		
-		public static function createArrayByKey(  objects:*, propertyPath:String ) : Array {
-			var results : Array = [ ];
-			
-			for each ( var object:Object in objects )
-			{
-				results.push( PropertyUtil.getObjectPropertyValue( object, propertyPath ) );
-			}
-			
-			return results;
-		}
-		
-		/**
-		 * Given an iterable set (Array, ArrayCollection, Proxy, etc.) of Objects, returns a Dictionary of Objects indexed by the specified property value.
+		 * Given an iterable set (Array, ArrayCollection, Proxy, etc.) of Objects, returns a Dictionary of Objects indexed by the specified property name.
 		 * 
 		 * NOTE: 'dot notation' is supported.
 		 */
