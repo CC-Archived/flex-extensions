@@ -382,7 +382,7 @@ package com.codecatalyst.component.template
 		
 		protected static function initializeStyles():Boolean
 		{
-			var declaration:CSSStyleDeclaration = StyleUtil.getStyleDeclaration( "MasterDetail" ) || new CSSStyleDeclaration();
+			var declaration:CSSStyleDeclaration = StyleUtil.getStyleDeclaration( "com.codecatalyst.component.date.MasterDetail" ) || new CSSStyleDeclaration();
 			
 			declaration.defaultFactory = 
 				function ():void
@@ -391,7 +391,7 @@ package com.codecatalyst.component.template
 					this.verticalScrollPolicy   = ScrollPolicy.OFF;
 				};
 			
-			StyleUtil.setStyleDeclaration( "MasterDetail", declaration, false );
+			StyleUtil.setStyleDeclaration( "com.codecatalyst.component.date.MasterDetail", declaration, false );
 			
 			return true;
 		}

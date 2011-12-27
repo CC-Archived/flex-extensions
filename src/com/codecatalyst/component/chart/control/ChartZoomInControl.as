@@ -84,7 +84,7 @@ package com.codecatalyst.component.chart.control
 		
 		protected static function initializeStyles():Boolean
 		{
-			var declaration:CSSStyleDeclaration = StyleUtil.getStyleDeclaration( "ChartZoomInControl" ) || new CSSStyleDeclaration();
+			var declaration:CSSStyleDeclaration = StyleUtil.getStyleDeclaration( "com.codecatalyst.component.chart.control.ChartZoomInControl" ) || new CSSStyleDeclaration();
 			
 			declaration.defaultFactory = 
 				function ():void
@@ -95,7 +95,7 @@ package com.codecatalyst.component.chart.control
 					this.rollOverCursorOffset 	= DEFAULT_ZOOM_IN_CURSOR_OFFSET;
 				};
 			
-			StyleUtil.setStyleDeclaration( "ChartZoomInControl", declaration, false );
+			StyleUtil.setStyleDeclaration( "com.codecatalyst.component.chart.control.ChartZoomInControl", declaration, false );
 			
 			return true;
 		}

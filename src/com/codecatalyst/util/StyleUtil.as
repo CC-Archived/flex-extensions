@@ -41,6 +41,8 @@ package com.codecatalyst.util
 		/**
 		 * Gets the CSSStyleDeclaration object that stores the rules for the specified CSS selector.
 		 * 
+		 * Normalizes the changes between Flex 3.x and Flex 4.x - specify the full path to the component class for both.
+		 * 
 		 * @see mx.styles.IStyleManager#getStyleDeclaration()
 		 * @see mx.styles.IStyleManager2#getStyleDeclaration()
 		 */
@@ -49,10 +51,15 @@ package com.codecatalyst.util
 			var result : CSSStyleDeclaration = null;
 			
 			CONFIG::FLEX3 {
-				result = StyleManager.getStyleDeclaration( style ); 
+				var expression:RegExp = /^(.*)\.([^.]+)$/;
+				var match:Object = expression.exec( style );
+				
+				var className:String = ( match ) ? match[ 1 ] as String : style;
+				
+				result = StyleManager.getStyleDeclaration( className ); 
 			}
 			CONFIG::FLEX4 {
-				result = StyleManager.getStyleManager(module).getStyleDeclaration( style );
+				result = StyleManager.getStyleManager( module ).getStyleDeclaration( style );
 			}
 			
 			return result; 
@@ -70,7 +77,7 @@ package com.codecatalyst.util
 				StyleManager.setStyleDeclaration( style, declaration, update ); 
 			}
 			CONFIG::FLEX4 {
-				StyleManager.getStyleManager(module).setStyleDeclaration( style, declaration, update ); 
+				StyleManager.getStyleManager( module ).setStyleDeclaration( style, declaration, update ); 
 			}
 		}
 		

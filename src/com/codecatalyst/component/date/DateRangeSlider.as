@@ -204,7 +204,7 @@ package com.codecatalyst.component.date
 		
 		protected static function initializeStyles():Boolean
 		{
-			var declaration:CSSStyleDeclaration = StyleUtil.getStyleDeclaration( "DateRangeSlider" ) || new CSSStyleDeclaration();
+			var declaration:CSSStyleDeclaration = StyleUtil.getStyleDeclaration( "com.codecatalyst.component.date.DateRangeSlider" ) || new CSSStyleDeclaration();
 			
 			declaration.defaultFactory = 
 				function ():void
@@ -226,7 +226,7 @@ package com.codecatalyst.component.date
 					this.resizeMouseUpCursorOffset          = DEFAULT_RESIZE_CURSOR_OFFSET;
 				};
 					
-			StyleUtil.setStyleDeclaration( "DateRangeSlider", declaration, false );
+			StyleUtil.setStyleDeclaration( "com.codecatalyst.component.date.DateRangeSlider", declaration, false );
 			
 			return true;
 		}
