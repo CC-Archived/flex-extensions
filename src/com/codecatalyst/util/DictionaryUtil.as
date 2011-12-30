@@ -91,17 +91,26 @@ package com.codecatalyst.util
 		/**
 		 * Given an iterable set (Array, ArrayCollection, Proxy, etc.) of Objects, returns a Dictionary of Booleans indexed by Object instances.
 		 */
-		public static function createExistenceIndex( objects:*, weakKeys:Boolean = false ):Dictionary
+		public static function createExistenceIndex( objects:*, childrenFieldName:String = null, weakKeys:Boolean = false ):Dictionary
 		{
 			var existenceIndex:Dictionary = new Dictionary( weakKeys );
 			
-			var indexCount:int = 0;
-			for each ( var object:Object in objects )
+			function populateExistenceIndexFromObjects( objects:* ):void
 			{
-				existenceIndex[ object ] = true;
-				
-				indexCount++;
+				for each ( var object:Object in objects )
+				{
+					existenceIndex[ object ] = true;
+					
+					if ( childrenFieldName != null )
+					{
+						var children:* = getChildren( object, childrenFieldName );
+						if ( children != null )
+							populateExistenceIndexFromObjects( children );
+					}
+				}
 			}
+			
+			populateExistenceIndexFromObjects( objects );
 			
 			return existenceIndex;
 		}
@@ -113,19 +122,28 @@ package com.codecatalyst.util
 		 * 
 		 * NOTE: Assumes that the specified property is a unique key - i.e. only one Object will have that value.
 		 */
-		public static function createObjectIndexByKey( objects:*, propertyPath:String, weakKeys:Boolean = false ):Dictionary
+		public static function createObjectIndexByKey( objects:*, propertyPath:String, childrenFieldName:String = null, weakKeys:Boolean = false ):Dictionary
 		{
 			var objectIndex:Dictionary = new Dictionary( weakKeys );
 			
-			var indexCount:int = 0;
-			for each ( var object:Object in objects )
+			function populateObjectIndexFromObjects( objects:* ):void
 			{
-				var propertyValue:* = PropertyUtil.getObjectPropertyValue( object, propertyPath );
-				
-				objectIndex[ propertyValue ] = object;
-				
-				indexCount++;
+				for each ( var object:Object in objects )
+				{
+					var propertyValue:* = PropertyUtil.getObjectPropertyValue( object, propertyPath );
+					
+					objectIndex[ propertyValue ] = object;
+					
+					if ( childrenFieldName != null )
+					{
+						var children:* = getChildren( object, childrenFieldName );
+						if ( children != null )
+							populateObjectIndexFromObjects( children );
+					}
+				}
 			}
+			
+			populateObjectIndexFromObjects( objects );
 			
 			return objectIndex;
 		}
@@ -135,22 +153,58 @@ package com.codecatalyst.util
 		 * 
 		 * NOTE: 'dot notation' is supported.
 		 */
-		public static function createObjectIndexByProperty( objects:*, propertyPath:String, weakKeys:Boolean = false ):Dictionary
+		public static function createObjectIndexByProperty( objects:*, propertyPath:String, childrenFieldName:String = null, weakKeys:Boolean = false ):Dictionary
 		{
 			var objectIndex:Dictionary = new Dictionary( weakKeys );
 			
-			var indexCount:int = 0;
-			for each ( var object:Object in objects )
+			function populateObjectIndexFromObjects( objects:* ):void
 			{
-				var propertyValue:* = PropertyUtil.getObjectPropertyValue( object, propertyPath );
-				
-				objectIndex[ propertyValue ] ||= new Array();
-				objectIndex[ propertyValue ].push( object );
-				
-				indexCount++;
+				for each ( var object:Object in objects )
+				{
+					var propertyValue:* = PropertyUtil.getObjectPropertyValue( object, propertyPath );
+					
+					objectIndex[ propertyValue ] ||= new Array();
+					objectIndex[ propertyValue ].push( object );
+					
+					if ( childrenFieldName != null )
+					{
+						var children:* = getChildren( object, childrenFieldName );
+						if ( children != null )
+							populateObjectIndexFromObjects( children );
+					}
+				}
 			}
 			
+			populateObjectIndexFromObjects( objects );
+			
 			return objectIndex;
+		}
+		
+		// ========================================
+		// Protected methods
+		// ========================================
+		
+		/**
+		 * Get the iterable set of children (Array, ArrayCollection, Proxy, etc.) for the specified item and child field name.
+		 */
+		protected static function getChildren( item:Object, childrenFieldName:String ):*
+		{
+			if ( item is XML )
+			{
+				var children:XMLList = ( item as XML ).children();
+				
+				if ( children.length() > 0 )
+					return new XMLList( children );
+				
+				return null;
+			}
+			else
+			{
+				if ( ( childrenFieldName != null ) && ( item.hasOwnProperty( childrenFieldName ) ) )
+					return item[ childrenFieldName ];
+				
+				return null;
+			}
 		}
 	}
 }
