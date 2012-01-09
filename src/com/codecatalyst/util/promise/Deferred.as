@@ -481,6 +481,7 @@ package com.codecatalyst.util.promise
 		{
 			if ( pending )
 			{
+				_reason = reason;
 				setState( Deferred.CANCELLED_STATE );
 				
 				notify( cancelCallbacks.concat( alwaysCallbacks ), reason );
