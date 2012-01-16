@@ -83,6 +83,10 @@ package com.codecatalyst.util
 			{
 				return traversePropertyPath( object, propertyPath );
 			}
+			catch ( error:TypeError )
+			{
+				// return false;
+			}
 			catch ( error:ReferenceError )
 			{
 				// return null;
@@ -101,6 +105,10 @@ package com.codecatalyst.util
 				traversePropertyPath( object, propertyPath );
 				
 				return true;
+			}
+			catch ( error:TypeError )
+			{
+				// return false;
 			}
 			catch ( error:ReferenceError )
 			{
