@@ -63,6 +63,19 @@ package com.codecatalyst.util
 		}
 		
 		/**
+		 * Returns the number of keys in the specified Dictionary
+		 */ 
+		public static function keyCount( dictionary:Dictionary ):int
+		{
+			var count:int = 0;
+			
+			for ( var key:* in dictionary )
+				count++;
+			
+			return count;
+		}
+		
+		/**
 		 * Create an Array representation of the values in the specified dictionary.
 		 * 
 		 * @param dictionary Dictionary
