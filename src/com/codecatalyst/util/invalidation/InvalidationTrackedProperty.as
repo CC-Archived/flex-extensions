@@ -102,6 +102,12 @@ package com.codecatalyst.util.invalidation
 			return _previousValue;
 		}
 		
+		/**
+		 * Support to defer `reset()` when callbacks on non-IInvalidating are used.
+		 * Set to `false` to allow "throttled" callbacks to used; @see InvalidationTracker::applyThrottler()
+		 */
+		public var autoReset : Boolean = true;
+
 		// ========================================
 		// Constructor
 		// ========================================
@@ -242,7 +248,7 @@ package com.codecatalyst.util.invalidation
 		 */
 		public function invalidate():void
 		{
-			if (_invalidated == false) 
+			if ( _invalidated == false ) 
 			{
 				_invalidated = true;
 				
@@ -270,11 +276,16 @@ package com.codecatalyst.util.invalidation
 			if ( callback != null )
 			{
 				var currentValue:* = PropertyUtil.getObjectPropertyValue( source, propertyName );
-					
+				
 				if ( callback.length == 3 )
 					callback( propertyName, previousValue, currentValue );
 				else
 					callback();
+				
+				if ( !(source is IInvalidating) && autoReset ) 
+				{
+					reset();
+				}
 			}
 			
 		}
@@ -283,9 +294,8 @@ package com.codecatalyst.util.invalidation
 		 * Reset this invalidated tracked property.
 		 */
 		public function reset():void
-		{
-			_invalidated = false;
-			
+		{			
+			_invalidated   = false;			
 			_previousValue = PropertyUtil.getObjectPropertyValue( source, propertyName );
 		}
 		
@@ -312,5 +322,7 @@ package com.codecatalyst.util.invalidation
 		}
 		
 		private var _customEventName : String;
+
+		
 	}
 }

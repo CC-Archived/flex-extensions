@@ -22,11 +22,13 @@
 
 package com.codecatalyst.util.invalidation
 {
+	import com.codecatalyst.util.DelayedCall;
 	import com.codecatalyst.util.MetadataUtil;
 	
 	import flash.events.IEventDispatcher;
 	import flash.utils.Dictionary;
 	
+	import mx.core.IInvalidating;
 	import mx.events.FlexEvent;
 	import mx.utils.DescribeTypeCache;
 	import mx.utils.StringUtil;
@@ -76,14 +78,62 @@ package com.codecatalyst.util.invalidation
 		/**
 		 * Constructor.
 		 */
-		public function InvalidationTracker( source:IEventDispatcher, callback:Function = null )
+		public function InvalidationTracker( source:IEventDispatcher, callback:Function = null, enableThrottle:Boolean=false )
 		{
 			super();
 			
 			this.source   = source;
-			this.callback = callback;
+			this.callback = applyThrottle( callback, enableThrottle );
 			
 			setup();
+		}
+		
+		/**
+		 *  Defer notification via explicit callback for 1-2 frames IF the source
+		 *  is not IInvalidating and user has explicitly requested throttling.
+		 * 
+		 *  NOTE: only callbacks with zero-args can be throttled.
+		 */
+		private function applyThrottle(callback:Function, enable:Boolean) : Function
+		{
+			var allowed   : Boolean  = callback && enable && !(source is IInvalidating);
+			var delayed   : Boolean  = false;
+			
+			/**
+			 *  Since the throttler can be invoked n-times [while deferred]
+			 *  each time with different (propertyName, ...) values.
+			 *  So we restrict throttling only for callbacks with zero-arguments!
+			 */
+			var throttler : Function = function() :void 
+			{
+				// !! The scope of throttler callback is an ITP instance
+				this["autoReset"] = false;
+				
+				// Ignore current callback if `real` is still pending.
+				if ( !delayed ) 
+				{
+					delayed = true;
+					
+					// Defer notification for 1-2 frames...
+					DelayedCall.schedule( function():void 
+					{
+						delayed = false;
+						
+						// Call `real` callback 1x
+						callback();
+						
+						// now force reset() on all ITP instances
+						for each ( var inst:InvalidationTrackedProperty in trackedProperties )
+						{
+							inst.reset();
+						}
+						
+					}, [], 45);
+				}
+				
+			};
+			
+			return allowed ? throttler : callback; 
 		}
 		
 		// ========================================
@@ -228,7 +278,9 @@ package com.codecatalyst.util.invalidation
 				
 				invalidateMetadataOptions
 					.split(",")
-					.map( function ( item:String, index:int, array:Array ):uint { 
+					.map( function ( item:String, index:int, array:Array ):uint {
+						if (item == "") return InvalidationFlags.NONE;
+						
 						switch( StringUtil.trim( item ).toLowerCase() )
 						{
 							case "displaylist":  return InvalidationFlags.DISPLAY_LIST;

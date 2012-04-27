@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<flexLibProperties includeAllClasses="false" useMultiPlatformConfig="false" version="3">
+<flexLibProperties includeAllClasses="true" useMultiPlatformConfig="false" version="3">
   <includeClasses>
     <classEntry path="asset.image.cursor.CursorAsset"/>
     <classEntry path="asset.image.search.SearchAsset"/>
@@ -107,9 +107,6 @@
     <classEntry path="com.codecatalyst.util.invalidation.InvalidationTrackedProperty"/>
     <classEntry path="com.codecatalyst.util.invalidation.InvalidationTracker"/>
     <classEntry path="com.codecatalyst.util.invalidation.mxml.InvalidationTracker"/>
-    <classEntry path="com.codecatalyst.util.promise.Deferred"/>
-    <classEntry path="com.codecatalyst.util.promise.Promise"/>
-    <classEntry path="com.codecatalyst.util.promise.PromiseUtil"/>
     <classEntry path="qs.charts.DashedAreaRenderer"/>
     <classEntry path="qs.charts.DashedLineRenderer"/>
     <classEntry path="qs.utils.GraphicsUtils"/>

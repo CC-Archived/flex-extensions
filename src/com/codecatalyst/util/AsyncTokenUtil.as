@@ -22,9 +22,6 @@
 
 package com.codecatalyst.util
 {
-	import com.codecatalyst.util.promise.Deferred;
-	import com.codecatalyst.util.promise.Promise;
-	
 	import mx.rpc.AsyncToken;
 	import mx.rpc.IResponder;
 	import mx.rpc.Responder;
@@ -101,19 +98,5 @@ package com.codecatalyst.util
 			return proxyToken;
 		}
 		
-		/**
-		 * Create a Promise for the specified AsyncToken.
-		 * 
-		 * @see com.codecatalyst.util.promise.Promise
-		 */
-		public static function createPromise( token:AsyncToken ):Promise
-		{
-			var deferred:Deferred = new Deferred();
-			
-			var responder:Responder = new Responder( deferred.resolve, deferred.reject );
-			token.addResponder( responder );
-			
-			return deferred.promise;
-		}
 	}
 }
