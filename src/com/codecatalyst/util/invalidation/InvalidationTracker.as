@@ -117,10 +117,11 @@ package com.codecatalyst.util.invalidation
 					// Defer notification for 1-2 frames...
 					DelayedCall.schedule( function():void 
 					{
-						delayed = false;
-						
 						// Call `real` callback 1x
 						callback();
+
+						// Now allow future invalidations to start a new change set
+						delayed = false;
 						
 						// now force reset() on all ITP instances
 						for each ( var inst:InvalidationTrackedProperty in trackedProperties )
