@@ -74,7 +74,7 @@ package com.codecatalyst.component.chart.control
 		
 		protected static function initializeStyles():Boolean
 		{
-			var declaration:CSSStyleDeclaration = StyleUtil.getStyleDeclaration( "ChartPanControl" ) || new CSSStyleDeclaration();
+			var declaration:CSSStyleDeclaration = StyleUtil.getStyleDeclaration( "com.codecatalyst.component.chart.control.ChartPanControl" ) || new CSSStyleDeclaration();
 			
 			declaration.defaultFactory = 
 				function ():void
@@ -85,7 +85,7 @@ package com.codecatalyst.component.chart.control
 					this.rollOverCursorOffset   = DEFAULT_PAN_CURSOR_OFFSET;
 				};
 			
-			StyleUtil.setStyleDeclaration( "ChartPanControl", declaration, false );
+			StyleUtil.setStyleDeclaration( "com.codecatalyst.component.chart.control.ChartPanControl", declaration, false );
 			
 			return true;
 		}

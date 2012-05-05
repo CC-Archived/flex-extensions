@@ -87,12 +87,9 @@ package com.codecatalyst.util.persistence
 		{
 			super();
 			
-			this.keyValueStore = keyValueStore;
-			
 			processPersistentAnnotations();
 			
-			if ( keyValueStore != null )
-				restorePersistedValues();
+			this.keyValueStore = keyValueStore;
 		}
 		
 		// ========================================

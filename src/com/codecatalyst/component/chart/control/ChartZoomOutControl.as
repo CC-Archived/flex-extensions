@@ -63,7 +63,7 @@ package com.codecatalyst.component.chart.control
 		
 		protected static function initializeStyles():Boolean
 		{
-			var declaration:CSSStyleDeclaration = StyleUtil.getStyleDeclaration( "ChartZoomOutControl" ) || new CSSStyleDeclaration();
+			var declaration:CSSStyleDeclaration = StyleUtil.getStyleDeclaration( "com.codecatalyst.component.chart.control.ChartZoomOutControl" ) || new CSSStyleDeclaration();
 			
 			declaration.defaultFactory = 
 				function ():void
@@ -74,7 +74,7 @@ package com.codecatalyst.component.chart.control
 					this.rollOverCursorOffset 	= DEFAULT_ZOOM_OUT_CURSOR_OFFSET;
 				};
 			
-			StyleUtil..setStyleDeclaration( "ChartZoomOutControl", declaration, false );
+			StyleUtil..setStyleDeclaration( "com.codecatalyst.component.chart.control.ChartZoomOutControl", declaration, false );
 			
 			return true;
 		}

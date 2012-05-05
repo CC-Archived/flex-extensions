@@ -84,6 +84,10 @@ package com.codecatalyst.util
 				var val : * = traversePropertyPath( object, propertyPath ); 
 				return (val == null) ? defaultVal : val;
 			}
+			catch ( error:TypeError )
+			{
+				// return false;
+			}
 			catch ( error:ReferenceError )
 			{
 				// return null;
@@ -102,6 +106,10 @@ package com.codecatalyst.util
 				traversePropertyPath( object, propertyPath );
 				
 				return true;
+			}
+			catch ( error:TypeError )
+			{
+				// return false;
 			}
 			catch ( error:ReferenceError )
 			{
