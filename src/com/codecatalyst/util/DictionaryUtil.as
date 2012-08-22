@@ -36,14 +36,22 @@ package com.codecatalyst.util
 		 * @param dictionary Dictionary instance
 		 * @return Array of keys in the dictionary
 		 */
-		public static function keys( dictionary:Dictionary ):Array
+		public static function keys( dictionary:Dictionary, flatten:Boolean=false ):Array
 		{
-			var keys:Array = [];
+			var list:Array = [];
 			
 			for ( var key:* in dictionary )
-				keys.push( key );
+			{
+				if ( flatten )
+				{
+					if ( dictionary[key] is Dictionary )
+						list.concat( keys( dictionary[key] as Dictionary, flatten ) );
+				}
+				else					
+					list.push( key );
+			}
 			
-			return keys;
+			return list;
 		}
 		
 		/**
@@ -52,25 +60,45 @@ package com.codecatalyst.util
 		 * @param dictionary Dictionary instance
 		 * @return Array of values in the dictionary
 		 */
-		public static function values( dictionary:Dictionary ):Array
+		public static function values( dictionary:Dictionary, flatten:Boolean=false ):Array
 		{
-			var values:Array = [];
+			var list:Array = [];
 			
-			for each ( var item:* in dictionary ) 
-				values.push( item );
+			for each ( var item:* in dictionary )
+			{
+				if ( flatten )
+				{
+					if (item is Dictionary)	
+						list = list.concat( values( item as Dictionary, flatten ) );
+					else if (item is Array)
+						list = list.concat( item as Array );
+				}
+				else
+					list.push( item );			
+			}
 			
-			return values;
+			return list;
 		}
 		
 		/**
 		 * Returns the number of keys in the specified Dictionary
 		 */ 
-		public static function keyCount( dictionary:Dictionary ):int
+		public static function keyCount( dictionary:Dictionary, flatten:Boolean=false ):int
 		{
 			var count:int = 0;
 			
 			for ( var key:* in dictionary )
-				count++;
+			{
+				if ( flatten )
+				{
+					if ( dictionary[key] is Dictionary )
+						count += keyCount( dictionary[key] as Dictionary, flatten);
+					else if ( dictionary[key] is Array )
+						count += (dictionary[key] as Array).length;
+				}
+				else
+					count += 1;
+			}
 			
 			return count;
 		}
@@ -83,9 +111,9 @@ package com.codecatalyst.util
 		 * 
 		 * @see #values()
 		 */
-		public static function toArray( dictionary:Dictionary ):Array
+		public static function toArray( dictionary:Dictionary,flatten:Boolean=false ):Array
 		{
-			return values( dictionary );
+			return values( dictionary, flatten );
 		}
 		
 		/**

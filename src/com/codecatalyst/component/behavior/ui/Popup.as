@@ -2,11 +2,13 @@ package com.codecatalyst.component.behavior.ui
 {
 	import com.codecatalyst.component.behavior.AbstractBehavior;
 	import com.codecatalyst.component.behavior.IBehavior;
+	import com.codecatalyst.component.behavior.ui.events.ContentEvent;
 	import com.codecatalyst.factory.ClassFactory;
 	import com.codecatalyst.util.invalidation.InvalidationTracker;
 	
 	import flash.display.DisplayObject;
 	import flash.events.Event;
+	import flash.events.KeyboardEvent;
 	import flash.events.MouseEvent;
 	import flash.geom.Point;
 	
@@ -21,10 +23,12 @@ package com.codecatalyst.component.behavior.ui
 	import mx.managers.PopUpManager;
 	import mx.styles.IStyleClient;
 	
-	[Event(name="contentChange",	 	type="flash.events.Event")]
-	[Event(name="contentInitialized",  	type="flash.events.Event")]
-	[Event(name="contentReady",  		type="flash.events.Event")]
+	[Event(name="contentChange",	 	type="com.codecatalyst.component.behavior.ui.events.ContentEvent")]
+	[Event(name="contentInitialized",  	type="com.codecatalyst.component.behavior.ui.events.ContentEvent")]
+	[Event(name="contentReady",  		type="com.codecatalyst.component.behavior.ui.events.ContentEvent")]
+	[Event(name="contentReleased",  	type="com.codecatalyst.component.behavior.ui.events.ContentEvent")]
 	[Event(name="close",				type="flash.events.Event")]
+	[Event(name="keyDown",				type="flash.events.KeyboardEvent")]
 	
 	
 	[DefaultProperty("renderer")]
@@ -109,14 +113,19 @@ package com.codecatalyst.component.behavior.ui
 	 *				parent="{this}"
 	 *				autoClose="true"	
 	 *				modal="false" 
-	 *				showEffect="{   new ClassFactory( Fade,null,{duration:600} )    }" 	
+	 *				showEffect="{  new ClassFactory( Fade,null,{duration:600} )   }" 	
 	 *				hideEffect="{  new ClassFactory( Fade,null,{duration:400} )   }" 	
 	 *				renderer="{ new StyleableFactory( CorrelationWindow, null,{ bottom:100, right:100 } ) }"  
 	 *				xmlns:ui="com.codecatalyst.component.behavior.ui.*" /&gt;
 	 * 
+	 *  &lt;!-- Enabled Swiz injection via SET_UP_BEAN --&gt;
+	 * 
 	 * 	&lt;ui:Popup	id="performances"
 	 * 				parent="testsGrid"
 	 * 				autoClose="true" modal="true"
+	 * 				showEffect="{  new ClassFactory( Fade,null,{duration:600} )   }" 	
+	 *				hideEffect="{  new ClassFactory( Fade,null,{duration:400} )   }"
+	 * 				contentChange="dispatchEvent( new BeanEvent(BeanEvent.SET_UP_BEAN,popup.content) );"
 	 * 				xmlns:ui="com.codecatalyst.component.behavior.ui.*" &gt;
 	 * 
 	 * 			&lt;mx:Component&gt;
@@ -209,10 +218,10 @@ package com.codecatalyst.component.behavior.ui
 				
 				// Listen to ready notification so positioning will work...
 				instance.addEventListener(FlexEvent.CREATION_COMPLETE, onContentReady, false, 0, true);
-				instance.addEventListener(CloseEvent.CLOSE, onCloseContent, false, 0, true);
+				instance.addEventListener(CloseEvent.CLOSE, onCloseContent, false, 0, true);				
 				instance.addEventListener(FlexEvent.INITIALIZE, onContentInitialized, false, 0 , true);
 				
-				dispatchEvent(new Event('contentChange'));
+				dispatchEvent(new ContentEvent(ContentEvent.CONTENT_CHANGE,instance));
 			}
 			
 			return instance;
@@ -332,9 +341,11 @@ package com.codecatalyst.component.behavior.ui
 				
 				instance.removeEventListener(EffectEvent.EFFECT_END, onHideFinished);
 				instance.removeEventListener(CloseEvent.CLOSE, onCloseContent);
+				instance.removeEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
 				
+				dispatchEvent( new ContentEvent(ContentEvent.CONTENT_RELEASED,instance) );
 				instance = null;
-				dispatchEvent(new Event('contentChange'));
+				dispatchEvent(new ContentEvent(ContentEvent.CONTENT_CHANGE,null));
 			}
 		}
 		
@@ -401,7 +412,7 @@ package com.codecatalyst.component.behavior.ui
 		{
 			content.removeEventListener(FlexEvent.INITIALIZE, onContentInitialized);
 			
-			dispatchEvent( new Event('contentInitialized') );
+			dispatchEvent( new ContentEvent(ContentEvent.CONTENT_INITIALIZED) );
 		}
 		
 		
@@ -412,10 +423,11 @@ package com.codecatalyst.component.behavior.ui
 		 */
 		protected function onContentReady(event:FlexEvent):void 
 		{
-			content.removeEventListener(FlexEvent.CREATION_COMPLETE, onContentReady);
 			content.stage.addEventListener(MouseEvent.MOUSE_DOWN,onMouseDown,true,0,true);
+			content.stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown, false, 0, true);
 			
-			dispatchEvent( new Event('contentReady') );
+			content.removeEventListener(FlexEvent.CREATION_COMPLETE, onContentReady);
+			dispatchEvent( new ContentEvent(ContentEvent.CONTENT_READY,content) );
 			
 			showInstance();
 			
@@ -437,7 +449,11 @@ package com.codecatalyst.component.behavior.ui
 			if ( !content ) return;
 			
 			if ( content.stage ) 
+			{
 				content.stage.removeEventListener(MouseEvent.MOUSE_DOWN,onMouseDown,true);
+				content.stage.removeEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
+			}
+				
 			
 			// This will execute a hideEffect effect IF one has been configured
 			
@@ -450,6 +466,16 @@ package com.codecatalyst.component.behavior.ui
 			
 			if (event != null)
 				event.stopPropagation();
+		}
+		
+		/**
+		 * The keydown event is dispatched from the popup if no one
+		 * else kills it first.
+		 */
+		protected function onKeyDown(event:KeyboardEvent):void 
+		{
+			dispatchEvent( event.clone() );
+			event.stopImmediatePropagation();
 		}
 		
 		/**
@@ -583,7 +609,10 @@ package com.codecatalyst.component.behavior.ui
 				UIComponent(content).isPopUp = true;	
 			
 			if ( content.stage )
+			{
 				content.stage.addEventListener(MouseEvent.MOUSE_DOWN,onMouseDown,true,0,true);
+				content.stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown, false, 0, true);
+			}
 			
 			content.visible = isContentReady;
 			

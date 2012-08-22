@@ -111,6 +111,7 @@
     <classEntry path="qs.charts.DashedLineRenderer"/>
     <classEntry path="qs.utils.GraphicsUtils"/>
     <classEntry path="utils.display.bringToFront"/>
+    <classEntry path="com.codecatalyst.component.behavior.ui.events.ContentEvent"/>
   </includeClasses>
   <includeResources>
     <resourceEntry destPath="manifest.xml" sourcePath="manifest.xml"/>

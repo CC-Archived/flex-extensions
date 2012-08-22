@@ -47,6 +47,11 @@ package com.codecatalyst.util
 		 */
 		protected var args:Array = null;
 		
+		/**
+		 * Scope context for the function invocation
+		 */
+		protected var scope:Object = null;
+		
 		// ========================================
 		// Constructor
 		// ========================================
@@ -70,11 +75,11 @@ package com.codecatalyst.util
 		 * @param args  The parameters to pass to the function / class method.
 		 * @param delay The time in milliseconds to delay before making the function / class method call.
 		 */
-		public static function schedule( func:Function, args:Array, delay:Number ):void
+		public static function schedule( func:Function, args:Array, delay:Number, scope:Object=null ):void
 		{
 			var call:DelayedCall = new DelayedCall();
 			
-			call.initiate( func, args, delay );
+			call.initiate( func, args, delay, scope );
 			
 			// Grab a reference so the call doesn't get prematurely garbage-collected
 			
@@ -98,10 +103,11 @@ package com.codecatalyst.util
 		/**
 		 * Initiate a delayed call.
 		 */
-		protected function initiate( func:Function, args:Array, delay:Number ):void
+		protected function initiate( func:Function, args:Array, delay:Number, scope:Object=null ):void
 		{
 			this.func = func;
-			this.args = args;
+			this.args = args || [ ];
+			this.scope= scope;
 			
 			// Create and start a timer
 			
@@ -122,7 +128,7 @@ package com.codecatalyst.util
 			// Execute the delayed function call
 			
 			if ( func != null )
-				func.apply( null, args );
+				func.apply( scope, args );
 			
 			release( this );
 		}
