@@ -22,74 +22,84 @@
 
 package com.codecatalyst.util
 {
-	import flash.display.DisplayObject;
-	import flash.display.DisplayObjectContainer;
+    import flash.display.DisplayObject;
+    import flash.display.DisplayObjectContainer;
 
-	public class DisplayObjectContainerUtil
-	{
-		// ========================================
-		// Public methods
-		// ========================================
-		
-		[ArrayElementType("flash.display.DisplayObject")]
-		/**
-		 * Returns an Array of the specified DisplayObjectContainer's children.
-		 */
-		public static function children( container:DisplayObjectContainer ):Array
-		{
-			var children:Array = new Array();
-			
-			var numChildren:int = container.numChildren;
-			for ( var childIndex:int = 0; childIndex < numChildren; childIndex++ )
-			{
-				var child:DisplayObject = container.getChildAt( childIndex );
-				
-				children.push( child );
-			}
-			
-			return children;
-		}
-		
-		/**
-		 * Brings the specified DisplayObject forward in z-order within the specified DisplayObjectContainer.
-		 */
-		public static function bringForward( container:DisplayObjectContainer, displayObject:DisplayObject ):void
-		{
-			var childIndex:int = container.getChildIndex( displayObject );
-			var targetIndex:int = ( childIndex < container.numChildren - 1 ) ? childIndex++ : childIndex;
-			
-			container.setChildIndex( displayObject, targetIndex );
-		}
-		
-		/**
-		 * Brings the specified DisplayObject to the front in z-order within the specified DisplayObjectContainer.
-		 */
-		public static function bringToFront( container:DisplayObjectContainer, displayObject:DisplayObject ):void
-		{
-			var lastIndex:int = container.numChildren - 1;
-			
-			container.setChildIndex( displayObject, lastIndex );
-		}
-		
-		/**
-		 * Sends the specified DisplayObject backward in z-order within the specified DisplayObjectContainer.
-		 */
-		public static function sendBackward( container:DisplayObjectContainer, displayObject:DisplayObject ):void
-		{
-			var childIndex:int = container.getChildIndex( displayObject );
-			var targetIndex:int = ( childIndex > 0 ) ? childIndex-- : childIndex;
-			
-			container.setChildIndex( displayObject, targetIndex );
-		}
-		
-		/**
-		 * Sends the specified DisplayObject to the back in z-order within the specified DisplayObjectContainer.
-		 */
-		public static function sendToBack( container:DisplayObjectContainer, displayObject:DisplayObject ):void
-		{
-			var firstIndex:int = 0;
-			
-			container.setChildIndex( displayObject, firstIndex );
-		}
-	}
+    public class DisplayObjectContainerUtil
+    {
+
+        // ========================================
+        // Public methods
+        // ========================================
+
+        [ArrayElementType("flash.display.DisplayObject")]
+        /**
+         * Returns an Array of the specified DisplayObjectContainer's children.
+         */
+        public static function children(container:DisplayObjectContainer):Array
+        {
+            var children:Array = new Array();
+
+            if (container != null)
+            {
+                var numChildren:int = container.numChildren;
+                for (var childIndex:int = 0; childIndex < numChildren; childIndex++)
+                {
+                    var child:DisplayObject = container.getChildAt(childIndex);
+
+                    children.push(child);
+                }
+            }
+
+            return children;
+        }
+
+
+        public static function contains(container:DisplayObjectContainer, target:DisplayObject):Boolean
+        {
+            return (children(container).indexOf(target) > -1);
+        }
+
+        /**
+         * Brings the specified DisplayObject forward in z-order within the specified DisplayObjectContainer.
+         */
+        public static function bringForward(container:DisplayObjectContainer, displayObject:DisplayObject):void
+        {
+            var childIndex:int = container.getChildIndex(displayObject);
+            var targetIndex:int = (childIndex < container.numChildren - 1) ? childIndex++ : childIndex;
+
+            container.setChildIndex(displayObject, targetIndex);
+        }
+
+        /**
+         * Brings the specified DisplayObject to the front in z-order within the specified DisplayObjectContainer.
+         */
+        public static function bringToFront(container:DisplayObjectContainer, displayObject:DisplayObject):void
+        {
+            var lastIndex:int = container.numChildren - 1;
+
+            container.setChildIndex(displayObject, lastIndex);
+        }
+
+        /**
+         * Sends the specified DisplayObject backward in z-order within the specified DisplayObjectContainer.
+         */
+        public static function sendBackward(container:DisplayObjectContainer, displayObject:DisplayObject):void
+        {
+            var childIndex:int = container.getChildIndex(displayObject);
+            var targetIndex:int = (childIndex > 0) ? childIndex-- : childIndex;
+
+            container.setChildIndex(displayObject, targetIndex);
+        }
+
+        /**
+         * Sends the specified DisplayObject to the back in z-order within the specified DisplayObjectContainer.
+         */
+        public static function sendToBack(container:DisplayObjectContainer, displayObject:DisplayObject):void
+        {
+            var firstIndex:int = 0;
+
+            container.setChildIndex(displayObject, firstIndex);
+        }
+    }
 }
